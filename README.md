@@ -1,20 +1,21 @@
-# ledgerly
-Ledgerly — A Flutter-based personal expense tracker powered by Google Sheets, featuring real-time insights, animated dashboards, and effortless expense entry.
-
 <p align="center">
-  <img src="assets/readme/ledgerly-banner.png" alt="Ledgerly Banner" />
+  <img src="assets/readme/ledgerly-logo.png" width="140" />
 </p>
 
 <h1 align="center">Ledgerly</h1>
 
 <p align="center">
-  A modern Flutter expense tracker powered by Google Sheets & Apps Script
+  Track smarter. Spend wiser.
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Flutter-3.x-blue" />
   <img src="https://img.shields.io/badge/Platform-Android%20|%20iOS-green" />
   <img src="https://img.shields.io/badge/Backend-Google%20Sheets-orange" />
+</p>
+
+<p align="center">
+  <img src="assets/readme/ledgerly-banner.png" alt="Ledgerly Banner" />
 </p>
 
 ---
@@ -63,7 +64,7 @@ Ledgerly — A Flutter-based personal expense tracker powered by Google Sheets, 
 - Google Sheets
 - REST APIs
 - fl_chart
-- Riverpod
+- Riverpod & Hooks
 
 ---
 
@@ -88,4 +89,3 @@ Ledgerly — A Flutter-based personal expense tracker powered by Google Sheets, 
 ## 📜 License
 
 MIT
-

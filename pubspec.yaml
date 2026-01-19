@@ -1,0 +1,47 @@
+name: ledgerly
+description: "A modern Flutter expense tracker powered by Google Sheets"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # State management + hooks
+  hooks_riverpod: ^2.5.1
+
+  # Networking
+  dio: ^5.4.3
+
+  # Environment variables
+  flutter_dotenv: ^5.1.0
+
+  # Charts
+  fl_chart: ^0.68.0
+
+  # Animations
+  flutter_animate: ^4.5.0
+
+  # SVG icons
+  flutter_svg: ^2.0.10
+
+  # Local storage (theme toggle later)
+  shared_preferences: ^2.2.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/

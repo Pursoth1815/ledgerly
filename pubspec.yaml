@@ -5,7 +5,8 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.6.1
+  sdk: ">=3.8.0 <4.0.0"
+  flutter: ">=3.32.0"
 
 dependencies:
   flutter:
@@ -17,19 +18,19 @@ dependencies:
   hooks_riverpod: ^2.5.1
 
   # Networking
-  dio: ^5.4.3
+  dio: ^5.5.0
 
   # Environment variables
-  flutter_dotenv: ^5.1.0
+  flutter_dotenv: ^5.2.0
 
   # Charts
-  fl_chart: ^0.68.0
+  fl_chart: ^0.70.0
 
   # Animations
   flutter_animate: ^4.5.0
 
   # SVG icons
-  flutter_svg: ^2.0.10
+  flutter_svg: ^2.0.12
 
   # Local storage (theme toggle later)
   shared_preferences: ^2.2.3
@@ -38,11 +39,12 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true
 
   assets:
     - assets/images/
-    - .env
+    - .env.dev
+    - .env.prod

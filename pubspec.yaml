@@ -35,6 +35,12 @@ dependencies:
   # Local storage (theme toggle later)
   shared_preferences: ^2.2.3
 
+  # #QR Scanning
+  mobile_scanner: ^7.0.1
+
+  # App Launcher
+  url_launcher: ^6.2.6
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

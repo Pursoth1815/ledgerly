@@ -7,14 +7,13 @@ class AppLogger {
     _enabled = enableLogs;
   }
 
-  static void d(String message, {String tag = 'APP'}) {
+  static void d(dynamic message, {String tag = 'APP'}) {
     if (_enabled) {
-      log(message, name: tag);
+      log(message.toString(), name: tag);
     }
   }
 
-  static void e(String message,
-      {String tag = 'APP', StackTrace? stackTrace}) {
+  static void e(String message, {String tag = 'APP', StackTrace? stackTrace}) {
     if (_enabled) {
       log(message, name: tag, error: message, stackTrace: stackTrace);
     }

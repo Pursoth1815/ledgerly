@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 /// App colors
 class AppColors {
+  static const Color transparent = Colors.transparent;
+
   // Primary colors
   static const Color primary = Color(0xFF6366F1);
   static const Color primaryDark = Color(0xFF4F46E5);
@@ -45,4 +47,8 @@ class AppColors {
   static const Color health = Color(0xFFEF4444);
   static const Color education = Color(0xFF3B82F6);
   static const Color other = Color(0xFF6B7280);
+
+  // Icons
+
+  static const Color redAccent = Color(0xFFFF5252);
 }

@@ -9,10 +9,7 @@ import '../core/utils/logger.dart';
 class AppInitializer {
   AppInitializer._();
 
-  static Future<void> initialize({
-    required ProviderContainer container,
-    required String flavor,
-  }) async {
+  static Future<void> initialize({required ProviderContainer container, required String flavor}) async {
     // 1️⃣ Load environment
     await _loadEnvironment(flavor);
 
@@ -26,7 +23,7 @@ class AppInitializer {
     AppLogger.d('🚀 Ledgerly starting', tag: 'INIT');
 
     // 4️⃣ Prefetch critical data
-    await _preloadMasterData(container);
+    _preloadMasterData(container);
 
     // Future additions (when needed):
     // await SharedPreferences.getInstance();
@@ -38,7 +35,7 @@ class AppInitializer {
     await dotenv.load(fileName: fileName);
   }
 
-  static _preloadMasterData(ProviderContainer container) async {
+  static Future<void> _preloadMasterData(ProviderContainer container) async {
     AppLogger.d('📦 Prefetching master data', tag: 'INIT');
     await container.read(masterDataProvider.future);
     AppLogger.d('✅ Master data loaded', tag: 'INIT');

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ledgerly/core/errors/app_exception.dart';
 import 'package:ledgerly/features/master_data/master_data.dart';
-import 'package:ledgerly/features/scan_and_pay/providers/providers.dart';
+import 'package:ledgerly/features/upi_payment_initiation/providers/providers.dart';
 import 'package:ledgerly/shared/widgets/app_error_view.dart';
 import 'package:ledgerly/theme/themes.dart';
 
@@ -12,14 +12,15 @@ class DashboardPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final masterDataAsync = ref.watch(masterDataProvider);
+    final flow = ref.read(paymentInitiationFlowProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Ledgerly')),
 
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.qr_code_scanner_rounded, color: AppColors.white),
+        child: Icon(Icons.attach_money_rounded, color: AppColors.warning),
         onPressed: () {
-          ref.read(scanAndPayFlowProvider).beginScan(context);
+          flow.navigateToPaymentInitiationScreen(context);
         },
       ),
 

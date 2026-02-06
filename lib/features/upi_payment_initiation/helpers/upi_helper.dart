@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 enum _AllUpiApps {
   allBank,
   amazonPay,
@@ -45,92 +43,6 @@ enum _AllUpiApps {
 }
 
 class UpiAppsHelper {
-  String _getName(_AllUpiApps app) {
-    switch (app) {
-      case _AllUpiApps.allBank:
-        return 'ALLBANK';
-      case _AllUpiApps.amazonPay:
-        return 'Amazon Pay';
-      case _AllUpiApps.axisPay:
-        return 'Axis Pay';
-      case _AllUpiApps.barodaPay:
-        return 'Baroda Pay';
-      case _AllUpiApps.bhim:
-        return 'BHIM';
-      case _AllUpiApps.boiUpi:
-        return 'BOI UPI';
-      case _AllUpiApps.centUpi:
-        return 'Cent UPI';
-      case _AllUpiApps.cointab:
-        return 'Cointab';
-      case _AllUpiApps.corpUpi:
-        return 'CORP UPI';
-      case _AllUpiApps.csbUpi:
-        return 'CSB UPI';
-      case _AllUpiApps.cubUpi:
-        return "CUB UPI";
-      case _AllUpiApps.digibank:
-        return "Digibank UPI";
-      case _AllUpiApps.dcbUpi:
-        return 'DCB UPI';
-      case _AllUpiApps.equitasUpi:
-        return "Equitas UPI";
-      case _AllUpiApps.finoBPay:
-        return 'Fino BPay';
-      case _AllUpiApps.freecharge:
-        return 'Freecharge';
-      case _AllUpiApps.googlePay:
-        return "Google Pay";
-      case _AllUpiApps.hsbcSimplyPay:
-        return 'HSBC Simply Pay';
-      case _AllUpiApps.iMobileICICI:
-        return 'iMobile by ICICI';
-      case _AllUpiApps.indusPay:
-        return 'IndusPay';
-      case _AllUpiApps.kblUpi:
-        return 'KBL UPI';
-      case _AllUpiApps.khaaliJeb:
-        return 'KhaaliJeb';
-      case _AllUpiApps.kotak:
-        return "Kotak UPI";
-      case _AllUpiApps.mahaUpi:
-        return 'MahaUPI';
-      case _AllUpiApps.miPayGlobal:
-      case _AllUpiApps.miPayXiaomi:
-        return 'MiPay';
-      case _AllUpiApps.mobikwik:
-        return 'Mobikwik';
-      case _AllUpiApps.orientalPay:
-        return 'Oriental Pay';
-      case _AllUpiApps.paytm:
-        return 'Paytm';
-      case _AllUpiApps.paywiz:
-        return 'Paywiz';
-      case _AllUpiApps.payZapp:
-        return "PayZapp";
-      case _AllUpiApps.phonePe:
-        return 'PhonePe';
-      case _AllUpiApps.pnb:
-        return "PNB UPI";
-      case _AllUpiApps.psb:
-        return 'PSB';
-      case _AllUpiApps.rblPay:
-        return 'RBL Pay';
-      case _AllUpiApps.realmePaySa:
-        return "Realme PaySa";
-      case _AllUpiApps.sbiPay:
-        return 'SBI Pay';
-      case _AllUpiApps.trueCallerUpi:
-        return 'Truecaller';
-      case _AllUpiApps.unitedUpiPay:
-        return "United UPI Pay";
-      case _AllUpiApps.vijayaUpi:
-        return 'Vijaya UPI';
-      case _AllUpiApps.yesPay:
-        return 'Yes Pay';
-    }
-  }
-
   String _getPackageName(_AllUpiApps app) {
     switch (app) {
       case _AllUpiApps.allBank:
@@ -220,26 +132,16 @@ class UpiAppsHelper {
 
   late String packageName;
 
-  /// This is the app name for display purpose
-  late String name;
-
-  /// This is the icon of the UPI app
-  late Uint8List icon;
-
-  UpiAppsHelper(String appName, String package) {
+  UpiAppsHelper(String package) {
     packageName = package;
-    name = appName;
   }
 
   UpiAppsHelper._fromEnum(_AllUpiApps app) {
     packageName = _getPackageName(app);
-    name = _getName(app);
   }
 
   UpiAppsHelper.fromMap(Map<String, dynamic> m) {
     packageName = m['packageName'];
-    name = m['name'];
-    icon = m['icon'];
   }
 
   static UpiAppsHelper allBank = UpiAppsHelper._fromEnum(_AllUpiApps.allBank);
@@ -360,25 +262,4 @@ class UpiAppsHelper {
 
   /// BHIM YES PAY(Yes Bank Limited): com.YesBank
   static UpiAppsHelper yesPay = UpiAppsHelper._fromEnum(_AllUpiApps.yesPay);
-
-  static const bhimImg =
-      "https://github.com/cooltechie-info/upi-chooser/blob/master/example/assets/upi/bhim.png?raw=true";
-  static const paytmImg =
-      "https://github.com/cooltechie-info/upi-chooser/blob/master/example/assets/upi/paytm.png?raw=true";
-  static const credImg =
-      "https://github.com/cooltechie-info/upi-chooser/blob/master/example/assets/upi/cred.png?raw=true";
-  static const amazonImg =
-      "https://github.com/cooltechie-info/upi-chooser/blob/master/example/assets/upi/amazon.png?raw=true";
-  static const gpayImg =
-      "https://github.com/cooltechie-info/upi-chooser/blob/master/example/assets/upi/gpay.png?raw=true";
-  static const phonepeImg =
-      "https://github.com/cooltechie-info/upi-chooser/blob/master/example/assets/upi/phonepe.png?raw=true";
-  static const airtelImg =
-      "https://github.com/cooltechie-info/upi-chooser/blob/master/example/assets/upi/airtel.png?raw=true";
-  static const payzappImg =
-      "https://github.com/cooltechie-info/upi-chooser/blob/master/example/assets/upi/payzapp.png?raw=true";
-  static const mobikwikImg =
-      "https://github.com/cooltechie-info/upi-chooser/blob/master/example/assets/upi/mobikwik.png?raw=true";
-  static const freechargeImg =
-      "https://github.com/cooltechie-info/upi-chooser/blob/master/example/assets/upi/freecharge.png?raw=true";
 }

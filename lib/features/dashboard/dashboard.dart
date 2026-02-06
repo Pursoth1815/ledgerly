@@ -6,7 +6,7 @@ import 'package:ledgerly/features/upi_payment_initiation/providers/providers.dar
 import 'package:ledgerly/shared/widgets/app_error_view.dart';
 import 'package:ledgerly/theme/themes.dart';
 
-class DashboardPage extends ConsumerWidget {
+class DashboardPage extends HookConsumerWidget {
   const DashboardPage({super.key});
 
   @override

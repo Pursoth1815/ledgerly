@@ -1,9 +1,8 @@
+import 'package:flutter_device_apps/flutter_device_apps.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ledgerly/features/upi_payment_initiation/helpers/upi_chooser.dart';
-import 'package:ledgerly/features/upi_payment_initiation/models/upi_apps.dart';
 
-final deviceAppsProvider = FutureProvider<List<UpiApps>>((ref) async {
+final deviceAppsProvider = FutureProvider<List<AppInfo>>((ref) {
   final upiChooser = UpiChooser();
-  final upiApps = await upiChooser.getUpiAppList();
-  return upiApps;
+  return upiChooser.getUpiAppList();
 });

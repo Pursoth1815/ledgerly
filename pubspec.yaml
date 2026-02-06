@@ -36,11 +36,10 @@ dependencies:
   shared_preferences: ^2.2.3
 
   # App Launcher
-  url_launcher: ^6.2.6
-
-  appcheck: ^1.7.0
-
   flutter_device_apps: ^0.4.0
+
+  # shimmer
+  shimmer: ^3.0.0
 
 dev_dependencies:
   build_runner: ^2.4.9
@@ -48,8 +47,6 @@ dev_dependencies:
 
   flutter_test:
     sdk: flutter
-
-  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true

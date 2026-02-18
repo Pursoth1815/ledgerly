@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ledgerly/features/upi_payment_initiation/providers/scan_and_pay_flow_provider.dart';
-import 'package:ledgerly/features/upi_payment_initiation/screens/sheets/select_payment_app_sheet.dart';
-import 'package:ledgerly/shared/widgets/app_bottom_sheet.dart';
 import 'package:ledgerly/theme/themes.dart';
 
 class PaymentInitiationScreen extends HookConsumerWidget {
@@ -67,15 +65,7 @@ class PaymentInitiationScreen extends HookConsumerWidget {
 
           // ── CTA Button ────────────────────────────────
           ElevatedButton(
-            onPressed: () {
-              showAppBottomSheet(
-                context,
-                SelectPaymentAppSheet(
-                  onAppSelected: (selectedApplication) =>
-                      flow.beginTransaction(context, selectedApplication.packageName ?? ''),
-                ),
-              );
-            },
+            onPressed: () {},
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
               backgroundColor: AppColors.primary,

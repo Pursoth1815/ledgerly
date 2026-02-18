@@ -20,7 +20,7 @@ class DashboardPage extends HookConsumerWidget {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.attach_money_rounded, color: AppColors.warning),
         onPressed: () {
-          flow.navigateToPaymentInitiationScreen(context);
+          flow.navigateToPaymentInitiationScreen(ref);
         },
       ),
 

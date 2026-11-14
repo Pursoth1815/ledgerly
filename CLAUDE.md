@@ -18,7 +18,7 @@ If a request conflicts with these files, say so and ask before acting.
 
 The owner reviews and merges everything. Claude never merges its own work.
 
-1. **One branch per feature or component.** Never commit to `main` or `develop` directly.
+1. **One branch per feature or component.** Never commit to `production` or `develop` directly.
 2. **Branch from the latest `develop`**, unless the owner says otherwise.
 3. **Branch names:** `feat/<name>`, `fix/<name>`, `chore/<name>`, `docs/<name>`, `test/<name>`, `refactor/<name>`, `spike/<name>`. Use short kebab-case names, for example `feat/expense-entry` or `spike/sms-receiver`.
 4. **Keep each branch small.** If a phase is large, split it into several branches. Each branch should be reviewable on its own.
@@ -30,8 +30,8 @@ The owner reviews and merges everything. Claude never merges its own work.
    - what was not tested or is Not Yet Verified.
 8. **The owner** verifies the PR, approves it, merges it into `develop`, tests on the device and reports the results.
 9. **Feedback on an open PR** is fixed on the same branch. A problem found after merge gets a new `fix/` branch.
-10. **Never** force-push to `main` or `develop`, rewrite their history, delete remote branches, or change branch protection.
-11. `main` only receives merges from `develop`, and only the owner does that.
+10. **Never** force-push to `production` or `develop`, rewrite their history, delete remote branches, or change branch protection.
+11. `production` only receives merges from `develop`, at release points such as the end of a phase, and only the owner does that.
 
 ## Platform targets
 

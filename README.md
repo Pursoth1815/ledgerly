@@ -1,91 +1,17 @@
-<p align="center">
-  <img src="assets/readme/ledgerly-logo.png" width="140" />
-</p>
+# ledgerly
 
-<h1 align="center">Ledgerly</h1>
+A new Flutter project.
 
-<p align="center">
-  Track smarter. Spend wiser.
-</p>
+## Getting Started
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Flutter-3.x-blue" />
-  <img src="https://img.shields.io/badge/Platform-Android%20|%20iOS-green" />
-  <img src="https://img.shields.io/badge/Backend-Google%20Sheets-orange" />
-</p>
+This project is a starting point for a Flutter application.
 
-<p align="center">
-  <img src="assets/readme/ledgerly-banner.png" alt="Ledgerly Banner" />
-</p>
+A few resources to get you started if this is your first Flutter project:
 
----
+- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
+- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
 
-## 📱 App Preview
-
-<p align="center">
-  <img src="assets/readme/dashboard.png" width="250" />
-  <img src="assets/readme/add-expense.png" width="250" />
-  <img src="assets/readme/monthly-summary.png" width="250" />
-</p>
-
----
-
-## ✨ Features
-
-- ⚡ Quick expense entry
-- 📊 Animated dashboard insights
-- 💳 UPI vs Card spending analysis
-- 📆 Monthly expense trends
-- ☁️ Google Sheets as backend
-- 🎨 Smooth animations
-
----
-
-## 🎥 Animations
-
-<p align="center">
-  <img src="assets/readme/dashboard-animation.gif" width="300" />
-</p>
-
----
-
-## 🧠 Architecture
-
-<p align="center">
-  <img src="assets/readme/architecture.png" width="600" />
-</p>
-
----
-
-## 🛠 Tech Stack
-
-- Flutter & Dart
-- Google Apps Script
-- Google Sheets
-- REST APIs
-- fl_chart
-- Riverpod & Hooks
-
----
-
-## 🚀 Getting Started
-
-1. Clone the repo
-2. Set up Google Sheets template
-3. Deploy Apps Script API
-4. Add API URL to environment variables
-5. Run the app
-
----
-
-## 🔐 Security
-
-- No credentials committed
-- API URLs stored in env files
-- Google Sheets access restricted
-
----
-
-## 📜 License
-
-MIT
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.

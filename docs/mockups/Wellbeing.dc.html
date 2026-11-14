@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Digital Wellbeing</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 1240px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+<main style="padding: 20px 20px 40px; display: flex; flex-direction: column; gap: 20px">
+
+<header style="display: flex; flex-direction: column; gap: 14px">
+<a href="Main.dc.html" aria-label="Back to Today" style="width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t1}}">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg>
+</a>
+<h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.5px">Screen time</h1>
+</header>
+
+<section aria-label="Today" style="background: {{c.wellT}}; border-radius: 26px; padding: 20px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; align-items: flex-end; justify-content: space-between">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 13px; font-weight: 700; color: {{c.well}}">Today</span>
+<span style="font-size: 44px; font-weight: 800; letter-spacing: -1px">3 h 12 m</span>
+</div>
+<span style="font-size: 13px; color: {{c.t2}}; text-align: right; padding-bottom: 8px">115 unlocks</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div role="img" aria-label="Screen time by hour today, busiest between 21:00 and 23:00" style="height: 56px; display: flex; align-items: flex-end; gap: 2px">
+<sc-for list="{{hours}}" as="h" hint-placeholder-count="24">
+<span style="flex: 1; height: {{h.h}}; border-radius: 2px 2px 0 0; background: {{c.well}}"></span>
+</sc-for>
+</div>
+<div style="display: flex; justify-content: space-between; font-size: 11px; color: {{c.t2}}">
+<span>00</span><span>06</span><span>12</span><span>18</span><span>23</span>
+</div>
+</div>
+</section>
+
+<section aria-label="Last seven days" style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<h2 style="margin: 0; font-size: 15px; font-weight: 700">Last 7 days</h2>
+<span style="font-size: 13px; color: {{c.t2}}">3 h 46 m a day</span>
+</div>
+<div role="img" aria-label="Daily screen time: Sun 3 h 30 m, Mon 4 h 5 m, Tue 3 h 50 m, Wed 4 h 50 m, Thu 3 h 25 m, Fri 3 h 40 m, today 3 h 12 m" style="height: 160px; display: flex; align-items: flex-end; gap: 10px; border-bottom: 1px solid {{c.line}}">
+<sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+<div style="flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 6px">
+<span style="font-size: 11px; font-weight: 700; color: {{c.t2}}; visibility: {{d.labelVis}}">{{d.label}}</span>
+<span style="width: 100%; height: {{d.h}}; border-radius: 4px 4px 0 0; background: {{d.color}}"></span>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; gap: 10px">
+<sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+<span style="flex: 1; text-align: center; font-size: 12px; font-weight: {{d.weight}}; color: {{d.dayColor}}">{{d.day}}</span>
+</sc-for>
+</div>
+<p style="margin: 0; font-size: 13px; color: {{c.t2}}">9% less than last week. Heaviest day: Wednesday.</p>
+</section>
+
+<section aria-label="Apps" style="display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{c.t3}}">Most used today</h2>
+<div style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 22px; padding: 6px 16px">
+<sc-for list="{{apps}}" as="a" hint-placeholder-count="5">
+<div style="display: flex; align-items: center; gap: 12px; min-height: 64px; border-bottom: {{a.divider}}">
+<span style="width: 36px; height: 36px; flex-shrink: 0; border-radius: 10px; background: {{c.s2}}; color: {{c.t2}}; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800">{{a.initial}}</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; font-size: 14px"><span style="font-weight: 700">{{a.name}}</span><span style="font-weight: 700">{{a.time}}</span></span>
+<span style="display: flex; align-items: center; gap: 10px">
+<span style="flex: 1; height: 6px; border-radius: 3px; background: {{c.s2}}; display: flex"><span style="width: {{a.pct}}; border-radius: 3px; background: {{c.well}}"></span></span>
+<span style="font-size: 11px; color: {{c.t3}}; width: 62px; text-align: right">{{a.opens}}</span>
+</span>
+</span>
+</div>
+</sc-for>
+</div>
+<p style="margin: 0; font-size: 12px; color: {{c.t3}}">Totals can differ a little from Android’s own screen-time view. Data stays on this phone.</p>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":1240}}'>
+class Component extends DCLogic {
+  pal(t) {
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',well:'#0F766E',wellSoft:'#9ED9D0',wellT:'#DBF3EF'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',well:'#2DD4BF',wellSoft:'#1F6B63',wellT:'rgba(45,212,191,0.14)'};
+  }
+  renderVals() {
+    const c = this.pal(this.props.theme);
+    const perHour = [2,0,0,0,0,0,4,9,12,6,8,10,14,9,6,5,8,11,10,12,16,28,24,9];
+    const hours = perHour.map((m) => ({ h: Math.max(2, Math.round(m / 28 * 56)) + 'px' }));
+    const raw = [
+      { day: 'Sun', mins: 210, label: '3h30' }, { day: 'Mon', mins: 245, label: '4h05' }, { day: 'Tue', mins: 230, label: '3h50' },
+      { day: 'Wed', mins: 290, label: '4h50' }, { day: 'Thu', mins: 205, label: '3h25' }, { day: 'Fri', mins: 220, label: '3h40' },
+      { day: 'Today', mins: 192, label: '3h12' }
+    ];
+    const days = raw.map((d, i) => {
+      const today = i === raw.length - 1;
+      const max = d.mins === 290;
+      return {
+        ...d,
+        h: Math.round(d.mins / 290 * 130) + 'px',
+        color: today ? c.well : c.wellSoft,
+        labelVis: today || max ? 'visible' : 'hidden',
+        weight: today ? '800' : '600',
+        dayColor: today ? c.t1 : c.t3
+      };
+    });
+    const apps = [
+      { name: 'YouTube', initial: 'Y', mins: 58, time: '58 m', opens: '14 opens' },
+      { name: 'WhatsApp', initial: 'W', mins: 46, time: '46 m', opens: '62 opens' },
+      { name: 'Instagram', initial: 'I', mins: 31, time: '31 m', opens: '28 opens' },
+      { name: 'Chrome', initial: 'C', mins: 22, time: '22 m', opens: '9 opens' },
+      { name: 'Kanakku', initial: 'K', mins: 6, time: '6 m', opens: '11 opens' }
+    ].map((a, i, all) => ({ ...a, pct: Math.round(a.mins / 58 * 100) + '%', divider: i < all.length - 1 ? '1px solid ' + c.line : '0' }));
+    return { c, hours, days, apps };
+  }
+}
+</script>
+</body>
+</html>

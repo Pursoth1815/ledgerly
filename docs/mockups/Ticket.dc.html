@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Travel ticket</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 1240px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+<main style="padding: 20px 20px 40px; display: flex; flex-direction: column; gap: 20px">
+
+<header style="display: flex; align-items: center; justify-content: space-between">
+<a href="Main.dc.html" aria-label="Back to Travel" style="width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t1}}">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg>
+</a>
+<span style="font-size: 15px; font-weight: 700">Tue 17 Nov · in 3 days</span>
+<button aria-label="Edit ticket" style="width: 44px; height: 44px; border-radius: 22px; border: 0; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t1}}">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg>
+</button>
+</header>
+
+<article aria-label="Train ticket, Chennai Central to Coimbatore" style="position: relative; border-radius: 26px; background: {{c.pass}}; color: #FFFFFF; display: flex; flex-direction: column">
+<div style="padding: 20px 20px 18px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; align-items: center; justify-content: space-between">
+<span style="font-size: 12px; font-weight: 700; letter-spacing: 1px">TRAIN · 12673 CHERAN EXPRESS</span>
+<span style="padding: 4px 10px; border-radius: 999px; background: #FFFFFF; color: {{c.pass}}; font-size: 12px; font-weight: 800">CNF</span>
+</div>
+<div style="display: flex; align-items: flex-end; justify-content: space-between">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 40px; font-weight: 800; letter-spacing: -1px">MAS</span>
+<span style="font-size: 13px">Chennai Central</span>
+<span style="font-size: 20px; font-weight: 800; padding-top: 6px">22:15</span>
+</div>
+<svg aria-hidden="true" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 30px"><path d="M4 12h15M14 7l5 5-5 5"></path></svg>
+<div style="display: flex; flex-direction: column; gap: 2px; align-items: flex-end">
+<span style="font-size: 40px; font-weight: 800; letter-spacing: -1px">CBE</span>
+<span style="font-size: 13px">Coimbatore Jn</span>
+<span style="font-size: 20px; font-weight: 800; padding-top: 6px">05:50 <span style="font-size: 12px; font-weight: 600">Wed</span></span>
+</div>
+</div>
+</div>
+<div aria-hidden="true" style="position: relative; height: 24px; display: flex; align-items: center">
+<span style="position: absolute; left: -12px; width: 24px; height: 24px; border-radius: 12px; background: {{c.bg}}"></span>
+<span style="flex: 1; margin: 0 22px; border-top: 2px dashed rgba(255,255,255,0.45)"></span>
+<span style="position: absolute; right: -12px; width: 24px; height: 24px; border-radius: 12px; background: {{c.bg}}"></span>
+</div>
+<div style="padding: 14px 20px 20px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; font-weight: 600">Coach</span><span style="font-size: 18px; font-weight: 800">S4</span></span>
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; font-weight: 600">Berth</span><span style="font-size: 18px; font-weight: 800">32 LB</span></span>
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; font-weight: 600">Class</span><span style="font-size: 18px; font-weight: 800">SL</span></span>
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; font-weight: 600">Fare</span><span style="font-size: 18px; font-weight: 800">₹455</span></span>
+</div>
+<div style="margin: 0 20px 20px; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,0.14); display: flex; align-items: center; justify-content: space-between">
+<span style="font-size: 12px; font-weight: 700">PNR</span>
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 600; letter-spacing: 1.5px">421 857 3096</span>
+</div>
+</article>
+
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<button style="height: 52px; border-radius: 26px; border: 0; background: {{c.travel}}; color: {{c.onAccent}}; font-family: inherit; font-size: 15px; font-weight: 800">Show ticket</button>
+<button style="height: 52px; border-radius: 26px; border: 1.5px solid {{c.line}}; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 15px; font-weight: 700">Ticket PDF</button>
+</div>
+
+<section aria-label="Reminders" style="display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{c.t3}}">Reminders</h2>
+<ol style="margin: 0; padding: 6px 16px; list-style: none; background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 22px">
+<sc-for list="{{stages}}" as="s" hint-placeholder-count="4">
+<li style="display: flex; align-items: center; gap: 14px; min-height: 62px; border-bottom: {{s.divider}}">
+<span style="width: 30px; height: 30px; flex-shrink: 0; border-radius: 15px; background: {{s.dotBg}}; color: {{s.dotFg}}; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800">{{s.n}}</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 700">{{s.title}}</span>
+<span style="font-size: 12px; color: {{c.t3}}">{{s.sub}}</span>
+</span>
+<span style="font-size: 13px; font-weight: 700; color: {{s.timeColor}}">{{s.time}}</span>
+</li>
+</sc-for>
+</ol>
+<p style="margin: 0; font-size: 12px; color: {{c.t3}}">The final notice stays on the lock screen until you press Done. It is never cleared by the clock.</p>
+</section>
+
+<section aria-label="Booking" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<div style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 12px; color: {{c.t3}}">Passengers</span><span style="font-size: 15px; font-weight: 700">1 adult</span>
+</div>
+<div style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 12px; color: {{c.t3}}">Added from</span><span style="font-size: 15px; font-weight: 700">Railway SMS</span>
+</div>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":1240}}'>
+class Component extends DCLogic {
+  pal(t) {
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',lend:'#A14A06',lendT:'#FDF0D8',travel:'#4338CA',travelT:'#E8E9FD',pass:'#4338CA',notes:'#735E3B',notesT:'#F3ECE0',vault:'#44536A',vaultT:'#E6EBF2',well:'#0F766E',wellT:'#DBF3EF',review:'#B03A0A',reviewT:'#FDEADB',red:'#B91C1C',redT:'#FBE3E3',food:'#E8590C',onAccent:'#FFFFFF',scrim:'rgba(17,20,27,0.45)'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',btn:'#F3F5F9',btnT:'#0D0F14',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)',lend:'#FBBF24',lendT:'rgba(251,191,36,0.13)',travel:'#8F98FF',travelT:'rgba(143,152,255,0.16)',pass:'#4F46E5',notes:'#E6CDA3',notesT:'rgba(230,205,163,0.13)',vault:'#A3B5CC',vaultT:'rgba(163,181,204,0.14)',well:'#2DD4BF',wellT:'rgba(45,212,191,0.14)',review:'#FF9F5A',reviewT:'rgba(255,159,90,0.15)',red:'#FF7B7B',redT:'rgba(255,123,123,0.14)',food:'#FF8A4C',onAccent:'#0D0F14',scrim:'rgba(0,0,0,0.6)'};
+  }
+  renderVals() {
+    const c = this.pal(this.props.theme);
+    const base = { dotBg: c.travelT, dotFg: c.travel, timeColor: c.t2 };
+    const stages = [
+      { ...base, n: '1', title: 'Prepare for the journey', sub: 'One day before', time: 'Mon 19:00' },
+      { ...base, n: '2', title: 'Check journey details', sub: 'Travel-day morning', time: 'Tue 07:00' },
+      { ...base, n: '3', title: 'Prepare for boarding', sub: 'Three hours before', time: 'Tue 19:15' },
+      { n: '4', title: 'Ticket on lock screen', sub: '15 minutes before · stays until Done', time: 'Tue 22:00', dotBg: c.travel, dotFg: c.onAccent, timeColor: c.travel }
+    ].map((s, i, all) => ({ ...s, divider: i < all.length - 1 ? '1px solid ' + c.line : '0' }));
+    return { c, stages };
+  }
+}
+</script>
+</body>
+</html>

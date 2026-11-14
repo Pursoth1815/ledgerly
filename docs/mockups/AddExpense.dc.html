@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add expense</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 1240px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+<main style="padding: 20px 20px 130px; display: flex; flex-direction: column; gap: 22px">
+
+<header style="display: flex; align-items: center; justify-content: space-between">
+<a href="Main.dc.html" aria-label="Close" style="width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t1}}">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+</a>
+<h1 style="margin: 0; font-size: 17px; font-weight: 800">Add expense</h1>
+<span style="width: 44px"></span>
+</header>
+
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 0 4px">
+<label for="amt" style="font-size: 13px; font-weight: 600; color: {{c.t3}}">Amount</label>
+<div style="display: flex; align-items: baseline; gap: 4px; color: {{c.t1}}">
+<span style="font-size: 34px; font-weight: 700; color: {{c.money}}">₹</span>
+<input id="amt" inputmode="decimal" value="{{amount}}" onChange="{{setAmount}}" style="width: 200px; border: 0; outline: none; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 52px; font-weight: 800; letter-spacing: -1px; text-align: left; font-variant-numeric: tabular-nums">
+</div>
+</div>
+
+<section aria-label="Payment method" style="display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{c.t3}}">Payment method</h2>
+<div role="group" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 22px; background: {{c.s2}}">
+<button onClick="{{pickUpi}}" aria-pressed="{{upiPressed}}" style="height: 48px; border-radius: 18px; border: 0; background: {{upiBg}}; color: {{upiFg}}; font-family: inherit; font-size: 15px; font-weight: 800">UPI</button>
+<button onClick="{{pickCard}}" aria-pressed="{{cardPressed}}" style="height: 48px; border-radius: 18px; border: 0; background: {{cardBg}}; color: {{cardFg}}; font-family: inherit; font-size: 15px; font-weight: 800">Credit Card</button>
+</div>
+</section>
+
+<section aria-label="{{listTitle}}" style="display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{c.t3}}">{{listTitle}}</h2>
+<div style="display: flex; flex-direction: column; background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 22px; overflow: hidden">
+<sc-for list="{{accounts}}" as="a" hint-placeholder-count="3">
+<button onClick="{{a.pick}}" aria-pressed="{{a.pressed}}" style="display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 16px; border: 0; border-bottom: {{a.divider}}; background: {{a.rowBg}}; color: {{c.t1}}; font-family: inherit; text-align: left">
+<span style="width: 38px; height: 38px; flex-shrink: 0; border-radius: 12px; background: {{a.color}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800">{{a.initials}}</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<span style="display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700">{{a.nick}}<sc-if value="{{a.isDefault}}" hint-placeholder-val="{{ false }}"><span style="padding: 2px 8px; border-radius: 999px; background: {{c.s2}}; color: {{c.t2}}; font-size: 11px; font-weight: 700">Default</span></sc-if></span>
+<span style="font-size: 12px; color: {{c.t3}}">{{a.bank}} ••{{a.last4}}</span>
+</span>
+<span style="width: 22px; height: 22px; flex-shrink: 0; border-radius: 11px; box-sizing: border-box; border: {{a.ring}}"></span>
+</button>
+</sc-for>
+</div>
+</section>
+
+<section aria-label="Category" style="display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{c.t3}}">Category</h2>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{cats}}" as="k" hint-placeholder-count="6">
+<button onClick="{{k.pick}}" aria-pressed="{{k.pressed}}" style="height: 48px; border-radius: 16px; border: {{k.border}}; background: {{k.bg}}; color: {{c.t1}}; font-family: inherit; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px">
+<span style="width: 10px; height: 10px; border-radius: 5px; background: {{k.color}}"></span>{{k.name}}</button>
+</sc-for>
+</div>
+</section>
+
+<section aria-label="Details" style="display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{c.t3}}">Optional</h2>
+<div style="display: flex; flex-direction: column; background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 22px; overflow: hidden">
+<label style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 0 16px; border-bottom: 1px solid {{c.line}}">
+<span style="font-size: 14px; color: {{c.t2}}">Merchant</span>
+<input placeholder="e.g. Swiggy" style="flex: 1; min-width: 0; border: 0; outline: none; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 15px; font-weight: 600; text-align: right">
+</label>
+<label style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 0 16px; border-bottom: 1px solid {{c.line}}">
+<span style="font-size: 14px; color: {{c.t2}}">Note</span>
+<input placeholder="Add a note" style="flex: 1; min-width: 0; border: 0; outline: none; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 15px; font-weight: 600; text-align: right">
+</label>
+<div style="display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: 0 16px">
+<span style="font-size: 14px; color: {{c.t2}}">Date</span>
+<button style="border: 0; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 15px; font-weight: 700">Today, 14 Nov</button>
+</div>
+</div>
+</section>
+</main>
+
+<div style="position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 20px 28px; display: flex; flex-direction: column; gap: 10px; background: {{c.bg}}; border-top: 1px solid {{c.line}}">
+<div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px">
+<span style="color: {{c.t3}}">{{summary}}</span>
+<span style="padding: 3px 10px; border-radius: 999px; background: {{chipBg}}; color: {{chipFg}}; font-size: 12px; font-weight: 800">{{chipText}}</span>
+</div>
+<button style="height: 54px; border-radius: 27px; border: 0; background: {{c.money}}; color: {{c.onAccent}}; font-family: inherit; font-size: 16px; font-weight: 800">Save ₹{{amount}}</button>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":1240}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { method: 'upi', acct: 0, cat: 'Food', amount: '1,250' };
+  }
+  pal(t) {
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',lend:'#A14A06',lendT:'#FDF0D8',travel:'#4338CA',travelT:'#E8E9FD',notes:'#735E3B',notesT:'#F3ECE0',vault:'#44536A',vaultT:'#E6EBF2',well:'#0F766E',wellT:'#DBF3EF',review:'#B03A0A',reviewT:'#FDEADB',red:'#B91C1C',redT:'#FBE3E3',food:'#E8590C',onAccent:'#FFFFFF',scrim:'rgba(17,20,27,0.45)'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',btn:'#F3F5F9',btnT:'#0D0F14',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)',lend:'#FBBF24',lendT:'rgba(251,191,36,0.13)',travel:'#8F98FF',travelT:'rgba(143,152,255,0.16)',notes:'#E6CDA3',notesT:'rgba(230,205,163,0.13)',vault:'#A3B5CC',vaultT:'rgba(163,181,204,0.14)',well:'#2DD4BF',wellT:'rgba(45,212,191,0.14)',review:'#FF9F5A',reviewT:'rgba(255,159,90,0.15)',red:'#FF7B7B',redT:'rgba(255,123,123,0.14)',food:'#FF8A4C',onAccent:'#0D0F14',scrim:'rgba(0,0,0,0.6)'};
+  }
+  renderVals() {
+    const c = this.pal(this.props.theme);
+    const s = this.state || {};
+    const isUpi = s.method !== 'card';
+    const accent = isUpi ? c.money : c.card;
+    const banks = [
+      { nick: 'Salary account', bank: 'HDFC Bank', last4: '4821', initials: 'HD', color: '#1E3A8A', isDefault: true },
+      { nick: 'Savings', bank: 'State Bank of India', last4: '1093', initials: 'SB', color: '#155E75', isDefault: false },
+      { nick: 'Joint account', bank: 'ICICI Bank', last4: '7710', initials: 'IC', color: '#9A3412', isDefault: false }
+    ];
+    const cards = [
+      { nick: 'Travel card', bank: 'HDFC Bank', last4: '3344', initials: 'HD', color: '#1E3A8A', isDefault: true },
+      { nick: 'Amazon Pay card', bank: 'ICICI Bank', last4: '9021', initials: 'IC', color: '#9A3412', isDefault: false },
+      { nick: 'SimplyCLICK', bank: 'SBI Card', last4: '5567', initials: 'SB', color: '#155E75', isDefault: false }
+    ];
+    const list = isUpi ? banks : cards;
+    const sel = Math.min(s.acct || 0, list.length - 1);
+    const accounts = list.map((a, i) => ({
+      ...a,
+      pick: () => this.setState({ acct: i }),
+      pressed: i === sel ? 'true' : 'false',
+      ring: i === sel ? '7px solid ' + accent : '2px solid ' + c.line,
+      rowBg: i === sel ? (isUpi ? c.moneyT : c.cardT) : 'transparent',
+      divider: i < list.length - 1 ? '1px solid ' + c.line : '0'
+    }));
+    const catDefs = [
+      { name: 'Food', color: '#FF8A4C' }, { name: 'Groceries', color: '#EAB308' }, { name: 'Transport', color: '#60A5FA' },
+      { name: 'Shopping', color: '#F472B6' }, { name: 'Bills', color: '#A78BFA' }, { name: 'Health', color: '#22D3EE' }
+    ];
+    const cats = catDefs.map((k) => ({
+      ...k,
+      pick: () => this.setState({ cat: k.name }),
+      pressed: s.cat === k.name ? 'true' : 'false',
+      border: s.cat === k.name ? '1.5px solid ' + k.color : '1px solid ' + c.line,
+      bg: s.cat === k.name ? c.s2 : c.s1
+    }));
+    const chosen = list[sel];
+    return {
+      c,
+      amount: s.amount,
+      setAmount: (e) => this.setState({ amount: e.target.value }),
+      pickUpi: () => this.setState({ method: 'upi', acct: 0 }),
+      pickCard: () => this.setState({ method: 'card', acct: 0 }),
+      upiPressed: isUpi ? 'true' : 'false',
+      cardPressed: isUpi ? 'false' : 'true',
+      upiBg: isUpi ? c.money : 'transparent',
+      upiFg: isUpi ? c.onAccent : c.t2,
+      cardBg: isUpi ? 'transparent' : c.card,
+      cardFg: isUpi ? c.t2 : c.onAccent,
+      listTitle: isUpi ? 'Bank account' : 'Credit card',
+      accounts,
+      cats,
+      summary: (s.cat || 'Food') + ' · ' + chosen.nick + ' ••' + chosen.last4,
+      chipText: isUpi ? 'UPI' : 'CC',
+      chipBg: isUpi ? c.moneyT : c.cardT,
+      chipFg: accent
+    };
+  }
+}
+</script>
+</body>
+</html>

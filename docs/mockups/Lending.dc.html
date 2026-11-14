@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lending: Arun</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 1300px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+<main style="padding: 20px 20px 40px; display: flex; flex-direction: column; gap: 20px">
+
+<header style="display: flex; align-items: center; justify-content: space-between">
+<a href="Main.dc.html" aria-label="Back to Lending" style="width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t1}}">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg>
+</a>
+<button aria-label="More actions" style="width: 44px; height: 44px; border-radius: 22px; border: 0; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t1}}">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"></circle><circle cx="12" cy="12" r="1.8"></circle><circle cx="19" cy="12" r="1.8"></circle></svg>
+</button>
+</header>
+
+<section aria-label="Balance" style="background: {{c.lendT}}; border-radius: 26px; padding: 20px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: center; gap: 14px">
+<span style="width: 52px; height: 52px; border-radius: 26px; background: {{c.lend}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800">A</span>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<h1 style="margin: 0; font-size: 24px; font-weight: 800">Arun</h1>
+<span style="font-size: 13px; color: {{c.t2}}">2 open loans · monthly repayments</span>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 13px; font-weight: 700; color: {{c.lend}}">Owes you</span>
+<span style="font-size: 44px; font-weight: 800; letter-spacing: -1px">₹9,500</span>
+<span style="font-size: 14px; color: {{c.t2}}">Next: ₹1,500 due tomorrow, 15 Nov</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<button style="height: 50px; border-radius: 25px; border: 0; background: {{c.lend}}; color: {{c.onAccent}}; font-family: inherit; font-size: 15px; font-weight: 800">Mark received</button>
+<button style="height: 50px; border-radius: 25px; border: 1.5px solid {{c.lend}}; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 15px; font-weight: 700">Lend more</button>
+</div>
+</section>
+
+<section aria-label="Open loans" style="display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{c.t3}}">Open loans · oldest is repaid first</h2>
+<sc-for list="{{loans}}" as="l" hint-placeholder-count="2">
+<article style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<span style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 15px; font-weight: 700">{{l.purpose}}</span>
+<span style="font-size: 12px; color: {{c.t3}}">{{l.meta}}</span>
+</span>
+<span style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px">
+<span style="font-size: 17px; font-weight: 800">{{l.left}}</span>
+<span style="font-size: 12px; color: {{c.t3}}">of {{l.total}}</span>
+</span>
+</div>
+<div role="img" aria-label="{{l.a11y}}" style="height: 8px; border-radius: 4px; background: {{c.s2}}; display: flex">
+<span style="width: {{l.paidPct}}; border-radius: 4px; background: {{c.lend}}"></span>
+</div>
+</article>
+</sc-for>
+</section>
+
+<section aria-label="History" style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{c.t3}}">History</h2>
+<span style="font-size: 12px; color: {{c.t3}}">Balance</span>
+</div>
+<div style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 20px; padding: 6px 16px">
+<sc-for list="{{history}}" as="h" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 12px; min-height: 64px; border-bottom: {{h.divider}}">
+<span style="width: 34px; height: 34px; flex-shrink: 0; border-radius: 17px; background: {{h.iconBg}}; color: {{h.iconFg}}; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800">{{h.sign}}</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 700; color: {{h.amountColor}}">{{h.title}}</span>
+<span style="font-size: 12px; color: {{c.t3}}">{{h.sub}}</span>
+</span>
+<span style="font-size: 14px; font-weight: 700; color: {{c.t2}}">{{h.balance}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<button style="display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 16px; border-radius: 18px; border: 0; background: {{c.s1}}; color: {{c.t1}}; font-family: inherit; font-size: 14px; font-weight: 700">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5M5 14v5h14v-5"></path></svg>Share a plain-text statement</button>
+<p style="margin: 0; font-size: 12px; color: {{c.t3}}">Reminders are only for you. Arun is never messaged by the app.</p>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":1300}}'>
+class Component extends DCLogic {
+  pal(t) {
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',lend:'#A14A06',lendT:'#FDF0D8',travel:'#4338CA',travelT:'#E8E9FD',notes:'#735E3B',notesT:'#F3ECE0',vault:'#44536A',vaultT:'#E6EBF2',well:'#0F766E',wellT:'#DBF3EF',review:'#B03A0A',reviewT:'#FDEADB',red:'#B91C1C',redT:'#FBE3E3',food:'#E8590C',onAccent:'#FFFFFF',scrim:'rgba(17,20,27,0.45)'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',btn:'#F3F5F9',btnT:'#0D0F14',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)',lend:'#FBBF24',lendT:'rgba(251,191,36,0.13)',travel:'#8F98FF',travelT:'rgba(143,152,255,0.16)',notes:'#E6CDA3',notesT:'rgba(230,205,163,0.13)',vault:'#A3B5CC',vaultT:'rgba(163,181,204,0.14)',well:'#2DD4BF',wellT:'rgba(45,212,191,0.14)',review:'#FF9F5A',reviewT:'rgba(255,159,90,0.15)',red:'#FF7B7B',redT:'rgba(255,123,123,0.14)',food:'#FF8A4C',onAccent:'#0D0F14',scrim:'rgba(0,0,0,0.6)'};
+  }
+  renderVals() {
+    const c = this.pal(this.props.theme);
+    const loans = [
+      { purpose: 'Bike repair', meta: 'Lent 10 Sep · from HDFC ••4821', left: '₹3,500 left', total: '₹5,000', paidPct: '30%', a11y: '1,500 of 5,000 rupees repaid' },
+      { purpose: 'Rent help', meta: 'Lent 2 Oct · from SBI ••1093', left: '₹6,000 left', total: '₹6,000', paidPct: '0%', a11y: 'Nothing repaid yet' }
+    ];
+    const out = { iconBg: c.lendT, iconFg: c.lend, amountColor: c.t1, sign: '↗' };
+    const inn = { iconBg: c.moneyT, iconFg: c.money, amountColor: c.money, sign: '↙' };
+    const history = [
+      { ...inn, title: 'Received ₹1,500', sub: '15 Oct · to HDFC ••4821 · Bike repair', balance: '₹9,500' },
+      { ...out, title: 'Lent ₹6,000', sub: '2 Oct · Rent help', balance: '₹11,000' },
+      { ...out, title: 'Lent ₹5,000', sub: '10 Sep · Bike repair', balance: '₹5,000' }
+    ].map((h, i, all) => ({ ...h, divider: i < all.length - 1 ? '1px solid ' + c.line : '0' }));
+    return { c, loans, history };
+  }
+}
+</script>
+</body>
+</html>

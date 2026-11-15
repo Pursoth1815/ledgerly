@@ -11,164 +11,239 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
 <style>body{margin:0}</style>
 </helmet>
-<div style="width: 390px; height: 1300px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
-<main style="padding: 20px 20px 40px; display: flex; flex-direction: column; gap: 16px">
+<div style="width: 390px; height: 1980px; position: relative; overflow: hidden; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+<main style="padding: 20px 20px 120px; display: flex; flex-direction: column; gap: 18px">
 
 <header style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; justify-content: space-between">
 <a href="Main.dc.html" aria-label="Back to Today" style="width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t1}}">
 <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg>
 </a>
-<div style="display: flex; flex-direction: column; gap: 4px">
-<h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.5px">Review Inbox</h1>
-<p style="margin: 0; font-size: 14px; color: {{c.t2}}">{{waiting}} waiting · nothing is saved until you confirm</p>
+<button onClick="{{replay}}" style="height: 36px; padding: 0 12px; border-radius: 18px; border: 1px solid {{c.line}}; background: transparent; color: {{c.t3}}; font-family: inherit; font-size: 12px; font-weight: 700">Replay opening</button>
 </div>
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.5px">Review Inbox</h1>
+<span style="padding: 4px 10px; border-radius: 999px; background: {{c.reviewT}}; color: {{c.review}}; font-size: 12px; font-weight: 800">{{badge}}</span>
+</div>
+<p style="margin: 0; font-size: 14px; color: {{c.t2}}">Nothing is saved until you press Looks Good.</p>
 </header>
 
-<sc-if value="{{saved1}}" hint-placeholder-val="{{ false }}">
-<div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 20px; background: {{c.moneyT}}">
-<span style="width: 32px; height: 32px; border-radius: 16px; background: {{c.money}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>
-<span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
-<span style="font-size: 14px; font-weight: 700">Saved to Money</span>
-<span style="font-size: 12px; color: {{c.t2}}">₹1,250.00 · Swiggy · Food · UPI</span>
+<sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 48px 20px; border-radius: 24px; border: 1.5px dashed {{c.line}}; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center">
+<span style="font-size: 17px; font-weight: 800">All caught up</span>
+<span style="font-size: 13px; color: {{c.t3}}">New payments and tickets from SMS will wait here.</span>
+</div>
+</sc-if>
+
+<div style="display: flex; flex-direction: column">
+<sc-for list="{{cards}}" as="k" hint-placeholder-count="4">
+<div style="position: relative; z-index: {{k.z}}; overflow: hidden; max-height: {{k.maxH}}; margin-top: {{k.mt}}; opacity: {{k.op}}; transform: scale({{k.sc}}); transform-origin: top center; transition: max-height 520ms cubic-bezier(.2,.8,.2,1) {{k.delay}}, margin-top 520ms cubic-bezier(.2,.8,.2,1) {{k.delay}}, transform 420ms ease {{k.delay}}, opacity 300ms ease {{k.delay}}">
+<article aria-label="{{k.a11y}}" style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 16px">
+
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="width: 42px; height: 42px; flex-shrink: 0; border-radius: 21px; background: {{k.avatarBg}}; color: {{k.avatarFg}}; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800">{{k.initial}}</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span style="font-size: 16px; font-weight: 700">{{k.title}}</span>
+<span style="font-size: 12px; color: {{c.t3}}">{{k.sub}}</span>
+</span>
+<button onClick="{{k.remove}}" aria-label="Remove {{k.title}} from the inbox" style="width: 40px; height: 40px; flex-shrink: 0; margin-right: -8px; border-radius: 20px; border: 0; background: transparent; color: {{c.t3}}; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg>
+</button>
+</div>
+
+<p style="margin: 0; font-size: 36px; font-weight: 800; letter-spacing: -0.8px">{{k.amount}}</p>
+
+<sc-if value="{{k.showSource}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 16px; background: {{c.s2}}">
+<span aria-hidden="true" style="position: relative; width: 46px; height: 30px; flex-shrink: 0; border-radius: 6px; background: {{k.bankColor}}">
+<span style="position: absolute; left: 6px; top: 7px; width: 10px; height: 8px; border-radius: 2px; background: {{k.chipColor}}"></span>
+<span style="position: absolute; right: 5px; bottom: 3px; font-size: 8px; font-weight: 700; color: #FFFFFF; font-family: 'JetBrains Mono', monospace">{{k.last4}}</span>
+</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span style="font-size: 14px; font-weight: 700">{{k.srcName}}</span>
+<span style="font-size: 12px; color: {{c.t3}}">{{k.srcDetail}}</span>
+</span>
+<span style="padding: 4px 10px; border-radius: 999px; background: {{k.methodBg}}; color: {{k.methodFg}}; font-size: 12px; font-weight: 800">{{k.method}}</span>
+</div>
+</sc-if>
+
+<sc-if value="{{k.needsMethod}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 13px; font-weight: 600; color: {{c.t2}}">How did you pay?</span>
+<div role="group" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 18px; background: {{c.s2}}">
+<button onClick="{{k.pickUpi}}" style="height: 44px; border-radius: 14px; border: 0; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 14px; font-weight: 800">UPI</button>
+<button onClick="{{k.pickCard}}" style="height: 44px; border-radius: 14px; border: 0; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 14px; font-weight: 800">Credit Card</button>
+</div>
+<span style="font-size: 12px; color: {{c.t3}}">The SMS didn’t say. We’ll fill in your default account.</span>
+</div>
+</sc-if>
+
+<sc-if value="{{k.showCatKnown}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; align-items: center; justify-content: space-between">
+<span style="font-size: 13px; color: {{c.t3}}">Category</span>
+<span style="display: flex; align-items: center; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 15px; background: {{c.s2}}; font-size: 13px; font-weight: 700"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{k.catColor}}"></span>{{k.catName}}</span>
+<span style="font-size: 12px; color: {{c.t3}}">{{k.catNote}}</span>
 </span>
 </div>
 </sc-if>
-<sc-if value="{{show1}}" hint-placeholder-val="{{ true }}">
-<article aria-label="New transaction detected, 1,250 rupees" style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 16px">
-<div style="display: flex; align-items: center; justify-content: space-between">
-<span style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: {{c.t2}}">
-<span style="width: 28px; height: 28px; border-radius: 10px; background: {{c.moneyT}}; color: {{c.money}}; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 4z"></path></svg></span>
-From HDFC Bank SMS · 21:42
-</span>
-<span style="padding: 4px 10px; border-radius: 999px; background: {{c.reviewT}}; color: {{c.review}}; font-size: 12px; font-weight: 700">Review</span>
+
+<sc-if value="{{k.showChips}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 13px; font-weight: 600; color: {{c.t2}}">{{k.chipsLabel}}</span>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{k.chips}}" as="ch" hint-placeholder-count="3">
+<button onClick="{{ch.pick}}" aria-pressed="{{ch.pressed}}" style="height: 34px; padding: 0 12px; border-radius: 17px; border: {{ch.border}}; background: {{ch.bg}}; color: {{c.t1}}; font-family: inherit; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{ch.dot}}"></span>{{ch.label}}</button>
+</sc-for>
 </div>
-<div style="display: flex; flex-direction: column; gap: 6px">
-<h2 style="margin: 0; font-size: 16px; font-weight: 700">New transaction detected</h2>
-<p style="margin: 0; font-size: 36px; font-weight: 800; letter-spacing: -0.8px">₹1,250.00</p>
-<p style="margin: 0; font-size: 14px; color: {{c.t2}}">Paid to Swiggy · 13 Nov 2026</p>
 </div>
-<dl style="margin: 0; display: flex; flex-direction: column; border-top: 1px solid {{c.line}}">
-<div style="display: flex; align-items: center; justify-content: space-between; min-height: 48px; border-bottom: 1px solid {{c.line}}">
-<dt style="font-size: 14px; color: {{c.t2}}">Category</dt>
-<dd style="margin: 0; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700"><span style="width: 10px; height: 10px; border-radius: 5px; background: {{c.food}}"></span>Food</dd>
-</div>
-<div style="display: flex; align-items: center; justify-content: space-between; min-height: 48px; border-bottom: 1px solid {{c.line}}">
-<dt style="font-size: 14px; color: {{c.t2}}">Payment method</dt>
-<dd style="margin: 0"><span style="display: inline-flex; align-items: center; height: 28px; padding: 0 12px; border-radius: 14px; background: {{c.moneyT}}; color: {{c.money}}; font-size: 13px; font-weight: 800">UPI</span></dd>
-</div>
-<div style="display: flex; align-items: center; justify-content: space-between; min-height: 48px">
-<dt style="font-size: 14px; color: {{c.t2}}">Account</dt>
-<dd style="margin: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 2px"><span style="font-size: 15px; font-weight: 700">Salary account</span><span style="font-size: 12px; color: {{c.t3}}">HDFC Bank ••4821</span></dd>
-</div>
-</dl>
-<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
-<button style="height: 50px; border-radius: 25px; border: 1.5px solid {{c.line}}; background: transparent; color: {{c.t1}}; font-family: inherit; font-weight: 700; font-size: 15px">Review</button>
-<button onClick="{{confirm1}}" style="height: 50px; border-radius: 25px; border: 0; background: {{c.money}}; color: {{c.onAccent}}; font-family: inherit; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 6px">Looks Good<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button>
-</div>
-</article>
 </sc-if>
 
-<article aria-label="New transaction detected, 4,999 rupees, details missing" style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 16px">
-<div style="display: flex; align-items: center; justify-content: space-between">
-<span style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: {{c.t2}}">
-<span style="width: 28px; height: 28px; border-radius: 10px; background: {{c.cardT}}; color: {{c.card}}; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 4z"></path></svg></span>
-From ICICI Bank SMS · 12 Nov
-</span>
-<span style="padding: 4px 10px; border-radius: 999px; background: {{c.reviewT}}; color: {{c.review}}; font-size: 12px; font-weight: 700">{{status2}}</span>
-</div>
-<div style="display: flex; flex-direction: column; gap: 6px">
-<h2 style="margin: 0; font-size: 16px; font-weight: 700">New transaction detected</h2>
-<p style="margin: 0; font-size: 36px; font-weight: 800; letter-spacing: -0.8px">₹4,999.00</p>
-<p style="margin: 0; font-size: 14px; color: {{c.t2}}">Paid to Amazon · 12 Nov 2026</p>
-</div>
-<dl style="margin: 0; display: flex; flex-direction: column; border-top: 1px solid {{c.line}}">
-<div style="display: flex; align-items: center; justify-content: space-between; min-height: 48px; border-bottom: 1px solid {{c.line}}">
-<dt style="font-size: 14px; color: {{c.t2}}">Category</dt>
-<dd style="margin: 0; font-size: 15px; font-weight: 600; color: {{c.t3}}">Not set</dd>
-</div>
-<div style="display: flex; align-items: center; justify-content: space-between; min-height: 52px; border-bottom: 1px solid {{c.line}}">
-<dt style="font-size: 14px; color: {{c.t2}}">Payment method</dt>
-<dd style="margin: 0; display: flex; gap: 6px">
-<button onClick="{{pickUpi}}" aria-pressed="{{upiPressed}}" style="height: 34px; padding: 0 12px; border-radius: 17px; border: {{upiBorder}}; background: {{upiBg}}; color: {{upiFg}}; font-family: inherit; font-size: 13px; font-weight: 800">UPI</button>
-<button onClick="{{pickCard}}" aria-pressed="{{cardPressed}}" style="height: 34px; padding: 0 12px; border-radius: 17px; border: {{cardBorder}}; background: {{cardBg}}; color: {{cardFg}}; font-family: inherit; font-size: 13px; font-weight: 800">Credit Card</button>
-</dd>
-</div>
-<div style="display: flex; align-items: center; justify-content: space-between; min-height: 48px">
-<dt style="font-size: 14px; color: {{c.t2}}">Account</dt>
-<dd style="margin: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 2px"><span style="font-size: 15px; font-weight: 700; color: {{acct2Color}}">{{acct2}}</span><span style="font-size: 12px; color: {{c.t3}}">{{acct2Sub}}</span></dd>
-</div>
-</dl>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
-<button style="height: 50px; border-radius: 25px; border: 1.5px solid {{c.line}}; background: transparent; color: {{c.t1}}; font-family: inherit; font-weight: 700; font-size: 15px">Review</button>
-<button disabled="{{lg2Disabled}}" style="height: 50px; border-radius: 25px; border: 0; background: {{lg2Bg}}; color: {{lg2Fg}}; font-family: inherit; font-weight: 700; font-size: 15px">Looks Good ✓</button>
-</div>
-<p style="margin: 0; font-size: 12px; color: {{c.t3}}">{{hint2}}</p>
-</article>
-
-<article aria-label="Ticket detected" style="background: {{c.travelT}}; border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 14px">
-<div style="display: flex; align-items: center; justify-content: space-between">
-<span style="font-size: 13px; font-weight: 700; color: {{c.travel}}">Ticket detected · from railway SMS</span>
-<span style="padding: 4px 10px; border-radius: 999px; background: {{c.reviewT}}; color: {{c.review}}; font-size: 12px; font-weight: 700">Review</span>
-</div>
-<div style="display: flex; flex-direction: column; gap: 4px">
-<h2 style="margin: 0; font-size: 22px; font-weight: 800">Chennai Egmore → Madurai</h2>
-<p style="margin: 0; font-size: 14px; color: {{c.t2}}">Sat 28 Nov · 21:40 · 12637 Pandian Express</p>
-</div>
-<div style="display: flex; gap: 8px; flex-wrap: wrap">
-<span style="height: 28px; padding: 0 10px; display: inline-flex; align-items: center; border-radius: 14px; background: {{c.s1}}; font-size: 12px; font-weight: 700">Coach B2 · 41</span>
-<span style="height: 28px; padding: 0 10px; display: inline-flex; align-items: center; border-radius: 14px; background: {{c.s1}}; font-size: 12px; font-weight: 700">3A · Confirmed</span>
-<span style="height: 28px; padding: 0 10px; display: inline-flex; align-items: center; border-radius: 14px; background: {{c.s1}}; font-size: 12px; font-weight: 600; font-family: 'JetBrains Mono', monospace">PNR 482 •••• 17</span>
-</div>
-<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
-<button style="height: 50px; border-radius: 25px; border: 1.5px solid {{c.travel}}; background: transparent; color: {{c.t1}}; font-family: inherit; font-weight: 700; font-size: 15px">Review</button>
-<button style="height: 50px; border-radius: 25px; border: 0; background: {{c.travel}}; color: {{c.onAccent}}; font-family: inherit; font-weight: 700; font-size: 15px">Looks Good ✓</button>
+<a href="ReviewDetail.dc.html" style="height: 50px; border-radius: 25px; border: 1.5px solid {{c.line}}; box-sizing: border-box; display: flex; align-items: center; justify-content: center; color: {{c.t1}}; font-weight: 700; font-size: 15px; text-decoration: none">Review</a>
+<button onClick="{{k.confirm}}" disabled="{{k.lgDisabled}}" style="height: 50px; border-radius: 25px; border: 0; background: {{k.lgBg}}; color: {{k.lgFg}}; font-family: inherit; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 6px">{{k.lgText}}</button>
 </div>
 </article>
-
-<p style="margin: 0; text-align: center; font-size: 12px; color: {{c.t3}}">Open Review to fix a field, or mark a message as “Not a transaction”.</p>
+</div>
+</sc-for>
+</div>
 </main>
+
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: absolute; left: 20px; right: 20px; bottom: 32px; display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 18px; border-radius: 18px; background: {{c.btn}}; color: {{c.btnT}}">
+<span style="flex: 1; font-size: 14px; font-weight: 700">{{toast}}</span>
+<button onClick="{{undo}}" style="height: 36px; padding: 0 14px; border-radius: 18px; border: 0; background: transparent; color: {{c.btnT}}; font-family: inherit; font-size: 14px; font-weight: 800; text-decoration: underline">Undo</button>
+</div>
+</sc-if>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":1300}}'>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":1980}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { saved1: false, m2: null };
+    this.state = { open: false, gone: {}, cat: {}, method: {}, kind: {}, toast: null, last: null };
+  }
+  componentDidMount() {
+    this.t = setTimeout(() => this.setState({ open: true }), 450);
+  }
+  componentWillUnmount() {
+    clearTimeout(this.t);
   }
   pal(t) {
-    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',lend:'#A14A06',lendT:'#FDF0D8',travel:'#4338CA',travelT:'#E8E9FD',notes:'#735E3B',notesT:'#F3ECE0',vault:'#44536A',vaultT:'#E6EBF2',well:'#0F766E',wellT:'#DBF3EF',review:'#B03A0A',reviewT:'#FDEADB',red:'#B91C1C',redT:'#FBE3E3',food:'#E8590C',onAccent:'#FFFFFF',scrim:'rgba(17,20,27,0.45)'};
-    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',btn:'#F3F5F9',btnT:'#0D0F14',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)',lend:'#FBBF24',lendT:'rgba(251,191,36,0.13)',travel:'#8F98FF',travelT:'rgba(143,152,255,0.16)',notes:'#E6CDA3',notesT:'rgba(230,205,163,0.13)',vault:'#A3B5CC',vaultT:'rgba(163,181,204,0.14)',well:'#2DD4BF',wellT:'rgba(45,212,191,0.14)',review:'#FF9F5A',reviewT:'rgba(255,159,90,0.15)',red:'#FF7B7B',redT:'rgba(255,123,123,0.14)',food:'#FF8A4C',onAccent:'#0D0F14',scrim:'rgba(0,0,0,0.6)'};
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',lend:'#A14A06',lendT:'#FDF0D8',review:'#B03A0A',reviewT:'#FDEADB',onAccent:'#FFFFFF'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',btn:'#F3F5F9',btnT:'#0D0F14',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)',lend:'#FBBF24',lendT:'rgba(251,191,36,0.13)',review:'#FF9F5A',reviewT:'rgba(255,159,90,0.15)',onAccent:'#0D0F14'};
   }
   renderVals() {
     const c = this.pal(this.props.theme);
     const s = this.state || {};
-    const m2 = s.m2;
-    const chip = (on, col, tint) => on
-      ? { border: '1.5px solid ' + col, bg: tint, fg: col }
-      : { border: '1.5px dashed ' + c.review, bg: 'transparent', fg: c.t2 };
-    const u = chip(m2 === 'upi', c.money, c.moneyT);
-    const k = chip(m2 === 'card', c.card, c.cardT);
-    const picked = m2 !== null && m2 !== undefined;
+    const gone = s.gone || {};
+    const chip = (label, dot, on, pick) => ({
+      label, dot, pick,
+      pressed: on ? 'true' : 'false',
+      border: on ? '1.5px solid ' + dot : '1px solid ' + c.line,
+      bg: on ? c.s2 : 'transparent'
+    });
+    const finish = (id, text) => this.setState({ gone: { ...gone, [id]: true }, toast: text, last: id });
+    const defs = [
+      { id: 'k1', initial: 'S', title: 'STATE TRANSPORT CO', sub: 'From YES BANK SMS · 14 Nov, 10:39 am', amount: '₹705.00',
+        avatarColor: '#60A5FA', source: { color: '#1D4ED8', last4: '4417', name: 'Kiwi · YES BANK', detail: 'Credit card ••4417 · paid by UPI QR', method: 'CC' },
+        cat: { name: 'Travel', color: '#60A5FA', note: 'guessed' } },
+      { id: 'k2', initial: 'M', title: 'MALABAR CORN', sub: 'From Federal Bank SMS · 13 Nov, 10:29 am', amount: '₹62.00',
+        source: { color: '#A16207', last4: '2210', name: 'Federal Bank', detail: 'Everyday account ••2210', method: 'UPI' },
+        askCategory: true },
+      { id: 'k3', initial: 'A', title: 'AMAZON PAY', sub: 'From ICICI Bank SMS · 12 Nov, 8:14 pm', amount: '₹1,299.00',
+        avatarColor: '#F472B6', needsMethod: true,
+        cat: { name: 'Shopping', color: '#F472B6', note: 'guessed' } },
+      { id: 'k4', initial: 'A', title: 'Sent to Arun', sub: 'From HDFC Bank SMS · 14 Nov, 10:48 am', amount: '₹2,000.00',
+        person: true, source: { color: '#1E3A8A', last4: '8124', name: 'HDFC Bank', detail: 'Savings ••8124', method: 'UPI' } }
+    ];
+    const cats = [['Food', '#FF8A4C'], ['Snacks', '#F472B6'], ['Groceries', '#EAB308'], ['More', c.t3]];
+    let visibleIndex = 0;
+    const cards = defs.map((d) => {
+      const isGone = !!gone[d.id];
+      const i = isGone ? 0 : visibleIndex++;
+      const m = (s.method || {})[d.id];
+      const catPick = (s.cat || {})[d.id];
+      const kind = (s.kind || {})[d.id];
+      let src = d.source;
+      if (d.needsMethod && m) {
+        src = m === 'upi'
+          ? { color: '#9A3412', last4: '5530', name: 'ICICI Bank', detail: 'Salary account ••5530 · your default', method: 'UPI' }
+          : { color: '#9A3412', last4: '7781', name: 'Amazon Pay · ICICI', detail: 'Credit card ••7781 · your default', method: 'CC' };
+      }
+      const ready = (!d.needsMethod || !!m) && (!d.person || !!kind);
+      const catColor = catPick ? (cats.find((x) => x[0] === catPick) || [0, c.t3])[1] : null;
+      let chips = [];
+      let chipsLabel = '';
+      if (d.askCategory) {
+        chipsLabel = catPick ? 'Saved for this shop from now on' : 'New shop · pick a category (optional)';
+        chips = cats.map((x) => chip(x[0], x[1], catPick === x[0], () => this.setState({ cat: { ...(s.cat || {}), [d.id]: x[0] } })));
+      }
+      if (d.person) {
+        chipsLabel = kind === 'loan' ? 'Will be added to Lent to friends' : (kind === 'expense' ? 'Will be saved as an expense' : 'What was this?');
+        chips = [
+          chip('Lent to Arun', c.lend, kind === 'loan', () => this.setState({ kind: { ...(s.kind || {}), [d.id]: 'loan' } })),
+          chip('Expense', c.money, kind === 'expense', () => this.setState({ kind: { ...(s.kind || {}), [d.id]: 'expense' } }))
+        ];
+      }
+      const closed = !s.open && i > 0;
+      return {
+        initial: d.initial, title: d.title, sub: d.sub, amount: d.amount,
+        a11y: d.title + ', ' + d.amount,
+        z: String(20 - i),
+        maxH: isGone ? '0px' : (closed ? '16px' : '720px'),
+        mt: isGone ? '0px' : (i === 0 ? '0px' : (closed ? '-10px' : '14px')),
+        sc: closed ? String(1 - Math.min(i, 3) * 0.04) : '1',
+        op: isGone ? '0' : (closed && i > 2 ? '0' : '1'),
+        delay: s.open && !isGone ? (i * 140) + 'ms' : '0ms',
+        avatarBg: d.person ? c.lend : (catColor || d.avatarColor || c.s2),
+        avatarFg: d.person ? c.onAccent : ((catColor || d.avatarColor) ? '#0D0F14' : c.t2),
+        showSource: !!src,
+        bankColor: src ? src.color : 'transparent',
+        chipColor: '#FCD34D',
+        last4: src ? src.last4 : '',
+        srcName: src ? src.name : '',
+        srcDetail: src ? src.detail : '',
+        method: src ? src.method : '',
+        methodBg: src && src.method === 'CC' ? c.cardT : c.moneyT,
+        methodFg: src && src.method === 'CC' ? c.card : c.money,
+        needsMethod: !!d.needsMethod && !m,
+        pickUpi: () => this.setState({ method: { ...(s.method || {}), [d.id]: 'upi' } }),
+        pickCard: () => this.setState({ method: { ...(s.method || {}), [d.id]: 'card' } }),
+        showCatKnown: !!d.cat,
+        catName: d.cat ? d.cat.name : '',
+        catColor: d.cat ? d.cat.color : 'transparent',
+        catNote: d.cat ? d.cat.note : '',
+        showChips: chips.length > 0,
+        chipsLabel,
+        chips,
+        lgDisabled: !ready,
+        lgBg: ready ? c.money : c.s2,
+        lgFg: ready ? c.onAccent : c.t3,
+        lgText: ready ? 'Looks Good ✓' : (d.person ? 'Choose above' : 'Pick UPI or Card'),
+        confirm: () => finish(d.id, 'Saved · ' + d.amount),
+        remove: () => finish(d.id, 'Removed from inbox')
+      };
+    });
+    const left = defs.filter((d) => !gone[d.id]).length;
     return {
       c,
-      saved1: !!s.saved1,
-      show1: !s.saved1,
-      waiting: s.saved1 ? 2 : 3,
-      confirm1: () => this.setState({ saved1: true }),
-      pickUpi: () => this.setState({ m2: 'upi' }),
-      pickCard: () => this.setState({ m2: 'card' }),
-      upiPressed: m2 === 'upi' ? 'true' : 'false',
-      cardPressed: m2 === 'card' ? 'true' : 'false',
-      upiBorder: u.border, upiBg: u.bg, upiFg: u.fg,
-      cardBorder: k.border, cardBg: k.bg, cardFg: k.fg,
-      status2: picked ? 'Review' : 'Needs a choice',
-      acct2: !picked ? 'Choose' : (m2 === 'upi' ? 'Savings · ICICI' : 'Amazon Pay card'),
-      acct2Sub: !picked ? 'Pick the method first' : (m2 === 'upi' ? 'ICICI Bank ••7710' : 'ICICI Bank ••9021'),
-      acct2Color: picked ? c.t1 : c.review,
-      lg2Disabled: !picked,
-      lg2Bg: picked ? c.money : c.s2,
-      lg2Fg: picked ? c.onAccent : c.t3,
-      hint2: picked ? 'Account filled from your default for this bank. Category can be set in Review.' : 'Looks Good unlocks once the method and account are chosen.'
+      cards,
+      badge: left > 1 ? left + ' New' : (left === 1 ? 'New' : 'Done'),
+      empty: left === 0,
+      hasToast: !!s.toast,
+      toast: s.toast || '',
+      undo: () => {
+        if (!s.last) return;
+        const g = { ...gone };
+        delete g[s.last];
+        this.setState({ gone: g, toast: null, last: null });
+      },
+      replay: () => {
+        this.setState({ open: false });
+        clearTimeout(this.t);
+        this.t = setTimeout(() => this.setState({ open: true }), 500);
+      }
     };
   }
 }

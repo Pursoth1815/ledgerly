@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
 <style>body{margin:0}</style>
 </helmet>
-<div style="width: 390px; height: {{rootH}}; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+<div style="width: 390px; height: 2160px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
 <main style="padding: 24px 20px 120px; display: flex; flex-direction: column; gap: 16px">
 
 <header style="display: flex; flex-direction: column; gap: 2px">
@@ -74,42 +74,11 @@
 </div>
 </article>
 
-<sc-if value="{{collapsed}}" hint-placeholder-val="{{ true }}">
-<button onClick="{{toggle}}" aria-expanded="false" aria-label="Show 2 more waiting for confirmation" style="position: relative; z-index: 1; height: 26px; margin-top: -14px; border: 0; padding: 0; background: transparent; display: flex; flex-direction: column; align-items: center">
+<a href="Review.dc.html" aria-label="Open Review Inbox, 2 more waiting" style="position: relative; z-index: 1; height: 26px; margin-top: -14px; display: flex; flex-direction: column; align-items: center; text-decoration: none">
 <span style="width: 92%; height: 18px; flex-shrink: 0; box-sizing: border-box; border-radius: 0 0 20px 20px; background: {{c.s1}}; border: 1px solid {{c.line}}; border-top: 0"></span>
 <span style="width: 84%; height: 10px; flex-shrink: 0; margin-top: -2px; box-sizing: border-box; border-radius: 0 0 18px 18px; background: {{c.s1}}; border: 1px solid {{c.line}}; border-top: 0; opacity: 0.7"></span>
-</button>
-</sc-if>
+</a>
 
-<sc-for list="{{others}}" as="o" hint-placeholder-count="2">
-<div style="overflow: hidden; max-height: {{o.maxH}}; opacity: {{o.op}}; transform: translateY({{o.ty}}); transition: max-height 450ms ease {{o.delay}}, opacity 350ms ease {{o.delay}}, transform 400ms ease {{o.delay}}">
-<article style="margin-top: 10px; background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 22px; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px">
-<div style="display: flex; align-items: center; gap: 12px">
-<span style="width: 38px; height: 38px; flex-shrink: 0; border-radius: 19px; background: {{o.avatarBg}}; color: {{o.avatarFg}}; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800">{{o.initial}}</span>
-<span style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0">
-<span style="font-size: 15px; font-weight: 700">{{o.title}}</span>
-<span style="font-size: 12px; color: {{c.t3}}">{{o.sub}}</span>
-</span>
-<span style="font-size: 18px; font-weight: 800">{{o.amount}}</span>
-</div>
-<div style="display: flex; flex-direction: column; gap: 8px">
-<span style="font-size: 12px; font-weight: 700; color: {{o.askColor}}">{{o.ask}}</span>
-<div style="display: flex; flex-wrap: wrap; gap: 6px">
-<sc-for list="{{o.chips}}" as="k" hint-placeholder-count="3">
-<button onClick="{{k.pick}}" aria-pressed="{{k.pressed}}" style="height: 32px; padding: 0 12px; border-radius: 16px; border: {{k.border}}; background: {{k.bg}}; color: {{c.t1}}; font-family: inherit; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{k.dot}}"></span>{{k.label}}</button>
-</sc-for>
-</div>
-</div>
-</article>
-</div>
-</sc-for>
-
-<sc-if value="{{expanded}}" hint-placeholder-val="{{ false }}">
-<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 4px 0">
-<button onClick="{{toggle}}" aria-expanded="true" style="height: 40px; padding: 0 14px; border-radius: 20px; border: 1px solid {{c.line}}; background: transparent; color: {{c.t2}}; font-family: inherit; font-size: 13px; font-weight: 700">Show less</button>
-<a href="Review.dc.html" style="font-size: 13px; font-weight: 700; color: {{c.review}}; text-decoration: none">Open Review Inbox</a>
-</div>
-</sc-if>
 </div>
 </section>
 
@@ -268,12 +237,11 @@
 </nav>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"stackOpen":{"editor":"boolean","default":false},"$preview":{"width":390,"height":2160}}'>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":2160}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    const open = props && (props.stackOpen === true || props.stackOpen === 'true');
-    this.state = { expanded: !!open, cat2: null, kind3: null, done: {} };
+    this.state = { done: {} };
   }
   pal(t) {
     if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',lend:'#A14A06',lendT:'#FDF0D8',travel:'#4338CA',travelT:'#E8E9FD',notes:'#735E3B',notesT:'#F3ECE0',well:'#0F766E',wellT:'#DBF3EF',review:'#B03A0A',reviewT:'#FDEADB',red:'#B91C1C',onAccent:'#FFFFFF'};
@@ -282,45 +250,7 @@ class Component extends DCLogic {
   renderVals() {
     const c = this.pal(this.props.theme);
     const s = this.state || {};
-    const exp = !!s.expanded;
-    const pending = 3;
-    const chip = (label, dot, on, pick) => ({
-      label, dot, pick,
-      pressed: on ? 'true' : 'false',
-      border: on ? '1.5px solid ' + dot : '1px dashed ' + c.line,
-      bg: on ? c.s2 : 'transparent'
-    });
-    const cats = [['Food', '#FF8A4C'], ['Snacks', '#F472B6'], ['Groceries', '#EAB308'], ['More', c.t3]];
-    const cat2 = s.cat2;
-    const cat2Color = cat2 ? (cats.find((k) => k[0] === cat2) || [0, c.t3])[1] : null;
-    const kind3 = s.kind3;
-    const others = [
-      {
-        initial: 'M', title: 'MALABAR CORN', sub: 'UPI · Federal Bank ••2210 · 13 Nov, 10:29',
-        amount: '₹62.00',
-        avatarBg: cat2Color || c.s2, avatarFg: cat2Color ? '#0D0F14' : c.t2,
-        ask: cat2 ? 'Category: ' + cat2 + ' · we will remember this shop' : 'New shop · pick a category',
-        askColor: cat2 ? c.t2 : c.review,
-        chips: cats.map((k) => chip(k[0], k[1], cat2 === k[0], () => this.setState({ cat2: k[0] })))
-      },
-      {
-        initial: 'A', title: 'Sent to Arun', sub: 'UPI · HDFC Savings ••8124 · 14 Nov, 10:48',
-        amount: '₹2,000',
-        avatarBg: c.lend, avatarFg: c.onAccent,
-        ask: kind3 === 'loan' ? 'Will be saved as money lent to Arun' : (kind3 === 'expense' ? 'Will be saved as an expense' : 'Sent to a person · what was it?'),
-        askColor: kind3 ? c.t2 : c.review,
-        chips: [
-          chip('Lent to Arun', c.lend, kind3 === 'loan', () => this.setState({ kind3: 'loan' })),
-          chip('Expense', c.money, kind3 === 'expense', () => this.setState({ kind3: 'expense' }))
-        ]
-      }
-    ].map((o, i) => ({
-      ...o,
-      maxH: exp ? '260px' : '0px',
-      op: exp ? '1' : '0',
-      ty: exp ? '0px' : '-24px',
-      delay: exp ? (120 + i * 140) + 'ms' : '0ms'
-    }));
+    const pending = 4;
     const done = s.done || {};
     const taskDefs = [
       { id: 'bill', title: 'Pay electricity bill', sub: 'Overdue · yesterday', overdue: true },
@@ -356,12 +286,7 @@ class Component extends DCLogic {
     ];
     return {
       c,
-      rootH: exp ? '2600px' : '2160px',
       badge: pending > 1 ? pending + ' New' : 'New',
-      collapsed: !exp,
-      expanded: exp,
-      toggle: () => this.setState({ expanded: !exp }),
-      others,
       tasks,
       tasksLeft: left === 0 ? 'all done' : left + ' due',
       friends,

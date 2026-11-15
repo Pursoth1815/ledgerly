@@ -10,9 +10,9 @@ The files in this folder are the source of that canvas, kept in git so every rev
 
 | # | Screen | Plan section | Interactive |
 | --- | --- | --- | --- |
-| 1 | Today | 3 | Open the review stack, tick tasks |
-| 1b | Today with the review stack opened | 3, 5 | Pick a category, choose Lent or Expense |
-| 2 | Review Inbox and transaction card | 5 | Looks Good saves; the second card needs a method chosen first |
+| 1 | Today | 3 | Tick tasks; the review stack opens the Review Inbox |
+| 2 | Review Inbox | 5 | Opening animation, Looks Good, delete with Undo, pick method, category, Lent or Expense |
+| 2b | Transaction details (what Review opens) | 5 | Edit name, method, account and category |
 | 3 | Add expense (UPI or Credit Card) | 4 | Switch method, account and category |
 | 4 | Accounts and cards | 4 | |
 | 5 | Lending: person page | 6 | |
@@ -44,7 +44,7 @@ The owner reviewed Today and shared real bank, railway and bus SMS as reference.
 | --- | --- | --- |
 | 1 | Real accounts and how each is used | Mockup data now follows the owner's setup: a primary credit card paid by UPI QR, a bank account for small UPI spends, separate salary and savings accounts |
 | 2 | Header elements unclear and misaligned | Date sits above the title; the Wellbeing (hourglass) and Settings (gear) buttons are centred on the title line |
-| 3 | Count badge and stacked cards | Badge reads "N New", or "New" for one. Pending items show as a stack; tapping the stack opens it and the other cards slide down one after another (screen 1b) |
+| 3 | Count badge and stacked cards | Badge reads "N New", or "New" for one. Today shows the top card with the others stacked behind it; tapping the stack opens the Review Inbox, where the cards slide down one after another |
 | 4 | Merchant names are often unclear | The name is shown as the SMS writes it. A new shop asks for a category once and is remembered with any rename |
 | 5 | Unknown category; wrong account; a catchier section | Unknown category shows one-tap category chips. A payment-source strip shows a mini card in the bank's colour, the account name and how it was paid |
 | 6 | Remove "Open Review Inbox · 2 more" | Removed from the closed stack; the link appears only once the stack is open |
@@ -53,6 +53,17 @@ The owner reviewed Today and shared real bank, railway and bus SMS as reference.
 | 9 | No due dates for friends | "Lent to friends" shows what is still out and how much came back, with no due or overdue state, plus a suggested repayment from an incoming bank credit |
 | 10 | Spending and Backup | Unchanged; the split now reflects card-heavy spending |
 | 11 | App icons in screen time | Top three apps with an icon on the left (the app shows the real icon from the phone; the mockup uses letter tiles) |
+
+### Follow-up on the same round
+
+| Feedback | Change |
+| --- | --- |
+| Don't open the stack on Today | Tapping the stack goes to the Review Inbox. The opening animation lives only there |
+| Review Inbox should use the new card | Same card as Today: avatar, payment-source strip, category, Review and Looks Good |
+| "Needs a choice" looked ugly | Badge removed. A missing method shows a plain "How did you pay?" UPI / Credit Card switch, and Looks Good reads "Pick UPI or Card" until then |
+| What does Review do? | Opens Transaction details (2b): edit amount, name, date, note, method, account and category; see the original SMS; mark "Not a payment" |
+| Need a delete icon | Every card has a delete icon. It removes the item from the inbox with Undo. Transaction details has one too |
+| RBL card is shared with family | Its spending counts as the owner's spending. No separate "shared card" state |
 
 Decisions that change the plan, to be folded into the proposal:
 

@@ -30,9 +30,9 @@
 
 <div style="display: flex; flex-direction: column; align-items: center; gap: 4px">
 <label for="amt" style="font-size: 13px; font-weight: 600; color: {{c.t3}}">Amount</label>
-<div style="display: flex; align-items: baseline; gap: 4px">
+<div style="display: flex; align-items: baseline; justify-content: center; gap: 4px; width: 100%">
 <span style="font-size: 32px; font-weight: 700; color: {{accent}}">₹</span>
-<input id="amt" inputmode="decimal" value="{{amount}}" onChange="{{setAmount}}" style="width: 170px; border: 0; outline: none; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 48px; font-weight: 800; letter-spacing: -1px; font-variant-numeric: tabular-nums">
+<input id="amt" inputmode="decimal" value="{{amount}}" onChange="{{setAmount}}" style="width: {{amtW}}; max-width: 300px; padding: 0; border: 0; outline: none; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 48px; font-weight: 800; letter-spacing: -1px; text-align: center; font-variant-numeric: tabular-nums">
 </div>
 <sc-if value="{{isReview}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; color: {{c.t3}}">Debited · 13 Nov 2026, 10:29 am</span></sc-if>
 </div>
@@ -178,6 +178,7 @@ class Component extends DCLogic {
       backLabel: review ? 'Back to Review Inbox' : 'Close',
       dateText: review ? '13 Nov, 10:29 am' : 'Today, 15 Nov',
       amount: s.amount,
+      amtW: 'calc(' + Math.max(1, String(s.amount || '').length) + 'ch + 6px)',
       setAmount: (e) => this.setState({ amount: e.target.value }),
       name: s.name,
       setName: (e) => this.setState({ name: e.target.value }),

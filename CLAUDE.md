@@ -61,6 +61,17 @@ The repository is private, but treat it as if it might become public later.
 
 ## Current stage
 
-- The plan is approved. The next step is mockups of the key screens, then Phase 0.
-- Do not start feature code until the owner approves the mockups.
+- The plan is at revision 3 and the mockups were reviewed in six rounds (14 to 16 Nov 2026). The next step is Phase 0, once the owner gives the phone model and Android version.
+- The mockups in `docs/mockups/` are the design reference. Build screens to match them, and record any change the owner asks for in `docs/mockups/README.md` and the proposal.
+- Screens that share a pattern are one widget with a mode, as in the mockups: the expense form (add or review), the category sheet (expense or Vault), the settings page (backup, task reminders or logs), and the ticket details (train or bus).
 - Every phase ends with the owner's approval before the next one starts.
+
+## Design rules from the review
+
+- Tabs: Today, Money, Travel, Planner (Notes and Tasks), More (Vault, Screen time, settings).
+- Colours: one accent per module. UPI is green and Credit Card is violet everywhere. Red for overdue and delete; orange for "needs review"; green for Save and Looks Good.
+- Type: Plus Jakarta Sans, tabular figures for amounts; JetBrains Mono for PNRs and the command line.
+- Detected items are never saved silently. Unclear ones get one orange Review button, not half-filled pickers.
+- A credit card paid by UPI QR is a Credit Card expense. SMS senders are matched on the six-letter bank code.
+- Lending has no due dates. Notes have no folders. Accounts have no archived state.
+- Mockups and the repo use made-up names and digits only.

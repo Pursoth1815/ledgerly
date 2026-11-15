@@ -1,17 +1,42 @@
-# ledgerly
+# Kanakku
 
-A new Flutter project.
+A personal, Android-first app that turns bank and ticket SMS into cards you confirm, and keeps money, lending, travel, notes, tasks and documents in one place. It works fully offline: the app has no internet permission and no server.
 
-## Getting Started
+Repository name: `ledgerly`. Working name of the app: **Kanakku**.
 
-This project is a starting point for a Flutter application.
+## Status
 
-A few resources to get you started if this is your first Flutter project:
+Planning and design are done; app code has not started.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+| Item | Where |
+| --- | --- |
+| Product plan (revision 3) | [Personal App — Product Proposal & Phased Roadmap.md](Personal%20App%20—%20Product%20Proposal%20&%20Phased%20Roadmap.md) |
+| Mockups and the design review record | [docs/mockups](docs/mockups/README.md) |
+| Postponed and removed features | [TO-DO.md](TO-DO.md) |
+| Decisions and open points | [proposal-status.md](proposal-status.md) |
+| Rules for working on this repository | [CLAUDE.md](CLAUDE.md) |
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Next step: Phase 0, foundation and spikes.
+
+## What it does
+
+| Tab | What is in it |
+| --- | --- |
+| Today | Detected items waiting for confirmation, trips this week, tasks, money lent to friends, spending, screen time, backup nudge |
+| Money | Expenses (UPI or Credit Card only), accounts and cards, lending |
+| Travel | Train and bus trips, ticket details, four reminders ending with the ticket on the lock screen 15 minutes before departure |
+| Planner | Notes and tasks |
+| More | Document Vault, screen time, and settings |
+
+## Platform
+
+- Android 15 (API 35) and later. Built and tested on Android.
+- iOS keeps compiling, but nothing on it is verified, because there is no iPhone to test on.
+
+## Tech
+
+Flutter, Riverpod, Drift on SQLite with SQLCipher, an encrypted file store, and a small in-repo Kotlin plugin for SMS, notifications, usage access and sharing.
+
+## Workflow
+
+Every change goes on its own branch and reaches `develop` through a pull request that the owner reviews and merges. `production` receives merges from `develop` at release points. See [CLAUDE.md](CLAUDE.md).

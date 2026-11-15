@@ -2,65 +2,456 @@
   "v": 3,
   "attachments": {},
   "boards": {
-    "Main.dc.html": {"h": 2160, "is_interactive": true, "radius": 28, "title": "1 · Today", "w": 390, "x": 0, "y": 0},
-    "Review.dc.html": {"h": 1880, "is_interactive": true, "radius": 28, "title": "2 · Review Inbox", "w": 390, "x": 470, "y": 0},
-    "ReviewDetail.dc.html": {"h": 1660, "is_interactive": true, "radius": 28, "title": "2b · Transaction details (Review button)", "w": 390, "x": 940, "y": 0},
-    "AddExpense.dc.html": {"h": 1300, "is_interactive": true, "radius": 28, "title": "3 · Add expense, UPI", "w": 390, "x": 1410, "y": 0},
-    "AddExpenseCard.dc.html": {"h": 1300, "is_interactive": true, "radius": 28, "title": "3b · Add expense, Credit Card", "w": 390, "x": 1880, "y": 0},
-    "Accounts.dc.html": {"h": 1320, "radius": 28, "title": "4 · Accounts and cards", "w": 390, "x": 2350, "y": 0},
-    "AddAccount.dc.html": {"h": 980, "is_interactive": true, "radius": 28, "title": "4b · Add bank account, searching \"hd\"", "w": 390, "x": 2820, "y": 0},
-    "AddAccountCard.dc.html": {"h": 980, "is_interactive": true, "radius": 28, "title": "4c · Add credit card, bank chosen", "w": 390, "x": 3290, "y": 0},
-    "Lending.dc.html": {"h": 1380, "radius": 28, "title": "5 · Lending: person page", "w": 390, "x": 3760, "y": 0},
-    "Travel.dc.html": {"h": 1180, "is_interactive": true, "radius": 28, "title": "6 · Travel list", "w": 390, "x": 4230, "y": 0},
-    "Ticket.dc.html": {"h": 1400, "radius": 28, "title": "6b · Ticket details, train", "w": 390, "x": 4700, "y": 0},
-    "TicketBus.dc.html": {"h": 1400, "radius": 28, "title": "6c · Ticket details, bus", "w": 390, "x": 5170, "y": 0},
-    "LockScreen.dc.html": {"h": 844, "radius": 28, "title": "7 · Lock screen, 15 min before", "w": 390, "x": 5640, "y": 0},
-    "Notes.dc.html": {"h": 980, "is_interactive": true, "radius": 28, "title": "8 · Notes (one note tapped)", "w": 390, "x": 6110, "y": 0},
-    "AddNote.dc.html": {"h": 844, "is_interactive": true, "radius": 28, "title": "8b · Add note sheet", "w": 390, "x": 6580, "y": 0},
-    "Tasks.dc.html": {"h": 960, "is_interactive": true, "radius": 28, "title": "9 · Tasks, Today", "w": 390, "x": 7050, "y": 0},
-    "TasksUpcoming.dc.html": {"h": 960, "is_interactive": true, "radius": 28, "title": "9b · Tasks, Upcoming", "w": 390, "x": 7520, "y": 0},
-    "AddTask.dc.html": {"h": 844, "is_interactive": true, "radius": 28, "title": "9c · Add task sheet", "w": 390, "x": 7990, "y": 0},
-    "More.dc.html": {"h": 1340, "radius": 28, "title": "10 · More (last tab)", "w": 390, "x": 8460, "y": 0},
-    "Vault.dc.html": {"h": 1110, "radius": 28, "title": "10b · Document Vault (inside More)", "w": 390, "x": 8930, "y": 0},
-    "Wellbeing.dc.html": {"h": 1240, "radius": 28, "title": "11 · Digital Wellbeing", "w": 390, "x": 9400, "y": 0},
-    "Capture.dc.html": {"h": 844, "radius": 28, "title": "12 · Capture sheet", "w": 390, "x": 9870, "y": 0},
-    "TodayLight.dc.html": {"h": 2160, "is_interactive": true, "radius": 28, "title": "1 · Today (light)", "w": 390, "x": 0, "y": 2560},
-    "ReviewLight.dc.html": {"h": 1880, "is_interactive": true, "radius": 28, "title": "2 · Review Inbox (light)", "w": 390, "x": 470, "y": 2560},
-    "ReviewDetailLight.dc.html": {"h": 1660, "is_interactive": true, "radius": 28, "title": "2b · Transaction details (light)", "w": 390, "x": 940, "y": 2560},
-    "AddExpenseLight.dc.html": {"h": 1300, "is_interactive": true, "radius": 28, "title": "3 · Add expense, UPI (light)", "w": 390, "x": 1410, "y": 2560},
-    "AddExpenseCardLight.dc.html": {"h": 1300, "is_interactive": true, "radius": 28, "title": "3b · Add expense, Credit Card (light)", "w": 390, "x": 1880, "y": 2560},
-    "AccountsLight.dc.html": {"h": 1320, "radius": 28, "title": "4 · Accounts and cards (light)", "w": 390, "x": 2350, "y": 2560},
-    "AddAccountLight.dc.html": {"h": 980, "is_interactive": true, "radius": 28, "title": "4b · Add bank account (light)", "w": 390, "x": 2820, "y": 2560},
-    "AddAccountCardLight.dc.html": {"h": 980, "is_interactive": true, "radius": 28, "title": "4c · Add credit card (light)", "w": 390, "x": 3290, "y": 2560},
-    "LendingLight.dc.html": {"h": 1380, "radius": 28, "title": "5 · Lending (light)", "w": 390, "x": 3760, "y": 2560},
-    "TravelLight.dc.html": {"h": 1180, "is_interactive": true, "radius": 28, "title": "6 · Travel list (light)", "w": 390, "x": 4230, "y": 2560},
-    "TicketLight.dc.html": {"h": 1400, "radius": 28, "title": "6b · Ticket details, train (light)", "w": 390, "x": 4700, "y": 2560},
-    "TicketBusLight.dc.html": {"h": 1400, "radius": 28, "title": "6c · Ticket details, bus (light)", "w": 390, "x": 5170, "y": 2560},
-    "LockScreenLight.dc.html": {"h": 844, "radius": 28, "title": "7 · Lock screen (light)", "w": 390, "x": 5640, "y": 2560},
-    "NotesLight.dc.html": {"h": 980, "is_interactive": true, "radius": 28, "title": "8 · Notes (light)", "w": 390, "x": 6110, "y": 2560},
-    "AddNoteLight.dc.html": {"h": 844, "is_interactive": true, "radius": 28, "title": "8b · Add note sheet (light)", "w": 390, "x": 6580, "y": 2560},
-    "TasksLight.dc.html": {"h": 960, "is_interactive": true, "radius": 28, "title": "9 · Tasks, Today (light)", "w": 390, "x": 7050, "y": 2560},
-    "TasksUpcomingLight.dc.html": {"h": 960, "is_interactive": true, "radius": 28, "title": "9b · Tasks, Upcoming (light)", "w": 390, "x": 7520, "y": 2560},
-    "AddTaskLight.dc.html": {"h": 844, "is_interactive": true, "radius": 28, "title": "9c · Add task sheet (light)", "w": 390, "x": 7990, "y": 2560},
-    "MoreLight.dc.html": {"h": 1340, "radius": 28, "title": "10 · More (light)", "w": 390, "x": 8460, "y": 2560},
-    "VaultLight.dc.html": {"h": 1110, "radius": 28, "title": "10b · Document Vault (light)", "w": 390, "x": 8930, "y": 2560},
-    "WellbeingLight.dc.html": {"h": 1240, "radius": 28, "title": "11 · Digital Wellbeing (light)", "w": 390, "x": 9400, "y": 2560},
-    "CaptureLight.dc.html": {"h": 844, "radius": 28, "title": "12 · Capture sheet (light)", "w": 390, "x": 9870, "y": 2560}
+    "Accounts.dc.html": {
+      "h": 1320,
+      "radius": 28,
+      "title": "4 · Accounts and cards",
+      "w": 390,
+      "x": 2350,
+      "y": 0
+    },
+    "AccountsLight.dc.html": {
+      "h": 1320,
+      "radius": 28,
+      "title": "4 · Accounts and cards (light)",
+      "w": 390,
+      "x": 2350,
+      "y": 2560
+    },
+    "AddAccount.dc.html": {
+      "h": 980,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "4b · Add bank account, searching \"hd\"",
+      "w": 390,
+      "x": 2820,
+      "y": 0
+    },
+    "AddAccountCard.dc.html": {
+      "h": 980,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "4c · Add credit card, bank chosen",
+      "w": 390,
+      "x": 3290,
+      "y": 0
+    },
+    "AddAccountCardLight.dc.html": {
+      "h": 980,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "4c · Add credit card (light)",
+      "w": 390,
+      "x": 3290,
+      "y": 2560
+    },
+    "AddAccountLight.dc.html": {
+      "h": 980,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "4b · Add bank account (light)",
+      "w": 390,
+      "x": 2820,
+      "y": 2560
+    },
+    "AddExpense.dc.html": {
+      "h": 1300,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "3 · Add expense, UPI",
+      "w": 390,
+      "x": 1410,
+      "y": 0
+    },
+    "AddExpenseCard.dc.html": {
+      "h": 1300,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "3b · Add expense, Credit Card",
+      "w": 390,
+      "x": 1880,
+      "y": 0
+    },
+    "AddExpenseCardLight.dc.html": {
+      "h": 1300,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "3b · Add expense, Credit Card (light)",
+      "w": 390,
+      "x": 1880,
+      "y": 2560
+    },
+    "AddExpenseLight.dc.html": {
+      "h": 1300,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "3 · Add expense, UPI (light)",
+      "w": 390,
+      "x": 1410,
+      "y": 2560
+    },
+    "AddNote.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "8b · Add note sheet",
+      "w": 390,
+      "x": 6580,
+      "y": 0
+    },
+    "AddNoteLight.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "8b · Add note sheet (light)",
+      "w": 390,
+      "x": 6580,
+      "y": 2560
+    },
+    "AddTask.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "9c · Add task sheet",
+      "w": 390,
+      "x": 7990,
+      "y": 0
+    },
+    "AddTaskLight.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "9c · Add task sheet (light)",
+      "w": 390,
+      "x": 7990,
+      "y": 2560
+    },
+    "Capture.dc.html": {
+      "h": 844,
+      "radius": 28,
+      "title": "12 · Capture sheet",
+      "w": 390,
+      "x": 9870,
+      "y": 0
+    },
+    "CaptureLight.dc.html": {
+      "h": 844,
+      "radius": 28,
+      "title": "12 · Capture sheet (light)",
+      "w": 390,
+      "x": 9870,
+      "y": 2560
+    },
+    "Lending.dc.html": {
+      "h": 1380,
+      "radius": 28,
+      "title": "5 · Lending: person page",
+      "w": 390,
+      "x": 3760,
+      "y": 0
+    },
+    "LendingLight.dc.html": {
+      "h": 1380,
+      "radius": 28,
+      "title": "5 · Lending (light)",
+      "w": 390,
+      "x": 3760,
+      "y": 2560
+    },
+    "LockScreen.dc.html": {
+      "h": 844,
+      "radius": 28,
+      "title": "7 · Lock screen, 15 min before",
+      "w": 390,
+      "x": 5640,
+      "y": 0
+    },
+    "LockScreenLight.dc.html": {
+      "h": 844,
+      "radius": 28,
+      "title": "7 · Lock screen (light)",
+      "w": 390,
+      "x": 5640,
+      "y": 2560
+    },
+    "Main.dc.html": {
+      "h": 2160,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "1 · Today",
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "More.dc.html": {
+      "h": 1300,
+      "radius": 28,
+      "title": "10 · More (last tab)",
+      "w": 390,
+      "x": 8460,
+      "y": 0
+    },
+    "MoreLight.dc.html": {
+      "h": 1300,
+      "radius": 28,
+      "title": "10 · More (light)",
+      "w": 390,
+      "x": 8460,
+      "y": 2560
+    },
+    "Notes.dc.html": {
+      "h": 980,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "8 · Planner: Notes (one note tapped)",
+      "w": 390,
+      "x": 6110,
+      "y": 0
+    },
+    "NotesLight.dc.html": {
+      "h": 980,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "8 · Planner: Notes (light)",
+      "w": 390,
+      "x": 6110,
+      "y": 2560
+    },
+    "Review.dc.html": {
+      "h": 1880,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "2 · Review Inbox",
+      "w": 390,
+      "x": 470,
+      "y": 0
+    },
+    "ReviewDetail.dc.html": {
+      "h": 1660,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "2b · Transaction details (Review button)",
+      "w": 390,
+      "x": 940,
+      "y": 0
+    },
+    "ReviewDetailLight.dc.html": {
+      "h": 1660,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "2b · Transaction details (light)",
+      "w": 390,
+      "x": 940,
+      "y": 2560
+    },
+    "ReviewLight.dc.html": {
+      "h": 1880,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "2 · Review Inbox (light)",
+      "w": 390,
+      "x": 470,
+      "y": 2560
+    },
+    "Tasks.dc.html": {
+      "h": 960,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "9 · Planner: Tasks, Today",
+      "w": 390,
+      "x": 7050,
+      "y": 0
+    },
+    "TasksLight.dc.html": {
+      "h": 960,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "9 · Planner: Tasks, Today (light)",
+      "w": 390,
+      "x": 7050,
+      "y": 2560
+    },
+    "TasksUpcoming.dc.html": {
+      "h": 960,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "9b · Planner: Tasks, Upcoming",
+      "w": 390,
+      "x": 7520,
+      "y": 0
+    },
+    "TasksUpcomingLight.dc.html": {
+      "h": 960,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "9b · Planner: Tasks, Upcoming (light)",
+      "w": 390,
+      "x": 7520,
+      "y": 2560
+    },
+    "Ticket.dc.html": {
+      "h": 1400,
+      "radius": 28,
+      "title": "6b · Ticket details, train",
+      "w": 390,
+      "x": 4700,
+      "y": 0
+    },
+    "TicketBus.dc.html": {
+      "h": 1400,
+      "radius": 28,
+      "title": "6c · Ticket details, bus",
+      "w": 390,
+      "x": 5170,
+      "y": 0
+    },
+    "TicketBusLight.dc.html": {
+      "h": 1400,
+      "radius": 28,
+      "title": "6c · Ticket details, bus (light)",
+      "w": 390,
+      "x": 5170,
+      "y": 2560
+    },
+    "TicketLight.dc.html": {
+      "h": 1400,
+      "radius": 28,
+      "title": "6b · Ticket details, train (light)",
+      "w": 390,
+      "x": 4700,
+      "y": 2560
+    },
+    "TodayLight.dc.html": {
+      "h": 2160,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "1 · Today (light)",
+      "w": 390,
+      "x": 0,
+      "y": 2560
+    },
+    "Travel.dc.html": {
+      "h": 1180,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "6 · Travel list",
+      "w": 390,
+      "x": 4230,
+      "y": 0
+    },
+    "TravelLight.dc.html": {
+      "h": 1180,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "6 · Travel list (light)",
+      "w": 390,
+      "x": 4230,
+      "y": 2560
+    },
+    "Vault.dc.html": {
+      "h": 1110,
+      "radius": 28,
+      "title": "10b · Document Vault (inside More)",
+      "w": 390,
+      "x": 8930,
+      "y": 0
+    },
+    "VaultLight.dc.html": {
+      "h": 1110,
+      "radius": 28,
+      "title": "10b · Document Vault (light)",
+      "w": 390,
+      "x": 8930,
+      "y": 2560
+    },
+    "Wellbeing.dc.html": {
+      "h": 1240,
+      "radius": 28,
+      "title": "11 · Digital Wellbeing",
+      "w": 390,
+      "x": 9400,
+      "y": 0
+    },
+    "WellbeingLight.dc.html": {
+      "h": 1240,
+      "radius": 28,
+      "title": "11 · Digital Wellbeing (light)",
+      "w": 390,
+      "x": 9400,
+      "y": 2560
+    }
   },
-  "createdOnFiles": {"at": "2026-11-14T18:30:00Z", "v": 1},
+  "createdOnFiles": {
+    "at": "2026-11-14T18:30:00Z",
+    "v": 1
+  },
   "designSystems": [],
-  "launch": {"view": "canvas"},
+  "launch": {
+    "view": "canvas"
+  },
   "notes": {
-    "darkTitle": {"kind": "title1", "maxW": 10260, "text": "Kanakku · dark theme (designed first)", "w": 240, "x": 0, "y": -280},
-    "lightTitle": {"kind": "title1", "maxW": 10260, "text": "Kanakku · light theme", "w": 240, "x": 0, "y": 2280}
+    "darkTitle": {
+      "kind": "title1",
+      "maxW": 8000,
+      "text": "Kanakku · dark theme (designed first)",
+      "w": 240,
+      "x": 0,
+      "y": -280
+    },
+    "lightTitle": {
+      "kind": "title1",
+      "maxW": 8000,
+      "text": "Kanakku · light theme",
+      "w": 240,
+      "x": 0,
+      "y": 2280
+    }
   },
   "order": [
-    "Main.dc.html", "Review.dc.html", "ReviewDetail.dc.html", "AddExpense.dc.html", "AddExpenseCard.dc.html",
-    "Accounts.dc.html", "AddAccount.dc.html", "AddAccountCard.dc.html", "Lending.dc.html", "Travel.dc.html", "Ticket.dc.html", "TicketBus.dc.html",
-    "LockScreen.dc.html", "Notes.dc.html", "AddNote.dc.html", "Tasks.dc.html", "TasksUpcoming.dc.html", "AddTask.dc.html", "More.dc.html", "Vault.dc.html", "Wellbeing.dc.html", "Capture.dc.html",
-    "TodayLight.dc.html", "ReviewLight.dc.html", "ReviewDetailLight.dc.html", "AddExpenseLight.dc.html", "AddExpenseCardLight.dc.html",
-    "AccountsLight.dc.html", "AddAccountLight.dc.html", "AddAccountCardLight.dc.html", "LendingLight.dc.html", "TravelLight.dc.html", "TicketLight.dc.html", "TicketBusLight.dc.html",
-    "LockScreenLight.dc.html", "NotesLight.dc.html", "AddNoteLight.dc.html", "TasksLight.dc.html", "TasksUpcomingLight.dc.html", "AddTaskLight.dc.html", "MoreLight.dc.html", "VaultLight.dc.html", "WellbeingLight.dc.html", "CaptureLight.dc.html"
+    "Main.dc.html",
+    "Review.dc.html",
+    "ReviewDetail.dc.html",
+    "AddExpense.dc.html",
+    "AddExpenseCard.dc.html",
+    "Accounts.dc.html",
+    "AddAccount.dc.html",
+    "AddAccountCard.dc.html",
+    "Lending.dc.html",
+    "Travel.dc.html",
+    "Ticket.dc.html",
+    "TicketBus.dc.html",
+    "LockScreen.dc.html",
+    "Notes.dc.html",
+    "AddNote.dc.html",
+    "Tasks.dc.html",
+    "TasksUpcoming.dc.html",
+    "AddTask.dc.html",
+    "More.dc.html",
+    "Vault.dc.html",
+    "Wellbeing.dc.html",
+    "Capture.dc.html",
+    "TodayLight.dc.html",
+    "ReviewLight.dc.html",
+    "ReviewDetailLight.dc.html",
+    "AddExpenseLight.dc.html",
+    "AddExpenseCardLight.dc.html",
+    "AccountsLight.dc.html",
+    "AddAccountLight.dc.html",
+    "AddAccountCardLight.dc.html",
+    "LendingLight.dc.html",
+    "TravelLight.dc.html",
+    "TicketLight.dc.html",
+    "TicketBusLight.dc.html",
+    "LockScreenLight.dc.html",
+    "NotesLight.dc.html",
+    "AddNoteLight.dc.html",
+    "TasksLight.dc.html",
+    "TasksUpcomingLight.dc.html",
+    "AddTaskLight.dc.html",
+    "MoreLight.dc.html",
+    "VaultLight.dc.html",
+    "WellbeingLight.dc.html",
+    "CaptureLight.dc.html"
   ],
   "pages": [],
   "title": "Kanakku Mockups"

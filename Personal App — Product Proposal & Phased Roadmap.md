@@ -80,7 +80,7 @@ Navigation has five tabs and one capture button.
 - **Today**
 - **Money**, with two segments: Expenses and Lending
 - **Travel**
-- **Notes**, with two segments: Notes and Tasks
+- **Planner**, with two segments: Notes and Tasks
 - **More**, a flexible last tab. It holds the Document Vault, Digital Wellbeing and Settings, and has room for later additions
 
 Digital Wellbeing and the light or dark theme switch open from the corner of Today. The capture button is reachable from every tab and opens one sheet for a new expense, loan, trip, note or task, plus the command line described in section 10.

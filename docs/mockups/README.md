@@ -23,9 +23,9 @@ The files in this folder are the source of that canvas, kept in git so every rev
 | 6b | Ticket details, train | 7 | |
 | 6c | Ticket details, bus | 7 | |
 | 7 | Lock screen, 15 minutes before departure | 7 | |
-| 8 | Notes | 8 | Tap a note to press it in and show pin, edit and delete |
+| 8 | Planner: Notes | 8 | Tap a note to press it in and show pin, edit and delete |
 | 8b | Add note sheet | 8 | Title, text, checklist, pin and note colour |
-| 9 | Tasks, Today | 8 | Today, Upcoming and Completed tabs; tick tasks off |
+| 9 | Planner: Tasks, Today | 8 | Today, Upcoming and Completed tabs; tick tasks off |
 | 9b | Tasks, Upcoming | 8 | Same screen on the Upcoming tab |
 | 9c | Add task sheet | 8 | Due, reminder, repeat and time |
 | 10 | More (last tab) | 3 | Opens the Vault, Screen time and Accounts and cards |
@@ -115,7 +115,22 @@ The SMS sender codes shown in the bank dropdown are examples. The real list is b
 | Settings icon on Today | Replaced by a light or dark theme switch |
 | Settings in the bottom bar; Vault moves inside | The last tab is **More**: Vault and Screen time as tiles, then settings grouped as Money, Reminders, Privacy and backup, and App. The name leaves room for later additions |
 
-Plan changes made in the proposal: the tabs are Today, Money, Travel, Notes and More (section 3), and Notes have colours and no folders (section 8).
+Plan changes made in the proposal: the tabs are Today, Money, Travel, Planner and More (section 3), and Notes have colours and no folders (section 8).
+
+## Review round 4: Add note, tab name, More and Vault (16 Nov 2026)
+
+| Feedback | Change |
+| --- | --- |
+| "Title" and "Note" labels in Add note look poor | Labels removed. The note card has a coloured edge, a large title, a status line ("Checklist · 3 of 4 left") and tickable checklist rows with "Add item". A text / checklist switch, pin and colour dots sit below the card |
+| The "Notes" tab also holds Tasks | The tab and the page title are now **Planner**, with Notes and Tasks inside |
+| Vault tile in More looks plain | Vault and Screen time are solid colour tiles with a large faint icon |
+| Switches | Task reminders, SMS detection and Dark theme use animated on and off switches. Dark theme switches the screen live |
+| About Kanakku | Removed for now |
+| Vault header misaligned; unclear "Unlocked" label | The label is gone. Title and Add button are aligned on one line, with "27 documents, encrypted on this phone" below |
+| Category icons | Identity card, rupee, shield, plane, car, heart with a cross, graduation cap |
+| New category tile | A dashed tile with a + icon and "New category" on one line |
+
+"Categories" in More are the **expense categories** used in Money (Food, Travel, Shopping and so on). The row is renamed "Expense categories" so it is not confused with Vault categories.
 
 Decisions that change the plan, to be folded into the proposal:
 

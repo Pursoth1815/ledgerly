@@ -11,10 +11,13 @@ The files in this folder are the source of that canvas, kept in git so every rev
 | # | Screen | Plan section | Interactive |
 | --- | --- | --- | --- |
 | 1 | Today | 3 | Tick tasks; the review stack opens the Review Inbox |
-| 2 | Review Inbox | 5 | Opening animation, Looks Good, delete with Undo, pick method, category, Lent or Expense |
+| 2 | Review Inbox | 5 | Opening animation, Looks Good, delete with Undo, category for a new shop |
 | 2b | Transaction details (what Review opens) | 5 | Edit name, method, account and category |
-| 3 | Add expense (UPI or Credit Card) | 4 | Switch method, account and category |
+| 3 | Add expense, UPI | 4 | Switch method, account and category |
+| 3b | Add expense, Credit Card | 4 | Same form with Credit Card chosen |
 | 4 | Accounts and cards | 4 | |
+| 4b | Add bank account | 4 | Pick bank, nickname, last four digits, default; live preview |
+| 4c | Add credit card | 4 | Same form for a card |
 | 5 | Lending: person page | 6 | |
 | 6 | Travel ticket and the four reminder stages | 7 | |
 | 7 | Lock screen, 15 minutes before departure | 7 | |
@@ -64,6 +67,21 @@ The owner reviewed Today and shared real bank, railway and bus SMS as reference.
 | What does Review do? | Opens Transaction details (2b): edit amount, name, date, note, method, account and category; see the original SMS; mark "Not a payment" |
 | Need a delete icon | Every card has a delete icon. It removes the item from the inbox with Undo. Transaction details has one too |
 | RBL card is shared with family | Its spending counts as the owner's spending. No separate "shared card" state |
+
+### Second follow-up, and Accounts and cards
+
+| Feedback | Change |
+| --- | --- |
+| Delete icon hard to see | Red icon on a soft red circle on every review card and on Transaction details |
+| Remove "guessed" | Removed from Today and the Review Inbox |
+| Unclear cards (UPI or card unknown; money sent to a person) | No inline pickers or disabled buttons. The card gets an orange border and a single orange Review button. The unknown part shows as a dashed "?" strip or a short note |
+| Account nicknames | "Primary" for the everyday UPI account and "Investments" for the auto-pay account |
+| Save button | One green "Save ₹amount" button, with no summary text above it, on Add expense and Transaction details |
+| Add expense with Credit Card | Screen 3b shows the card list with Kiwi as the default |
+| Archived accounts | Removed from the screen and from the plan (section 4). Removing an account keeps its past transactions |
+| Adding an account or card | Screens 4b and 4c: type switch, live card preview, bank grid, the SMS sender code it will match, nickname, last four digits and a default switch |
+
+**Implementation note:** Add expense (3, 3b) and Transaction details (2b) are one component, `AddExpense.dc.html`, with a `mode` of `add` or `review`. Review mode adds the delete icon, the "SMS said" line, the remember-this-shop option and the original message. The Flutter screen should follow the same pattern.
 
 Decisions that change the plan, to be folded into the proposal:
 

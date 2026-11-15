@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
 <style>body{margin:0}</style>
 </helmet>
-<div style="width: 390px; height: 1980px; position: relative; overflow: hidden; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+<div style="width: 390px; height: 1880px; position: relative; overflow: hidden; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
 <main style="padding: 20px 20px 120px; display: flex; flex-direction: column; gap: 18px">
 
 <header style="display: flex; flex-direction: column; gap: 14px">
@@ -38,7 +38,7 @@
 <div style="display: flex; flex-direction: column">
 <sc-for list="{{cards}}" as="k" hint-placeholder-count="4">
 <div style="position: relative; z-index: {{k.z}}; overflow: hidden; max-height: {{k.maxH}}; margin-top: {{k.mt}}; opacity: {{k.op}}; transform: scale({{k.sc}}); transform-origin: top center; transition: max-height 520ms cubic-bezier(.2,.8,.2,1) {{k.delay}}, margin-top 520ms cubic-bezier(.2,.8,.2,1) {{k.delay}}, transform 420ms ease {{k.delay}}, opacity 300ms ease {{k.delay}}">
-<article aria-label="{{k.a11y}}" style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 16px">
+<article aria-label="{{k.a11y}}" style="background: {{c.s1}}; border: {{k.border}}; border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 16px">
 
 <div style="display: flex; align-items: center; gap: 12px">
 <span style="width: 42px; height: 42px; flex-shrink: 0; border-radius: 21px; background: {{k.avatarBg}}; color: {{k.avatarFg}}; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800">{{k.initial}}</span>
@@ -46,8 +46,8 @@
 <span style="font-size: 16px; font-weight: 700">{{k.title}}</span>
 <span style="font-size: 12px; color: {{c.t3}}">{{k.sub}}</span>
 </span>
-<button onClick="{{k.remove}}" aria-label="Remove {{k.title}} from the inbox" style="width: 40px; height: 40px; flex-shrink: 0; margin-right: -8px; border-radius: 20px; border: 0; background: transparent; color: {{c.t3}}; display: flex; align-items: center; justify-content: center">
-<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg>
+<button onClick="{{k.remove}}" aria-label="Delete {{k.title}} from the inbox" style="width: 40px; height: 40px; flex-shrink: 0; border-radius: 20px; border: 0; background: {{c.redT}}; color: {{c.red}}; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg>
 </button>
 </div>
 
@@ -56,7 +56,7 @@
 <sc-if value="{{k.showSource}}" hint-placeholder-val="{{ true }}">
 <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 16px; background: {{c.s2}}">
 <span aria-hidden="true" style="position: relative; width: 46px; height: 30px; flex-shrink: 0; border-radius: 6px; background: {{k.bankColor}}">
-<span style="position: absolute; left: 6px; top: 7px; width: 10px; height: 8px; border-radius: 2px; background: {{k.chipColor}}"></span>
+<span style="position: absolute; left: 6px; top: 7px; width: 10px; height: 8px; border-radius: 2px; background: #FCD34D"></span>
 <span style="position: absolute; right: 5px; bottom: 3px; font-size: 8px; font-weight: 700; color: #FFFFFF; font-family: 'JetBrains Mono', monospace">{{k.last4}}</span>
 </span>
 <span style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0">
@@ -67,24 +67,20 @@
 </div>
 </sc-if>
 
-<sc-if value="{{k.needsMethod}}" hint-placeholder-val="{{ false }}">
-<div style="display: flex; flex-direction: column; gap: 8px">
-<span style="font-size: 13px; font-weight: 600; color: {{c.t2}}">How did you pay?</span>
-<div role="group" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 18px; background: {{c.s2}}">
-<button onClick="{{k.pickUpi}}" style="height: 44px; border-radius: 14px; border: 0; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 14px; font-weight: 800">UPI</button>
-<button onClick="{{k.pickCard}}" style="height: 44px; border-radius: 14px; border: 0; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 14px; font-weight: 800">Credit Card</button>
-</div>
-<span style="font-size: 12px; color: {{c.t3}}">The SMS didn’t say. We’ll fill in your default account.</span>
+<sc-if value="{{k.unknownSource}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 16px; border: 1.5px dashed {{c.line}}">
+<span aria-hidden="true" style="width: 46px; height: 30px; flex-shrink: 0; border-radius: 6px; border: 1.5px dashed {{c.t3}}; box-sizing: border-box; display: flex; align-items: center; justify-content: center; color: {{c.t3}}; font-size: 14px; font-weight: 800">?</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 700">{{k.srcName}}</span>
+<span style="font-size: 12px; color: {{c.t3}}">{{k.srcDetail}}</span>
+</span>
 </div>
 </sc-if>
 
-<sc-if value="{{k.showCatKnown}}" hint-placeholder-val="{{ true }}">
+<sc-if value="{{k.showCat}}" hint-placeholder-val="{{ true }}">
 <div style="display: flex; align-items: center; justify-content: space-between">
 <span style="font-size: 13px; color: {{c.t3}}">Category</span>
-<span style="display: flex; align-items: center; gap: 8px">
 <span style="display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 15px; background: {{c.s2}}; font-size: 13px; font-weight: 700"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{k.catColor}}"></span>{{k.catName}}</span>
-<span style="font-size: 12px; color: {{c.t3}}">{{k.catNote}}</span>
-</span>
 </div>
 </sc-if>
 
@@ -99,10 +95,15 @@
 </div>
 </sc-if>
 
+<sc-if value="{{k.ready}}" hint-placeholder-val="{{ true }}">
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
 <a href="ReviewDetail.dc.html" style="height: 50px; border-radius: 25px; border: 1.5px solid {{c.line}}; box-sizing: border-box; display: flex; align-items: center; justify-content: center; color: {{c.t1}}; font-weight: 700; font-size: 15px; text-decoration: none">Review</a>
-<button onClick="{{k.confirm}}" disabled="{{k.lgDisabled}}" style="height: 50px; border-radius: 25px; border: 0; background: {{k.lgBg}}; color: {{k.lgFg}}; font-family: inherit; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 6px">{{k.lgText}}</button>
+<button onClick="{{k.confirm}}" style="height: 50px; border-radius: 25px; border: 0; background: {{c.money}}; color: {{c.onAccent}}; font-family: inherit; font-weight: 700; font-size: 15px">Looks Good ✓</button>
 </div>
+</sc-if>
+<sc-if value="{{k.needsAction}}" hint-placeholder-val="{{ false }}">
+<a href="ReviewDetail.dc.html" style="height: 50px; border-radius: 25px; background: {{c.review}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; font-size: 15px; text-decoration: none">Review<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+</sc-if>
 </article>
 </div>
 </sc-for>
@@ -117,11 +118,11 @@
 </sc-if>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":1980}}'>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":1880}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { open: false, gone: {}, cat: {}, method: {}, kind: {}, toast: null, last: null };
+    this.state = { open: false, gone: {}, cat: {}, toast: null, last: null };
   }
   componentDidMount() {
     this.t = setTimeout(() => this.setState({ open: true }), 450);
@@ -130,99 +131,75 @@ class Component extends DCLogic {
     clearTimeout(this.t);
   }
   pal(t) {
-    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',lend:'#A14A06',lendT:'#FDF0D8',review:'#B03A0A',reviewT:'#FDEADB',onAccent:'#FFFFFF'};
-    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',btn:'#F3F5F9',btnT:'#0D0F14',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)',lend:'#FBBF24',lendT:'rgba(251,191,36,0.13)',review:'#FF9F5A',reviewT:'rgba(255,159,90,0.15)',onAccent:'#0D0F14'};
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',lend:'#A14A06',review:'#B03A0A',reviewT:'#FDEADB',red:'#B91C1C',redT:'#FBE3E3',onAccent:'#FFFFFF'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',btn:'#F3F5F9',btnT:'#0D0F14',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)',lend:'#FBBF24',review:'#FF9F5A',reviewT:'rgba(255,159,90,0.15)',red:'#FF7B7B',redT:'rgba(255,123,123,0.16)',onAccent:'#0D0F14'};
   }
   renderVals() {
     const c = this.pal(this.props.theme);
     const s = this.state || {};
     const gone = s.gone || {};
-    const chip = (label, dot, on, pick) => ({
-      label, dot, pick,
-      pressed: on ? 'true' : 'false',
-      border: on ? '1.5px solid ' + dot : '1px solid ' + c.line,
-      bg: on ? c.s2 : 'transparent'
-    });
     const finish = (id, text) => this.setState({ gone: { ...gone, [id]: true }, toast: text, last: id });
     const defs = [
-      { id: 'k1', initial: 'S', title: 'STATE TRANSPORT CO', sub: 'From YES BANK SMS · 14 Nov, 10:39 am', amount: '₹705.00',
-        avatarColor: '#60A5FA', source: { color: '#1D4ED8', last4: '4417', name: 'Kiwi · YES BANK', detail: 'Credit card ••4417 · paid by UPI QR', method: 'CC' },
-        cat: { name: 'Travel', color: '#60A5FA', note: 'guessed' } },
+      { id: 'k1', initial: 'S', title: 'STATE TRANSPORT CO', sub: 'From YES BANK SMS · 14 Nov, 10:39 am', amount: '₹705.00', avatarColor: '#60A5FA',
+        source: { color: '#1D4ED8', last4: '4417', name: 'Kiwi · YES BANK', detail: 'Credit card ••4417 · paid by UPI QR', method: 'CC' },
+        cat: { name: 'Travel', color: '#60A5FA' } },
       { id: 'k2', initial: 'M', title: 'MALABAR CORN', sub: 'From Federal Bank SMS · 13 Nov, 10:29 am', amount: '₹62.00',
-        source: { color: '#A16207', last4: '2210', name: 'Federal Bank', detail: 'Everyday account ••2210', method: 'UPI' },
+        source: { color: '#A16207', last4: '2210', name: 'Federal Bank', detail: 'Primary ••2210', method: 'UPI' },
         askCategory: true },
-      { id: 'k3', initial: 'A', title: 'AMAZON PAY', sub: 'From ICICI Bank SMS · 12 Nov, 8:14 pm', amount: '₹1,299.00',
-        avatarColor: '#F472B6', needsMethod: true,
-        cat: { name: 'Shopping', color: '#F472B6', note: 'guessed' } },
-      { id: 'k4', initial: 'A', title: 'Sent to Arun', sub: 'From HDFC Bank SMS · 14 Nov, 10:48 am', amount: '₹2,000.00',
-        person: true, source: { color: '#1E3A8A', last4: '8124', name: 'HDFC Bank', detail: 'Savings ••8124', method: 'UPI' } }
+      { id: 'k3', initial: 'A', title: 'AMAZON PAY', sub: 'From ICICI Bank SMS · 12 Nov, 8:14 pm', amount: '₹1,299.00', avatarColor: '#A78BFA',
+        unknown: { name: 'UPI or card?', detail: 'The SMS doesn’t say how you paid' },
+        cat: { name: 'Shopping', color: '#A78BFA' }, needsAction: true },
+      { id: 'k4', initial: 'A', title: 'Sent to Arun', sub: 'From HDFC Bank SMS · 14 Nov, 10:48 am', amount: '₹2,000.00', person: true,
+        source: { color: '#1E3A8A', last4: '8124', name: 'HDFC Bank', detail: 'Sent to a person · loan or expense?', method: 'UPI' },
+        needsAction: true }
     ];
     const cats = [['Food', '#FF8A4C'], ['Snacks', '#F472B6'], ['Groceries', '#EAB308'], ['More', c.t3]];
     let visibleIndex = 0;
     const cards = defs.map((d) => {
       const isGone = !!gone[d.id];
       const i = isGone ? 0 : visibleIndex++;
-      const m = (s.method || {})[d.id];
       const catPick = (s.cat || {})[d.id];
-      const kind = (s.kind || {})[d.id];
-      let src = d.source;
-      if (d.needsMethod && m) {
-        src = m === 'upi'
-          ? { color: '#9A3412', last4: '5530', name: 'ICICI Bank', detail: 'Salary account ••5530 · your default', method: 'UPI' }
-          : { color: '#9A3412', last4: '7781', name: 'Amazon Pay · ICICI', detail: 'Credit card ••7781 · your default', method: 'CC' };
-      }
-      const ready = (!d.needsMethod || !!m) && (!d.person || !!kind);
       const catColor = catPick ? (cats.find((x) => x[0] === catPick) || [0, c.t3])[1] : null;
-      let chips = [];
-      let chipsLabel = '';
-      if (d.askCategory) {
-        chipsLabel = catPick ? 'Saved for this shop from now on' : 'New shop · pick a category (optional)';
-        chips = cats.map((x) => chip(x[0], x[1], catPick === x[0], () => this.setState({ cat: { ...(s.cat || {}), [d.id]: x[0] } })));
-      }
-      if (d.person) {
-        chipsLabel = kind === 'loan' ? 'Will be added to Lent to friends' : (kind === 'expense' ? 'Will be saved as an expense' : 'What was this?');
-        chips = [
-          chip('Lent to Arun', c.lend, kind === 'loan', () => this.setState({ kind: { ...(s.kind || {}), [d.id]: 'loan' } })),
-          chip('Expense', c.money, kind === 'expense', () => this.setState({ kind: { ...(s.kind || {}), [d.id]: 'expense' } }))
-        ];
-      }
+      const chips = d.askCategory ? cats.map((x) => ({
+        label: x[0], dot: x[1],
+        pressed: catPick === x[0] ? 'true' : 'false',
+        border: catPick === x[0] ? '1.5px solid ' + x[1] : '1px solid ' + c.line,
+        bg: catPick === x[0] ? c.s2 : 'transparent',
+        pick: () => this.setState({ cat: { ...(s.cat || {}), [d.id]: x[0] } })
+      })) : [];
       const closed = !s.open && i > 0;
+      const src = d.source || d.unknown || {};
       return {
         initial: d.initial, title: d.title, sub: d.sub, amount: d.amount,
-        a11y: d.title + ', ' + d.amount,
+        a11y: d.title + ', ' + d.amount + (d.needsAction ? ', needs your review' : ''),
         z: String(20 - i),
         maxH: isGone ? '0px' : (closed ? '16px' : '720px'),
         mt: isGone ? '0px' : (i === 0 ? '0px' : (closed ? '-10px' : '14px')),
         sc: closed ? String(1 - Math.min(i, 3) * 0.04) : '1',
         op: isGone ? '0' : (closed && i > 2 ? '0' : '1'),
         delay: s.open && !isGone ? (i * 140) + 'ms' : '0ms',
+        border: d.needsAction ? '1.5px solid ' + c.review : '1px solid ' + c.line,
         avatarBg: d.person ? c.lend : (catColor || d.avatarColor || c.s2),
         avatarFg: d.person ? c.onAccent : ((catColor || d.avatarColor) ? '#0D0F14' : c.t2),
-        showSource: !!src,
-        bankColor: src ? src.color : 'transparent',
-        chipColor: '#FCD34D',
-        last4: src ? src.last4 : '',
-        srcName: src ? src.name : '',
-        srcDetail: src ? src.detail : '',
-        method: src ? src.method : '',
-        methodBg: src && src.method === 'CC' ? c.cardT : c.moneyT,
-        methodFg: src && src.method === 'CC' ? c.card : c.money,
-        needsMethod: !!d.needsMethod && !m,
-        pickUpi: () => this.setState({ method: { ...(s.method || {}), [d.id]: 'upi' } }),
-        pickCard: () => this.setState({ method: { ...(s.method || {}), [d.id]: 'card' } }),
-        showCatKnown: !!d.cat,
+        showSource: !!d.source,
+        unknownSource: !!d.unknown,
+        bankColor: d.source ? d.source.color : 'transparent',
+        last4: d.source ? d.source.last4 : '',
+        srcName: src.name || '',
+        srcDetail: src.detail || '',
+        method: d.source ? d.source.method : '',
+        methodBg: d.source && d.source.method === 'CC' ? c.cardT : c.moneyT,
+        methodFg: d.source && d.source.method === 'CC' ? c.card : c.money,
+        showCat: !!d.cat,
         catName: d.cat ? d.cat.name : '',
         catColor: d.cat ? d.cat.color : 'transparent',
-        catNote: d.cat ? d.cat.note : '',
         showChips: chips.length > 0,
-        chipsLabel,
+        chipsLabel: catPick ? 'Saved for this shop from now on' : 'New shop · pick a category (optional)',
         chips,
-        lgDisabled: !ready,
-        lgBg: ready ? c.money : c.s2,
-        lgFg: ready ? c.onAccent : c.t3,
-        lgText: ready ? 'Looks Good ✓' : (d.person ? 'Choose above' : 'Pick UPI or Card'),
+        ready: !d.needsAction,
+        needsAction: !!d.needsAction,
         confirm: () => finish(d.id, 'Saved · ' + d.amount),
-        remove: () => finish(d.id, 'Removed from inbox')
+        remove: () => finish(d.id, 'Deleted from inbox')
       };
     });
     const left = defs.filter((d) => !gone[d.id]).length;

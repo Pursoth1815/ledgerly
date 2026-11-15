@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add bank account or card</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 1260px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+<main style="padding: 20px 20px 130px; display: flex; flex-direction: column; gap: 22px">
+
+<header style="display: flex; align-items: center; justify-content: space-between">
+<a href="Accounts.dc.html" aria-label="Close" style="width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t1}}">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+</a>
+<h1 style="margin: 0; font-size: 17px; font-weight: 800">{{title}}</h1>
+<span style="width: 44px"></span>
+</header>
+
+<div role="group" aria-label="Type" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 20px; background: {{c.s2}}">
+<button onClick="{{pickBank}}" aria-pressed="{{bankPressed}}" style="height: 44px; border-radius: 16px; border: 0; background: {{bankBg}}; color: {{bankFg}}; font-family: inherit; font-size: 14px; font-weight: 800">Bank account</button>
+<button onClick="{{pickCard}}" aria-pressed="{{cardPressed}}" style="height: 44px; border-radius: 16px; border: 0; background: {{cardBg}}; color: {{cardFg}}; font-family: inherit; font-size: 14px; font-weight: 800">Credit card</button>
+</div>
+
+<div aria-label="Preview" style="position: relative; height: 196px; box-sizing: border-box; border-radius: 24px; padding: 20px 22px; background: {{preview.color}}; color: #FFFFFF; display: flex; flex-direction: column; justify-content: space-between; transition: background 300ms ease">
+<div style="display: flex; align-items: center; justify-content: space-between">
+<span style="font-size: 14px; font-weight: 700">{{preview.bank}}</span>
+<span style="padding: 3px 10px; border-radius: 999px; background: rgba(255,255,255,0.2); font-size: 11px; font-weight: 700">{{preview.kind}}</span>
+</div>
+<span aria-hidden="true" style="width: 40px; height: 30px; border-radius: 6px; background: #FCD34D"></span>
+<div style="display: flex; align-items: flex-end; justify-content: space-between">
+<span style="font-size: 22px; font-weight: 800">{{preview.nick}}</span>
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 600; letter-spacing: 2px">•••• {{preview.last4}}</span>
+</div>
+</div>
+
+<section aria-label="Bank" style="display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{c.t3}}">Bank</h2>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{banks}}" as="b" hint-placeholder-count="9">
+<button onClick="{{b.pick}}" aria-pressed="{{b.pressed}}" style="height: 46px; border-radius: 16px; border: {{b.border}}; background: {{b.bg}}; color: {{c.t1}}; font-family: inherit; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px"><span style="width: 10px; height: 10px; border-radius: 5px; background: {{b.color}}"></span>{{b.name}}</button>
+</sc-for>
+</div>
+<p style="margin: 0; font-size: 12px; color: {{c.t3}}">SMS from <span style="font-family: 'JetBrains Mono', monospace; color: {{c.t2}}">{{code}}</span> will be linked here, whatever the prefix.</p>
+</section>
+
+<section aria-label="Details" style="display: flex; flex-direction: column; background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 22px; overflow: hidden">
+<label style="display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border-bottom: 1px solid {{c.line}}">
+<span style="font-size: 12px; font-weight: 700; color: {{c.t3}}">Nickname</span>
+<input value="{{nick}}" onChange="{{setNick}}" placeholder="{{nickHint}}" style="border: 0; outline: none; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 17px; font-weight: 700; padding: 0">
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border-bottom: 1px solid {{c.line}}">
+<span style="font-size: 12px; font-weight: 700; color: {{c.t3}}">Last four digits</span>
+<input value="{{last4}}" onChange="{{setLast4}}" inputmode="numeric" maxlength="4" placeholder="0000" style="width: 120px; border: 0; outline: none; background: transparent; color: {{c.t1}}; font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 600; letter-spacing: 8px; padding: 0">
+<span style="font-size: 12px; color: {{c.t3}}">{{digitsHint}}</span>
+</label>
+<label style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 58px; padding: 0 16px">
+<span style="font-size: 15px; font-weight: 600">{{defaultLabel}}</span>
+<button onClick="{{toggleDefault}}" role="switch" aria-checked="{{defChecked}}" style="width: 52px; height: 32px; flex-shrink: 0; border-radius: 16px; border: 0; padding: 3px; background: {{switchBg}}; display: flex; justify-content: {{switchAlign}}; transition: background 200ms ease">
+<span style="width: 26px; height: 26px; border-radius: 13px; background: #FFFFFF"></span>
+</button>
+</label>
+</section>
+</main>
+
+<div style="position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 20px 28px; background: {{c.bg}}; border-top: 1px solid {{c.line}}">
+<button style="width: 100%; height: 56px; border-radius: 28px; border: 0; background: {{c.money}}; color: {{c.onAccent}}; font-family: inherit; font-size: 17px; font-weight: 800">{{saveText}}</button>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"type":{"editor":"enum","options":["bank","card"],"default":"bank"},"$preview":{"width":390,"height":1260}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const card = props && props.type === 'card';
+    this.state = card
+      ? { type: 'card', bank: 'YES BANK', nick: 'Kiwi', last4: '4417', def: true }
+      : { type: 'bank', bank: 'Federal', nick: 'Primary', last4: '2210', def: true };
+  }
+  pal(t) {
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',money:'#047857',card:'#6D28D9',onAccent:'#FFFFFF',off:'#C3C8D2'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',money:'#34D399',card:'#C4A5FF',onAccent:'#0D0F14',off:'#3A4050'};
+  }
+  renderVals() {
+    const c = this.pal(this.props.theme);
+    const s = this.state || {};
+    const isCard = s.type === 'card';
+    const defs = [
+      { name: 'HDFC', full: 'HDFC Bank', color: '#1E3A8A', code: 'HDFCBK' },
+      { name: 'ICICI', full: 'ICICI Bank', color: '#9A3412', code: 'ICICIT' },
+      { name: 'SBI', full: isCard ? 'SBI Card' : 'State Bank of India', color: '#155E75', code: isCard ? 'SBICRD' : 'SBIINB' },
+      { name: 'Federal', full: 'Federal Bank', color: '#A16207', code: 'FEDBNK' },
+      { name: 'Indian', full: 'Indian Bank', color: '#0F766E', code: 'INDBNK' },
+      { name: 'YES BANK', full: 'YES BANK', color: '#1D4ED8', code: 'YESBNK' },
+      { name: 'RBL', full: 'RBL Bank', color: '#7C2D12', code: 'RBLBNK' },
+      { name: 'Axis', full: 'Axis Bank', color: '#831843', code: 'AXISBK' },
+      { name: 'Other', full: 'Your bank', color: '#475569', code: 'the bank’s code' }
+    ];
+    const chosen = defs.find((b) => b.name === s.bank) || defs[0];
+    const banks = defs.map((b) => ({
+      ...b,
+      pick: () => this.setState({ bank: b.name }),
+      pressed: b.name === chosen.name ? 'true' : 'false',
+      border: b.name === chosen.name ? '1.5px solid ' + b.color : '1px solid ' + c.line,
+      bg: b.name === chosen.name ? c.s2 : c.s1
+    }));
+    const accent = isCard ? c.card : c.money;
+    return {
+      c,
+      title: isCard ? 'Add credit card' : 'Add bank account',
+      pickBank: () => this.setState({ type: 'bank', bank: 'Federal', nick: 'Primary', last4: '2210' }),
+      pickCard: () => this.setState({ type: 'card', bank: 'YES BANK', nick: 'Kiwi', last4: '4417' }),
+      bankPressed: isCard ? 'false' : 'true',
+      cardPressed: isCard ? 'true' : 'false',
+      bankBg: isCard ? 'transparent' : c.money,
+      bankFg: isCard ? c.t2 : c.onAccent,
+      cardBg: isCard ? c.card : 'transparent',
+      cardFg: isCard ? c.onAccent : c.t2,
+      preview: {
+        color: chosen.color,
+        bank: chosen.full,
+        kind: isCard ? 'Credit card' : 'Used for UPI',
+        nick: s.nick || (isCard ? 'Card nickname' : 'Account nickname'),
+        last4: (s.last4 || '').padEnd(4, '0')
+      },
+      banks,
+      code: chosen.code,
+      nick: s.nick,
+      setNick: (e) => this.setState({ nick: e.target.value }),
+      nickHint: isCard ? 'e.g. Kiwi, Travel card' : 'e.g. Primary, Salary',
+      last4: s.last4,
+      setLast4: (e) => this.setState({ last4: e.target.value.replace(/[^0-9]/g, '').slice(0, 4) }),
+      digitsHint: isCard ? 'From the card number. Bank SMS show these as X4417 or XX4417.' : 'From the account number. Bank SMS show these as *2210 or X2210.',
+      defaultLabel: isCard ? 'Default credit card' : 'Default for UPI',
+      defChecked: s.def ? 'true' : 'false',
+      toggleDefault: () => this.setState({ def: !s.def }),
+      switchBg: s.def ? accent : c.off,
+      switchAlign: s.def ? 'flex-end' : 'flex-start',
+      saveText: isCard ? 'Add card' : 'Add account'
+    };
+  }
+}
+</script>
+</body>
+</html>

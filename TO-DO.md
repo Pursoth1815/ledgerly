@@ -4,7 +4,7 @@ Postponed features for the personal app (working name: Kanakku).
 
 Nothing in this file is part of the roadmap. No phase allocates time to it. An item moves into the plan only when you decide to schedule it.
 
-Last updated: 2026-11-14
+Last updated: 2026-11-16
 
 ## Postponed
 
@@ -47,6 +47,10 @@ Last updated: 2026-11-14
 - **What:** Pictures, headings and styled text inside notes.
 - **Why it waits:** Notes are plain text first to stay fast and simple.
 
+### 10. About screen
+- **What:** A screen in More with the version, the privacy promise and the iOS status.
+- **Why it waits:** Not needed yet (owner's decision in the design review, 16 Nov 2026). The README covers it meanwhile.
+
 ## Removed, not postponed
 
 These are out of scope and must not come back under another name:
@@ -63,6 +67,10 @@ These are out of scope and must not come back under another name:
 - Parser Health and Reminder Health screens
 - Automatic saving of detected transactions without confirmation
 - A 30-minute final travel reminder, and clearing the ticket notification by the clock
+- Archived accounts and cards
+- Folders in Notes
+- Due dates and overdue states in Lending
+- "Choose" pickers and a disabled Looks Good on unclear review cards
 
 ## Optional enhancements that are in the roadmap
 

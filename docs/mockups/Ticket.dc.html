@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Travel ticket</title>
+<title>Ticket details</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -11,36 +11,39 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
 <style>body{margin:0}</style>
 </helmet>
-<div style="width: 390px; height: 1240px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
-<main style="padding: 20px 20px 40px; display: flex; flex-direction: column; gap: 20px">
+<div style="width: 390px; height: 1400px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+<main style="padding: 20px 20px 120px; display: flex; flex-direction: column; gap: 20px">
 
 <header style="display: flex; align-items: center; justify-content: space-between">
-<a href="Main.dc.html" aria-label="Back to Travel" style="width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t1}}">
+<a href="Travel.dc.html" aria-label="Back to Travel" style="width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t1}}">
 <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg>
 </a>
-<span style="font-size: 15px; font-weight: 700">Tue 17 Nov · in 3 days</span>
+<span style="font-size: 15px; font-weight: 700">{{t.headline}}</span>
 <button aria-label="Edit ticket" style="width: 44px; height: 44px; border-radius: 22px; border: 0; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t1}}">
 <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg>
 </button>
 </header>
 
-<article aria-label="Train ticket, Chennai Central to Coimbatore" style="position: relative; border-radius: 26px; background: {{c.pass}}; color: #FFFFFF; display: flex; flex-direction: column">
+<article aria-label="{{t.a11y}}" style="position: relative; border-radius: 26px; background: {{c.pass}}; color: #FFFFFF; display: flex; flex-direction: column">
 <div style="padding: 20px 20px 18px; display: flex; flex-direction: column; gap: 18px">
 <div style="display: flex; align-items: center; justify-content: space-between">
-<span style="font-size: 12px; font-weight: 700; letter-spacing: 1px">TRAIN · 12673 CHERAN EXPRESS</span>
-<span style="padding: 4px 10px; border-radius: 999px; background: #FFFFFF; color: {{c.pass}}; font-size: 12px; font-weight: 800">CNF</span>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 1px">
+<sc-if value="{{isTrain}}" hint-placeholder-val="{{ true }}"><svg role="img" aria-label="Train" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="14" rx="3"></rect><path d="M6 10h12M9 21l1.5-4M15 21l-1.5-4"></path><circle cx="9.5" cy="13.5" r="0.8"></circle><circle cx="14.5" cy="13.5" r="0.8"></circle></svg></sc-if>
+<sc-if value="{{isBus}}" hint-placeholder-val="{{ false }}"><svg role="img" aria-label="Bus" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="15" rx="3"></rect><path d="M4 11h16M8 6h8M8 18v3M16 18v3"></path><circle cx="8" cy="14.5" r="0.8"></circle><circle cx="16" cy="14.5" r="0.8"></circle></svg></sc-if>
+{{t.kicker}}</span>
+<span style="padding: 4px 10px; border-radius: 999px; background: #FFFFFF; color: {{c.pass}}; font-size: 12px; font-weight: 800">{{t.status}}</span>
 </div>
-<div style="display: flex; align-items: flex-end; justify-content: space-between">
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 8px">
 <div style="display: flex; flex-direction: column; gap: 2px">
-<span style="font-size: 40px; font-weight: 800; letter-spacing: -1px">MAS</span>
-<span style="font-size: 13px">Chennai Central</span>
-<span style="font-size: 20px; font-weight: 800; padding-top: 6px">22:15</span>
+<span style="font-size: {{t.codeSize}}; font-weight: 800; letter-spacing: -1px">{{t.from}}</span>
+<span style="font-size: 13px">{{t.fromSub}}</span>
+<span style="font-size: 20px; font-weight: 800; padding-top: 6px">{{t.dep}}</span>
 </div>
-<svg aria-hidden="true" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 30px"><path d="M4 12h15M14 7l5 5-5 5"></path></svg>
-<div style="display: flex; flex-direction: column; gap: 2px; align-items: flex-end">
-<span style="font-size: 40px; font-weight: 800; letter-spacing: -1px">CBE</span>
-<span style="font-size: 13px">Coimbatore Jn</span>
-<span style="font-size: 20px; font-weight: 800; padding-top: 6px">05:50 <span style="font-size: 12px; font-weight: 600">Wed</span></span>
+<svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 30px; flex-shrink: 0"><path d="M4 12h15M14 7l5 5-5 5"></path></svg>
+<div style="display: flex; flex-direction: column; gap: 2px; align-items: flex-end; text-align: right">
+<span style="font-size: {{t.codeSize}}; font-weight: 800; letter-spacing: -1px">{{t.to}}</span>
+<span style="font-size: 13px">{{t.toSub}}</span>
+<button style="margin-top: 6px; height: 28px; padding: 0 10px; border-radius: 14px; border: 1.5px dashed rgba(255,255,255,0.6); background: transparent; color: #FFFFFF; font-family: inherit; font-size: 12px; font-weight: 700">+ Arrival time</button>
 </div>
 </div>
 </div>
@@ -50,16 +53,30 @@
 <span style="position: absolute; right: -12px; width: 24px; height: 24px; border-radius: 12px; background: {{c.bg}}"></span>
 </div>
 <div style="padding: 14px 20px 20px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
-<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; font-weight: 600">Coach</span><span style="font-size: 18px; font-weight: 800">S4</span></span>
-<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; font-weight: 600">Berth</span><span style="font-size: 18px; font-weight: 800">32 LB</span></span>
-<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; font-weight: 600">Class</span><span style="font-size: 18px; font-weight: 800">SL</span></span>
-<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; font-weight: 600">Fare</span><span style="font-size: 18px; font-weight: 800">₹455</span></span>
+<sc-for list="{{t.cells}}" as="cell" hint-placeholder-count="4">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; font-weight: 600">{{cell.k}}</span><span style="font-size: 16px; font-weight: 800">{{cell.v}}</span></span>
+</sc-for>
 </div>
 <div style="margin: 0 20px 20px; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,0.14); display: flex; align-items: center; justify-content: space-between">
 <span style="font-size: 12px; font-weight: 700">PNR</span>
-<span style="font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 600; letter-spacing: 1.5px">421 857 3096</span>
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 600; letter-spacing: 1.5px">{{t.pnr}}</span>
 </div>
 </article>
+
+<sc-if value="{{isBus}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 20px; background: {{c.travelT}}">
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 15px; font-weight: 700">Conductor</span>
+<span style="font-size: 12px; color: {{c.t2}}">Number and bus details arrive by SMS on travel day</span>
+</span>
+<button aria-label="Call conductor" style="width: 44px; height: 44px; flex-shrink: 0; border-radius: 22px; border: 0; background: {{c.travel}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"></path></svg>
+</button>
+</div>
+</sc-if>
+<sc-if value="{{isTrain}}" hint-placeholder-val="{{ true }}">
+<p style="margin: 0; padding: 12px 16px; border-radius: 16px; background: {{c.travelT}}; font-size: 13px; color: {{c.t2}}">Boarding allowed from MS only · from the railway SMS</p>
+</sc-if>
 
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
 <button style="height: 52px; border-radius: 26px; border: 0; background: {{c.travel}}; color: {{c.onAccent}}; font-family: inherit; font-size: 15px; font-weight: 800">Show ticket</button>
@@ -80,36 +97,51 @@
 </li>
 </sc-for>
 </ol>
-<p style="margin: 0; font-size: 12px; color: {{c.t3}}">The final notice stays on the lock screen until you press Done. It is never cleared by the clock.</p>
-</section>
-
-<section aria-label="Booking" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
-<div style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 4px">
-<span style="font-size: 12px; color: {{c.t3}}">Passengers</span><span style="font-size: 15px; font-weight: 700">1 adult</span>
-</div>
-<div style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 4px">
-<span style="font-size: 12px; color: {{c.t3}}">Added from</span><span style="font-size: 15px; font-weight: 700">Railway SMS</span>
-</div>
+<p style="margin: 0; font-size: 12px; color: {{c.t3}}">The final notice stays on the lock screen until you press Done.</p>
 </section>
 </main>
+
+<nav aria-label="Main" style="position: absolute; left: 0; right: 0; bottom: 0; height: 84px; box-sizing: border-box; padding: 10px 8px 20px; display: flex; justify-content: space-around; align-items: flex-start; background: {{c.s1}}; border-top: 1px solid {{c.line}}">
+<a href="Main.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5L12 4l8 6.5V20H15v-5H9v5H4z"></path></svg>Today</a>
+<a href="Accounts.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"></rect><path d="M3 10h18M16 15h2"></path></svg>Money</a>
+<a href="Travel.dc.html" aria-current="page" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 700; color: {{c.t1}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"></path><path d="M14 7v10" stroke-dasharray="2 2"></path></svg>Travel</a>
+<a href="Notes.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h5"></path></svg>Notes</a>
+<a href="Vault.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2.5"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Vault</a>
+</nav>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":1240}}'>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"kind":{"editor":"enum","options":["train","bus"],"default":"train"},"$preview":{"width":390,"height":1400}}'>
 class Component extends DCLogic {
   pal(t) {
-    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',lend:'#A14A06',lendT:'#FDF0D8',travel:'#4338CA',travelT:'#E8E9FD',pass:'#4338CA',notes:'#735E3B',notesT:'#F3ECE0',vault:'#44536A',vaultT:'#E6EBF2',well:'#0F766E',wellT:'#DBF3EF',review:'#B03A0A',reviewT:'#FDEADB',red:'#B91C1C',redT:'#FBE3E3',food:'#E8590C',onAccent:'#FFFFFF',scrim:'rgba(17,20,27,0.45)'};
-    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',btn:'#F3F5F9',btnT:'#0D0F14',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)',lend:'#FBBF24',lendT:'rgba(251,191,36,0.13)',travel:'#8F98FF',travelT:'rgba(143,152,255,0.16)',pass:'#4F46E5',notes:'#E6CDA3',notesT:'rgba(230,205,163,0.13)',vault:'#A3B5CC',vaultT:'rgba(163,181,204,0.14)',well:'#2DD4BF',wellT:'rgba(45,212,191,0.14)',review:'#FF9F5A',reviewT:'rgba(255,159,90,0.15)',red:'#FF7B7B',redT:'rgba(255,123,123,0.14)',food:'#FF8A4C',onAccent:'#0D0F14',scrim:'rgba(0,0,0,0.6)'};
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',travel:'#4338CA',travelT:'#E8E9FD',pass:'#4338CA',onAccent:'#FFFFFF'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',travel:'#8F98FF',travelT:'rgba(143,152,255,0.16)',pass:'#4F46E5',onAccent:'#0D0F14'};
   }
   renderVals() {
     const c = this.pal(this.props.theme);
+    const bus = this.props.kind === 'bus';
+    const t = bus
+      ? { headline: 'Sat 21 Nov · in 6 days', a11y: 'Bus ticket, Trichy to Chennai', kicker: 'BUS · TNSTC', status: 'Booked',
+          from: 'Trichy', fromSub: 'Central bus stand', dep: '21:30', to: 'Chennai', toSub: 'Kilambakkam', codeSize: '30px',
+          cells: [{ k: 'Route', v: '123LB' }, { k: 'Seat', v: '14' }, { k: 'Platform', v: '4' }, { k: 'Bus no.', v: 'On the day' }],
+          pnr: 'T00000000' }
+      : { headline: 'Thu 19 Nov · in 4 days', a11y: 'Train ticket, Chennai Egmore to Tiruchchirappalli', kicker: 'TRAIN · 12653', status: 'Chart prepared',
+          from: 'MS', fromSub: 'Chennai Egmore', dep: '23:30', to: 'TPJ', toSub: 'Tiruchchirappalli', codeSize: '40px',
+          cells: [{ k: 'Coach', v: 'S7' }, { k: 'Berth', v: '80' }, { k: 'Class', v: 'SL' }, { k: 'Passenger', v: 'P1' }],
+          pnr: '410 000 0001' };
+    const times = bus ? ['Fri 19:00', 'Sat 07:00', 'Sat 18:30', 'Sat 21:15'] : ['Wed 19:00', 'Thu 07:00', 'Thu 20:30', 'Thu 23:15'];
     const base = { dotBg: c.travelT, dotFg: c.travel, timeColor: c.t2 };
     const stages = [
-      { ...base, n: '1', title: 'Prepare for the journey', sub: 'One day before', time: 'Mon 19:00' },
-      { ...base, n: '2', title: 'Check journey details', sub: 'Travel-day morning', time: 'Tue 07:00' },
-      { ...base, n: '3', title: 'Prepare for boarding', sub: 'Three hours before', time: 'Tue 19:15' },
-      { n: '4', title: 'Ticket on lock screen', sub: '15 minutes before · stays until Done', time: 'Tue 22:00', dotBg: c.travel, dotFg: c.onAccent, timeColor: c.travel }
+      { ...base, n: '1', title: 'Prepare for the journey', sub: 'One day before', time: times[0] },
+      { ...base, n: '2', title: 'Check journey details', sub: 'Travel-day morning', time: times[1] },
+      { ...base, n: '3', title: 'Prepare for boarding', sub: 'Three hours before', time: times[2] },
+      { n: '4', title: 'Ticket on lock screen', sub: '15 minutes before · stays until Done', time: times[3], dotBg: c.travel, dotFg: c.onAccent, timeColor: c.travel }
     ].map((s, i, all) => ({ ...s, divider: i < all.length - 1 ? '1px solid ' + c.line : '0' }));
-    return { c, stages };
+    return { c, t, isTrain: !bus, isBus: bus, stages };
   }
 }
 </script>

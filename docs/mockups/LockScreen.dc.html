@@ -14,8 +14,8 @@
 <div style="width: 390px; height: 844px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.wall}}; color: {{c.wallText}}">
 
 <div style="padding-top: 88px; display: flex; flex-direction: column; align-items: center; gap: 4px">
-<span style="font-size: 18px; font-weight: 600">Tuesday, 17 November</span>
-<span style="font-size: 88px; font-weight: 700; letter-spacing: -3px; line-height: 1">22:00</span>
+<span style="font-size: 18px; font-weight: 600">Thursday, 19 November</span>
+<span style="font-size: 88px; font-weight: 700; letter-spacing: -3px; line-height: 1">23:15</span>
 </div>
 
 <article aria-label="Kanakku notification: train leaves in 15 minutes" style="position: absolute; left: 14px; right: 14px; top: 300px; background: {{c.s1}}; color: {{c.t1}}; border-radius: 28px; padding: 18px; display: flex; flex-direction: column; gap: 14px">
@@ -29,16 +29,16 @@
 </div>
 <div style="display: flex; flex-direction: column; gap: 4px">
 <h1 style="margin: 0; font-size: 18px; font-weight: 800">Train leaves in 15 minutes</h1>
-<p style="margin: 0; font-size: 14px; color: {{c.t2}}">12673 Cheran Express · 22:15 · Chennai Central → Coimbatore Jn</p>
+<p style="margin: 0; font-size: 14px; color: {{c.t2}}">Train 12653 · 23:30 · MS Chennai Egmore → TPJ Tiruchchirappalli</p>
 </div>
 <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 12px; border-radius: 16px; background: {{c.travelT}}">
-<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; color: {{c.t2}}">Coach</span><span style="font-size: 17px; font-weight: 800">S4</span></span>
-<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; color: {{c.t2}}">Berth</span><span style="font-size: 17px; font-weight: 800">32 LB</span></span>
-<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; color: {{c.t2}}">PNR</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; padding-top: 3px">4218573096</span></span>
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; color: {{c.t2}}">Coach</span><span style="font-size: 17px; font-weight: 800">S7</span></span>
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; color: {{c.t2}}">Berth</span><span style="font-size: 17px; font-weight: 800">80</span></span>
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; color: {{c.t2}}">PNR</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; padding-top: 3px">4100000001</span></span>
 </div>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
 <button style="height: 46px; border-radius: 23px; border: 0; background: {{c.travel}}; color: {{c.onAccent}}; font-family: inherit; font-size: 14px; font-weight: 800">Show ticket</button>
-<button style="height: 46px; border-radius: 23px; border: 1.5px solid {{c.line}}; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 14px; font-weight: 700">Done</button>
+<button style="height: 46px; border-radius: 23px; border: 0; background: {{c.done}}; color: {{c.onAccent}}; font-family: inherit; font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 6px">Done<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button>
 </div>
 </article>
 
@@ -51,8 +51,8 @@ Swipe up to unlock
 <script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":844}}'>
 class Component extends DCLogic {
   pal(t) {
-    if (t === 'light') return {wall:'#D9DCF6',wallText:'#11141B',bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',travel:'#4338CA',travelT:'#E8E9FD',onAccent:'#FFFFFF'};
-    return {wall:'#171936',wallText:'#F3F5F9',bg:'#0D0F14',s1:'#1A1D27',s2:'#1F2330',line:'#2E3344',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',travel:'#8F98FF',travelT:'rgba(143,152,255,0.16)',onAccent:'#0D0F14'};
+    if (t === 'light') return {wall:'#D9DCF6',wallText:'#11141B',bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',travel:'#4338CA',travelT:'#E8E9FD',done:'#047857',onAccent:'#FFFFFF'};
+    return {wall:'#171936',wallText:'#F3F5F9',bg:'#0D0F14',s1:'#1A1D27',s2:'#1F2330',line:'#2E3344',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',travel:'#8F98FF',travelT:'rgba(143,152,255,0.16)',done:'#34D399',onAccent:'#0D0F14'};
   }
   renderVals() {
     return { c: this.pal(this.props.theme) };

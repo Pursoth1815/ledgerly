@@ -16,10 +16,12 @@ The files in this folder are the source of that canvas, kept in git so every rev
 | 3 | Add expense, UPI | 4 | Switch method, account and category |
 | 3b | Add expense, Credit Card | 4 | Same form with Credit Card chosen |
 | 4 | Accounts and cards | 4 | |
-| 4b | Add bank account | 4 | Pick bank, nickname, last four digits, default; live preview |
-| 4c | Add credit card | 4 | Same form for a card |
+| 4b | Add bank account (sheet, searching "hd") | 4 | Type to search banks, pick one, nickname, last four digits, default; live preview |
+| 4c | Add credit card (sheet, bank chosen) | 4 | Same sheet for a card |
 | 5 | Lending: person page | 6 | |
-| 6 | Travel ticket and the four reminder stages | 7 | |
+| 6 | Travel list | 7 | All / Train / Bus filter |
+| 6b | Ticket details, train | 7 | |
+| 6c | Ticket details, bus | 7 | |
 | 7 | Lock screen, 15 minutes before departure | 7 | |
 | 8 | Notes | 8 | |
 | 9 | Tasks | 8 | Tick tasks off |
@@ -82,6 +84,20 @@ The owner reviewed Today and shared real bank, railway and bus SMS as reference.
 | Adding an account or card | Screens 4b and 4c: type switch, live card preview, bank grid, the SMS sender code it will match, nickname, last four digits and a default switch |
 
 **Implementation note:** Add expense (3, 3b) and Transaction details (2b) are one component, `AddExpense.dc.html`, with a `mode` of `add` or `review`. Review mode adds the delete icon, the "SMS said" line, the remember-this-shop option and the original message. The Flutter screen should follow the same pattern.
+
+## Review round 2: Accounts sheet, Lending, Travel, Lock screen (15 Nov 2026)
+
+| Feedback | Change |
+| --- | --- |
+| Bottom bar missing on Lending and Travel | The tab bar is on the Lending person page (Money active) and on the Travel list and both ticket pages (Travel active) |
+| Add bank account / card should be a sheet | It is a bottom sheet over Accounts and cards |
+| Bank should be a searchable dropdown, not chips | A search field with a dropdown. Typing filters the list and highlights the match; an unknown name can be added as a new bank. Screen 4b shows "hd" typed |
+| Travel needs a list page | New Travel list (6) with All / Train / Bus tabs, upcoming trips (including a planned trip with a book-by date) and earlier trips |
+| Ticket page should match Today | Ticket details now show what the SMS carries. Train (6b): station codes, train number, class, coach, berth, chart status and the boarding note. Bus (6c): route, seat, platform, bus number on the day and a call-conductor button. Arrival time is not in the SMS, so it is an "+ Arrival time" button |
+| Lock screen button colours | "Show ticket" stays indigo; "Done" is green with a tick. This needs the custom notification layout already planned for the final ticket notice, to be confirmed in the Phase 0 spike |
+| Lending wording | The person page no longer shows a due date; it shows the last repayment |
+
+The SMS sender codes shown in the bank dropdown are examples. The real list is built in Phase 3.
 
 Decisions that change the plan, to be folded into the proposal:
 

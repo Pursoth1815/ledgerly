@@ -11,114 +11,194 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
 <style>body{margin:0}</style>
 </helmet>
-<div style="width: 390px; height: 1560px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
-<main style="padding: 28px 20px 120px; display: flex; flex-direction: column; gap: 14px">
+<div style="width: 390px; height: {{rootH}}; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+<main style="padding: 24px 20px 120px; display: flex; flex-direction: column; gap: 16px">
 
-<header style="display: flex; align-items: flex-start; justify-content: space-between">
-<div style="display: flex; flex-direction: column; gap: 4px">
-<p style="margin: 0; font-size: 13px; font-weight: 600; color: {{c.t3}}">Saturday, 14 November</p>
-<h1 style="margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.5px">Today</h1>
-</div>
-<div style="display: flex; gap: 8px">
+<header style="display: flex; flex-direction: column; gap: 2px">
+<p style="margin: 0; font-size: 13px; font-weight: 600; color: {{c.t3}}">Sunday, 15 November</p>
+<div style="display: flex; align-items: center; justify-content: space-between">
+<h1 style="margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.5px; line-height: 44px">Today</h1>
+<div style="display: flex; align-items: center; gap: 8px">
 <a href="Wellbeing.dc.html" aria-label="Digital Wellbeing" style="width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; background: {{c.wellT}}; color: {{c.well}}">
-<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10M7 21h10M8 3v2.5a4 4 0 0 0 1.6 3.2L12 10.5l2.4-1.8A4 4 0 0 0 16 5.5V3M8 21v-2.5a4 4 0 0 1 1.6-3.2L12 13.5l2.4 1.8a4 4 0 0 1 1.6 3.2V21"></path></svg>
 </a>
 <button aria-label="Settings" style="width: 44px; height: 44px; border-radius: 22px; border: 0; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t2}}">
-<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg>
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
 </button>
+</div>
 </div>
 </header>
 
-<section aria-label="Waiting for confirmation" style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+<section aria-label="Waiting for confirmation" style="display: flex; flex-direction: column; gap: 10px">
 <div style="display: flex; align-items: center; justify-content: space-between">
 <div style="display: flex; align-items: center; gap: 8px">
 <span style="width: 8px; height: 8px; border-radius: 4px; background: {{c.review}}"></span>
 <h2 style="margin: 0; font-size: 15px; font-weight: 700">Waiting for confirmation</h2>
 </div>
-<span style="padding: 4px 10px; border-radius: 999px; background: {{c.reviewT}}; color: {{c.review}}; font-size: 12px; font-weight: 700">3 new</span>
+<span style="padding: 4px 10px; border-radius: 999px; background: {{c.reviewT}}; color: {{c.review}}; font-size: 12px; font-weight: 800">{{badge}}</span>
 </div>
-<div style="display: flex; flex-direction: column; gap: 4px">
-<p style="margin: 0; font-size: 13px; font-weight: 600; color: {{c.t3}}">New transaction detected</p>
-<p style="margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.5px">₹1,250.00</p>
-<p style="margin: 0; font-size: 14px; color: {{c.t2}}">Paid to Swiggy · 13 Nov 2026</p>
+
+<div style="position: relative; display: flex; flex-direction: column">
+<article aria-label="New transaction detected, 705 rupees to State Transport Co" style="position: relative; z-index: 3; background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="width: 42px; height: 42px; flex-shrink: 0; border-radius: 21px; background: #60A5FA; color: #0D0F14; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="15" rx="3"></rect><path d="M4 11h16M8 6h8M8 18v3M16 18v3"></path><circle cx="8" cy="14.5" r="0.8"></circle><circle cx="16" cy="14.5" r="0.8"></circle></svg>
+</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span style="font-size: 16px; font-weight: 700">State Transport Co</span>
+<span style="font-size: 12px; color: {{c.t3}}">Detected from SMS · 14 Nov, 10:39 am</span>
+</span>
 </div>
-<div style="display: flex; flex-wrap: wrap; gap: 8px">
-<span style="display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 14px; background: {{c.s2}}; font-size: 12px; font-weight: 700; color: {{c.t1}}"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{c.food}}"></span>Food</span>
-<span style="display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: 14px; background: {{c.moneyT}}; font-size: 12px; font-weight: 700; color: {{c.money}}">UPI</span>
-<span style="display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: 14px; background: {{c.s2}}; font-size: 12px; font-weight: 700; color: {{c.t2}}">Salary account · HDFC ••4821</span>
+<p style="margin: 0; font-size: 36px; font-weight: 800; letter-spacing: -0.8px">₹705.00</p>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 16px; background: {{c.s2}}">
+<span aria-hidden="true" style="position: relative; width: 46px; height: 30px; flex-shrink: 0; border-radius: 6px; background: #1D4ED8">
+<span style="position: absolute; left: 6px; top: 7px; width: 10px; height: 8px; border-radius: 2px; background: #FCD34D"></span>
+<span style="position: absolute; right: 5px; bottom: 3px; font-size: 8px; font-weight: 700; color: #FFFFFF; font-family: 'JetBrains Mono', monospace">4417</span>
+</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span style="font-size: 14px; font-weight: 700">Kiwi · YES BANK</span>
+<span style="font-size: 12px; color: {{c.t3}}">Credit card ••4417 · paid by UPI QR</span>
+</span>
+<span style="padding: 4px 10px; border-radius: 999px; background: {{c.cardT}}; color: {{c.card}}; font-size: 12px; font-weight: 800">CC</span>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between">
+<span style="font-size: 13px; color: {{c.t3}}">Category</span>
+<span style="display: flex; align-items: center; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 15px; background: {{c.s2}}; font-size: 13px; font-weight: 700"><span style="width: 8px; height: 8px; border-radius: 4px; background: #60A5FA"></span>Travel</span>
+<span style="font-size: 12px; color: {{c.t3}}">guessed</span>
+</span>
 </div>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
 <a href="Review.dc.html" style="height: 48px; border-radius: 24px; border: 1.5px solid {{c.line}}; box-sizing: border-box; display: flex; align-items: center; justify-content: center; color: {{c.t1}}; font-weight: 700; font-size: 15px; text-decoration: none">Review</a>
 <button style="height: 48px; border-radius: 24px; border: 0; background: {{c.money}}; color: {{c.onAccent}}; font-family: inherit; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 6px">Looks Good<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button>
 </div>
-<a href="Review.dc.html" style="display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid {{c.line}}; font-size: 14px; font-weight: 600; color: {{c.t2}}; text-decoration: none">Open Review Inbox · 2 more<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></a>
+</article>
+
+<sc-if value="{{collapsed}}" hint-placeholder-val="{{ true }}">
+<button onClick="{{toggle}}" aria-expanded="false" aria-label="Show 2 more waiting for confirmation" style="position: relative; z-index: 1; height: 26px; margin-top: -14px; border: 0; padding: 0; background: transparent; display: flex; flex-direction: column; align-items: center">
+<span style="width: 92%; height: 18px; flex-shrink: 0; box-sizing: border-box; border-radius: 0 0 20px 20px; background: {{c.s1}}; border: 1px solid {{c.line}}; border-top: 0"></span>
+<span style="width: 84%; height: 10px; flex-shrink: 0; margin-top: -2px; box-sizing: border-box; border-radius: 0 0 18px 18px; background: {{c.s1}}; border: 1px solid {{c.line}}; border-top: 0; opacity: 0.7"></span>
+</button>
+</sc-if>
+
+<sc-for list="{{others}}" as="o" hint-placeholder-count="2">
+<div style="overflow: hidden; max-height: {{o.maxH}}; opacity: {{o.op}}; transform: translateY({{o.ty}}); transition: max-height 450ms ease {{o.delay}}, opacity 350ms ease {{o.delay}}, transform 400ms ease {{o.delay}}">
+<article style="margin-top: 10px; background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 22px; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="width: 38px; height: 38px; flex-shrink: 0; border-radius: 19px; background: {{o.avatarBg}}; color: {{o.avatarFg}}; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800">{{o.initial}}</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span style="font-size: 15px; font-weight: 700">{{o.title}}</span>
+<span style="font-size: 12px; color: {{c.t3}}">{{o.sub}}</span>
+</span>
+<span style="font-size: 18px; font-weight: 800">{{o.amount}}</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 12px; font-weight: 700; color: {{o.askColor}}">{{o.ask}}</span>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{o.chips}}" as="k" hint-placeholder-count="3">
+<button onClick="{{k.pick}}" aria-pressed="{{k.pressed}}" style="height: 32px; padding: 0 12px; border-radius: 16px; border: {{k.border}}; background: {{k.bg}}; color: {{c.t1}}; font-family: inherit; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{k.dot}}"></span>{{k.label}}</button>
+</sc-for>
+</div>
+</div>
+</article>
+</div>
+</sc-for>
+
+<sc-if value="{{expanded}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 4px 0">
+<button onClick="{{toggle}}" aria-expanded="true" style="height: 40px; padding: 0 14px; border-radius: 20px; border: 1px solid {{c.line}}; background: transparent; color: {{c.t2}}; font-family: inherit; font-size: 13px; font-weight: 700">Show less</button>
+<a href="Review.dc.html" style="font-size: 13px; font-weight: 700; color: {{c.review}}; text-decoration: none">Open Review Inbox</a>
+</div>
+</sc-if>
+</div>
 </section>
 
-<a href="Ticket.dc.html" aria-label="Next trip: Chennai Central to Coimbatore, Tuesday 17 November at 22:15" style="display: flex; flex-direction: column; gap: 14px; text-decoration: none; color: {{c.t1}}; background: {{c.travelT}}; border-radius: 24px; padding: 18px">
+<section aria-label="Trips this week" style="background: {{c.travelT}}; border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 14px">
 <div style="display: flex; align-items: center; justify-content: space-between">
-<span style="font-size: 13px; font-weight: 700; color: {{c.travel}}">Next trip · in 3 days</span>
-<span style="padding: 4px 10px; border-radius: 999px; background: {{c.travel}}; color: {{c.onAccent}}; font-size: 12px; font-weight: 700">Confirmed</span>
+<span style="font-size: 13px; font-weight: 700; color: {{c.travel}}">Trips this week</span>
+<span style="padding: 4px 10px; border-radius: 999px; background: {{c.travel}}; color: {{c.onAccent}}; font-size: 12px; font-weight: 700">Chart prepared</span>
 </div>
+<a href="Ticket.dc.html" aria-label="Train 12653, Chennai Egmore to Tiruchchirappalli, Thursday 19 November at 23:30" style="display: flex; flex-direction: column; gap: 10px; text-decoration: none; color: {{c.t1}}">
 <div style="display: flex; align-items: center; gap: 12px">
 <div style="display: flex; flex-direction: column; gap: 2px">
-<span style="font-size: 28px; font-weight: 800">MAS</span>
-<span style="font-size: 12px; color: {{c.t2}}">22:15 · Tue 17 Nov</span>
+<span style="font-size: 28px; font-weight: 800">MS</span>
+<span style="font-size: 12px; color: {{c.t2}}">Chennai Egmore</span>
 </div>
 <div style="flex: 1; display: flex; align-items: center; gap: 6px; color: {{c.travel}}">
 <span style="flex: 1; border-top: 2px dashed {{c.travel}}"></span>
-<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="14" rx="3"></rect><path d="M6 11h12M9 21l1.5-4M15 21l-1.5-4"></path><circle cx="9.5" cy="14" r="0.6"></circle><circle cx="14.5" cy="14" r="0.6"></circle></svg>
+<svg role="img" aria-label="Train" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="14" rx="3"></rect><path d="M6 10h12M9 21l1.5-4M15 21l-1.5-4"></path><circle cx="9.5" cy="13.5" r="0.8"></circle><circle cx="14.5" cy="13.5" r="0.8"></circle></svg>
 <span style="flex: 1; border-top: 2px dashed {{c.travel}}"></span>
 </div>
 <div style="display: flex; flex-direction: column; gap: 2px; align-items: flex-end">
-<span style="font-size: 28px; font-weight: 800">CBE</span>
-<span style="font-size: 12px; color: {{c.t2}}">05:50 · Wed</span>
+<span style="font-size: 28px; font-weight: 800">TPJ</span>
+<span style="font-size: 12px; color: {{c.t2}}">Tiruchchirappalli</span>
 </div>
 </div>
 <div style="display: flex; justify-content: space-between; font-size: 13px; color: {{c.t2}}">
-<span>12673 Cheran Express · S4 · 32 LB</span>
+<span><span style="font-weight: 800; color: {{c.t1}}">Thu 19 Nov · 23:30</span> · in 4 days</span>
+<span>12653 · SL · S7 / 80</span>
 </div>
 </a>
-
-<section aria-label="Tasks" style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
-<div style="display: flex; align-items: center; justify-content: space-between">
-<h2 style="margin: 0; font-size: 15px; font-weight: 700">Tasks · 2 due</h2>
-<a href="Tasks.dc.html" style="font-size: 13px; font-weight: 700; color: {{c.notes}}; text-decoration: none">All tasks</a>
+<div style="height: 1px; background: {{c.travel}}; opacity: 0.25"></div>
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px; background: {{c.travel}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center">
+<svg role="img" aria-label="Bus" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="15" rx="3"></rect><path d="M4 11h16M8 6h8M8 18v3M16 18v3"></path><circle cx="8" cy="14.5" r="0.8"></circle><circle cx="16" cy="14.5" r="0.8"></circle></svg>
+</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span style="font-size: 14px; font-weight: 700">TNSTC · Sat 21 Nov</span>
+<span style="font-size: 12px; color: {{c.t2}}">Route 123LB · Bus TN 01 AN 0000 · Platform 4</span>
+</span>
+<button aria-label="Call conductor" style="width: 40px; height: 40px; flex-shrink: 0; border-radius: 20px; border: 1.5px solid {{c.travel}}; background: transparent; color: {{c.travel}}; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"></path></svg>
+</button>
 </div>
-<label style="display: flex; align-items: center; gap: 12px; min-height: 44px">
-<input type="checkbox" style="width: 22px; height: 22px; margin: 0; accent-color: {{c.notes}}">
-<span style="display: flex; flex-direction: column; gap: 2px">
-<span style="font-size: 15px; font-weight: 600">Pay electricity bill</span>
-<span style="font-size: 12px; font-weight: 600; color: {{c.red}}">Overdue · yesterday</span>
-</span>
-</label>
-<label style="display: flex; align-items: center; gap: 12px; min-height: 44px">
-<input type="checkbox" style="width: 22px; height: 22px; margin: 0; accent-color: {{c.notes}}">
-<span style="display: flex; flex-direction: column; gap: 2px">
-<span style="font-size: 15px; font-weight: 600">Call electrician</span>
-<span style="font-size: 12px; color: {{c.t3}}">Today · 18:00</span>
-</span>
-</label>
 </section>
 
-<a href="Lending.dc.html" aria-label="Repayments" style="display: flex; flex-direction: column; gap: 12px; text-decoration: none; color: {{c.t1}}; background: {{c.lendT}}; border-radius: 24px; padding: 18px">
-<span style="font-size: 13px; font-weight: 700; color: {{c.lend}}">Repayments</span>
-<div style="display: flex; align-items: center; gap: 12px">
-<span style="width: 40px; height: 40px; border-radius: 20px; background: {{c.lend}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center; font-weight: 800">K</span>
-<span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
-<span style="font-size: 15px; font-weight: 700">Karthik</span>
-<span style="font-size: 12px; font-weight: 600; color: {{c.red}}">Overdue · 6 days</span>
-</span>
-<span style="font-size: 17px; font-weight: 800">₹2,000</span>
+<section aria-label="Tasks" style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 24px; padding: 14px 18px; display: flex; flex-direction: column">
+<div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 4px">
+<h2 style="margin: 0; font-size: 15px; font-weight: 700">Tasks · {{tasksLeft}}</h2>
+<a href="Tasks.dc.html" style="font-size: 13px; font-weight: 700; color: {{c.review}}; text-decoration: none">All tasks</a>
 </div>
-<div style="display: flex; align-items: center; gap: 12px">
-<span style="width: 40px; height: 40px; border-radius: 20px; background: {{c.lend}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center; font-weight: 800">A</span>
-<span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
-<span style="font-size: 15px; font-weight: 700">Arun</span>
-<span style="font-size: 12px; color: {{c.t2}}">Due tomorrow · monthly</span>
+<sc-for list="{{tasks}}" as="t" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 4px; min-height: 52px">
+<button onClick="{{t.toggle}}" aria-pressed="{{t.pressed}}" aria-label="{{t.a11y}}" style="width: 44px; height: 44px; margin-left: -12px; flex-shrink: 0; border: 0; background: transparent; display: flex; align-items: center; justify-content: center">
+<span style="width: 20px; height: 20px; border-radius: 10px; box-sizing: border-box; border: {{t.ring}}; background: {{t.fill}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center; transform: scale({{t.scale}}); transition: background 220ms ease, border-color 220ms ease, transform 260ms cubic-bezier(.3,1.6,.5,1)">
+<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="24" stroke-dashoffset="{{t.dash}}" style="transition: stroke-dashoffset 300ms ease 120ms"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
 </span>
-<span style="font-size: 17px; font-weight: 800">₹1,500</span>
+</button>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 15px; font-weight: 600; color: {{t.titleColor}}; text-decoration: {{t.strike}}; transition: color 200ms ease">{{t.title}}</span>
+<span style="font-size: 12px; font-weight: 600; color: {{t.subColor}}">{{t.sub}}</span>
+</span>
 </div>
+</sc-for>
+</section>
+
+<section aria-label="Lent to friends" style="background: {{c.lendT}}; border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<span style="font-size: 13px; font-weight: 700; color: {{c.lend}}">Lent to friends</span>
+<span style="font-size: 13px; color: {{c.t2}}"><span style="font-size: 17px; font-weight: 800; color: {{c.t1}}">₹6,200</span> out</span>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 16px; background: {{c.s1}}">
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 13px; font-weight: 700">₹1,000 came in from Karthik</span>
+<span style="font-size: 12px; color: {{c.t3}}">Indian Bank · 13 Nov</span>
+</span>
+<button style="height: 36px; padding: 0 12px; border-radius: 18px; border: 0; background: {{c.lend}}; color: {{c.onAccent}}; font-family: inherit; font-size: 12px; font-weight: 800">Record repayment</button>
+</div>
+<a href="Lending.dc.html" style="display: flex; flex-direction: column; gap: 12px; text-decoration: none; color: {{c.t1}}">
+<sc-for list="{{friends}}" as="f" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="width: 38px; height: 38px; flex-shrink: 0; border-radius: 19px; background: {{c.lend}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center; font-weight: 800">{{f.initial}}</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 5px; min-width: 0">
+<span style="display: flex; justify-content: space-between; font-size: 14px"><span style="font-weight: 700">{{f.name}}</span><span style="font-weight: 800">{{f.left}}</span></span>
+<span style="height: 4px; border-radius: 2px; background: {{c.s2}}; display: flex"><span style="width: {{f.back}}; border-radius: 2px; background: {{c.lend}}"></span></span>
+<span style="font-size: 12px; color: {{c.t2}}">{{f.sub}}</span>
+</span>
+</div>
+</sc-for>
 </a>
+</section>
 
 <section aria-label="Spending" style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 14px">
 <div style="display: flex; align-items: center; gap: 8px">
@@ -128,29 +208,37 @@
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
 <div style="display: flex; flex-direction: column; gap: 2px">
 <span style="font-size: 12px; font-weight: 600; color: {{c.t3}}">Today</span>
-<span style="font-size: 24px; font-weight: 800">₹1,640</span>
+<span style="font-size: 24px; font-weight: 800">₹767</span>
 </div>
 <div style="display: flex; flex-direction: column; gap: 2px">
 <span style="font-size: 12px; font-weight: 600; color: {{c.t3}}">November so far</span>
 <span style="font-size: 24px; font-weight: 800">₹18,420</span>
 </div>
 </div>
-<div role="img" aria-label="UPI 11,200 rupees, Credit Card 7,220 rupees" style="display: flex; gap: 2px; height: 10px">
-<span style="flex: 61; border-radius: 5px; background: {{c.money}}"></span>
-<span style="flex: 39; border-radius: 5px; background: {{c.card}}"></span>
+<div role="img" aria-label="UPI 4,180 rupees, Credit Card 14,240 rupees" style="display: flex; gap: 2px; height: 10px">
+<span style="flex: 23; border-radius: 5px; background: {{c.money}}"></span>
+<span style="flex: 77; border-radius: 5px; background: {{c.card}}"></span>
 </div>
 <div style="display: flex; gap: 18px; font-size: 13px; color: {{c.t2}}">
-<span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{c.money}}"></span>UPI ₹11,200</span>
-<span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{c.card}}"></span>Credit Card ₹7,220</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{c.money}}"></span>UPI ₹4,180</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{c.card}}"></span>Credit Card ₹14,240</span>
 </div>
 </section>
 
-<a href="Wellbeing.dc.html" style="display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: {{c.t1}}; background: {{c.wellT}}; border-radius: 24px; padding: 18px">
-<span style="display: flex; flex-direction: column; gap: 2px">
+<a href="Wellbeing.dc.html" aria-label="Screen time today, 3 hours 12 minutes" style="display: flex; flex-direction: column; gap: 12px; text-decoration: none; color: {{c.t1}}; background: {{c.wellT}}; border-radius: 24px; padding: 18px">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
 <span style="font-size: 13px; font-weight: 700; color: {{c.well}}">Screen time today</span>
-<span style="font-size: 24px; font-weight: 800">3 h 12 m</span>
+<span style="font-size: 22px; font-weight: 800">3 h 12 m</span>
+</div>
+<sc-for list="{{apps}}" as="a" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="width: 30px; height: 30px; flex-shrink: 0; border-radius: 9px; background: {{a.color}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800">{{a.initial}}</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 5px">
+<span style="display: flex; justify-content: space-between; font-size: 14px"><span style="font-weight: 600">{{a.name}}</span><span style="font-weight: 700">{{a.time}}</span></span>
+<span style="height: 4px; border-radius: 2px; background: {{c.s2}}; display: flex"><span style="width: {{a.pct}}; border-radius: 2px; background: {{c.well}}"></span></span>
 </span>
-<span style="font-size: 13px; color: {{c.t2}}; text-align: right">Most used<br>YouTube · 58 m</span>
+</div>
+</sc-for>
 </a>
 
 <section aria-label="Backup" style="display: flex; align-items: center; gap: 12px; border: 1.5px dashed {{c.line}}; border-radius: 24px; padding: 14px 16px">
@@ -160,7 +248,6 @@
 </span>
 <button style="height: 40px; padding: 0 16px; border-radius: 20px; border: 0; background: {{c.s2}}; color: {{c.t1}}; font-family: inherit; font-size: 13px; font-weight: 700">Back up</button>
 </section>
-
 </main>
 
 <a href="Capture.dc.html" aria-label="Capture" style="position: absolute; right: 20px; bottom: 104px; width: 60px; height: 60px; border-radius: 30px; background: {{c.btn}}; color: {{c.btnT}}; display: flex; align-items: center; justify-content: center">
@@ -181,14 +268,105 @@
 </nav>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":1560}}'>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"stackOpen":{"editor":"boolean","default":false},"$preview":{"width":390,"height":2160}}'>
 class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const open = props && (props.stackOpen === true || props.stackOpen === 'true');
+    this.state = { expanded: !!open, cat2: null, kind3: null, done: {} };
+  }
   pal(t) {
-    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',lend:'#A14A06',lendT:'#FDF0D8',travel:'#4338CA',travelT:'#E8E9FD',notes:'#735E3B',notesT:'#F3ECE0',vault:'#44536A',vaultT:'#E6EBF2',well:'#0F766E',wellT:'#DBF3EF',review:'#B03A0A',reviewT:'#FDEADB',red:'#B91C1C',redT:'#FBE3E3',food:'#E8590C',onAccent:'#FFFFFF',scrim:'rgba(17,20,27,0.45)'};
-    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',btn:'#F3F5F9',btnT:'#0D0F14',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)',lend:'#FBBF24',lendT:'rgba(251,191,36,0.13)',travel:'#8F98FF',travelT:'rgba(143,152,255,0.16)',notes:'#E6CDA3',notesT:'rgba(230,205,163,0.13)',vault:'#A3B5CC',vaultT:'rgba(163,181,204,0.14)',well:'#2DD4BF',wellT:'rgba(45,212,191,0.14)',review:'#FF9F5A',reviewT:'rgba(255,159,90,0.15)',red:'#FF7B7B',redT:'rgba(255,123,123,0.14)',food:'#FF8A4C',onAccent:'#0D0F14',scrim:'rgba(0,0,0,0.6)'};
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',lend:'#A14A06',lendT:'#FDF0D8',travel:'#4338CA',travelT:'#E8E9FD',notes:'#735E3B',notesT:'#F3ECE0',well:'#0F766E',wellT:'#DBF3EF',review:'#B03A0A',reviewT:'#FDEADB',red:'#B91C1C',onAccent:'#FFFFFF'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',btn:'#F3F5F9',btnT:'#0D0F14',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)',lend:'#FBBF24',lendT:'rgba(251,191,36,0.13)',travel:'#8F98FF',travelT:'rgba(143,152,255,0.16)',notes:'#E6CDA3',notesT:'rgba(230,205,163,0.13)',well:'#2DD4BF',wellT:'rgba(45,212,191,0.14)',review:'#FF9F5A',reviewT:'rgba(255,159,90,0.15)',red:'#FF7B7B',onAccent:'#0D0F14'};
   }
   renderVals() {
-    return { c: this.pal(this.props.theme) };
+    const c = this.pal(this.props.theme);
+    const s = this.state || {};
+    const exp = !!s.expanded;
+    const pending = 3;
+    const chip = (label, dot, on, pick) => ({
+      label, dot, pick,
+      pressed: on ? 'true' : 'false',
+      border: on ? '1.5px solid ' + dot : '1px dashed ' + c.line,
+      bg: on ? c.s2 : 'transparent'
+    });
+    const cats = [['Food', '#FF8A4C'], ['Snacks', '#F472B6'], ['Groceries', '#EAB308'], ['More', c.t3]];
+    const cat2 = s.cat2;
+    const cat2Color = cat2 ? (cats.find((k) => k[0] === cat2) || [0, c.t3])[1] : null;
+    const kind3 = s.kind3;
+    const others = [
+      {
+        initial: 'M', title: 'MALABAR CORN', sub: 'UPI · Federal Bank ••2210 · 13 Nov, 10:29',
+        amount: '₹62.00',
+        avatarBg: cat2Color || c.s2, avatarFg: cat2Color ? '#0D0F14' : c.t2,
+        ask: cat2 ? 'Category: ' + cat2 + ' · we will remember this shop' : 'New shop · pick a category',
+        askColor: cat2 ? c.t2 : c.review,
+        chips: cats.map((k) => chip(k[0], k[1], cat2 === k[0], () => this.setState({ cat2: k[0] })))
+      },
+      {
+        initial: 'A', title: 'Sent to Arun', sub: 'UPI · HDFC Savings ••8124 · 14 Nov, 10:48',
+        amount: '₹2,000',
+        avatarBg: c.lend, avatarFg: c.onAccent,
+        ask: kind3 === 'loan' ? 'Will be saved as money lent to Arun' : (kind3 === 'expense' ? 'Will be saved as an expense' : 'Sent to a person · what was it?'),
+        askColor: kind3 ? c.t2 : c.review,
+        chips: [
+          chip('Lent to Arun', c.lend, kind3 === 'loan', () => this.setState({ kind3: 'loan' })),
+          chip('Expense', c.money, kind3 === 'expense', () => this.setState({ kind3: 'expense' }))
+        ]
+      }
+    ].map((o, i) => ({
+      ...o,
+      maxH: exp ? '260px' : '0px',
+      op: exp ? '1' : '0',
+      ty: exp ? '0px' : '-24px',
+      delay: exp ? (120 + i * 140) + 'ms' : '0ms'
+    }));
+    const done = s.done || {};
+    const taskDefs = [
+      { id: 'bill', title: 'Pay electricity bill', sub: 'Overdue · yesterday', overdue: true },
+      { id: 'elec', title: 'Call electrician', sub: 'Today · 18:00' },
+      { id: 'water', title: 'Water the plants', sub: 'Daily' }
+    ];
+    const tasks = taskDefs.map((t) => {
+      const d = !!done[t.id];
+      return {
+        ...t,
+        pressed: d ? 'true' : 'false',
+        a11y: (d ? 'Mark not done: ' : 'Mark done: ') + t.title,
+        toggle: () => this.setState({ done: { ...done, [t.id]: !d } }),
+        ring: d ? '1.5px solid ' + c.money : '1.5px solid ' + (t.overdue ? c.red : c.t3),
+        fill: d ? c.money : 'transparent',
+        scale: d ? '1.08' : '1',
+        dash: d ? '0' : '24',
+        titleColor: d ? c.t3 : c.t1,
+        strike: d ? 'line-through' : 'none',
+        subColor: t.overdue && !d ? c.red : c.t3
+      };
+    });
+    const left = taskDefs.filter((t) => !done[t.id]).length;
+    const friends = [
+      { initial: 'A', name: 'Arun', left: '₹3,500', back: '30%', sub: 'Lent ₹5,000 on 10 Sep · ₹1,500 back' },
+      { initial: 'K', name: 'Karthik', left: '₹2,000', back: '0%', sub: 'Lent ₹2,000 on 2 Oct' },
+      { initial: 'D', name: 'Divya', left: '₹700', back: '0%', sub: 'Lent ₹700 on 5 Nov' }
+    ];
+    const apps = [
+      { name: 'YouTube', initial: 'Y', color: '#DC2626', time: '58 m', pct: '100%' },
+      { name: 'WhatsApp', initial: 'W', color: '#15803D', time: '46 m', pct: '79%' },
+      { name: 'Instagram', initial: 'I', color: '#C026D3', time: '31 m', pct: '53%' }
+    ];
+    return {
+      c,
+      rootH: exp ? '2600px' : '2160px',
+      badge: pending > 1 ? pending + ' New' : 'New',
+      collapsed: !exp,
+      expanded: exp,
+      toggle: () => this.setState({ expanded: !exp }),
+      others,
+      tasks,
+      tasksLeft: left === 0 ? 'all done' : left + ' due',
+      friends,
+      apps
+    };
   }
 }
 </script>

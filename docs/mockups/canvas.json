@@ -131,7 +131,7 @@
       "radius": 28,
       "title": "12 · Capture sheet (+ button)",
       "w": 390,
-      "x": 11280,
+      "x": 12690,
       "y": 0,
       "is_interactive": true
     },
@@ -140,7 +140,7 @@
       "radius": 28,
       "title": "12 · Capture sheet (light)",
       "w": 390,
-      "x": 11280,
+      "x": 12690,
       "y": 2560,
       "is_interactive": true
     },
@@ -355,7 +355,7 @@
       "radius": 28,
       "title": "10b · Document Vault (inside More)",
       "w": 390,
-      "x": 9870,
+      "x": 11280,
       "y": 0
     },
     "VaultLight.dc.html": {
@@ -363,7 +363,7 @@
       "radius": 28,
       "title": "10b · Document Vault (light)",
       "w": 390,
-      "x": 9870,
+      "x": 11280,
       "y": 2560
     },
     "Wellbeing.dc.html": {
@@ -371,7 +371,7 @@
       "radius": 28,
       "title": "11 · Digital Wellbeing",
       "w": 390,
-      "x": 10810,
+      "x": 12220,
       "y": 0
     },
     "WellbeingLight.dc.html": {
@@ -379,7 +379,7 @@
       "radius": 28,
       "title": "11 · Digital Wellbeing (light)",
       "w": 390,
-      "x": 10810,
+      "x": 12220,
       "y": 2560
     },
     "CategorySheet.dc.html": {
@@ -423,7 +423,7 @@
       "radius": 28,
       "title": "10e · New Vault category",
       "w": 390,
-      "x": 10340,
+      "x": 11750,
       "y": 0,
       "is_interactive": true
     },
@@ -432,7 +432,61 @@
       "radius": 28,
       "title": "10e · New Vault category (light)",
       "w": 390,
+      "x": 11750,
+      "y": 2560,
+      "is_interactive": true
+    },
+    "SettingsPage.dc.html": {
+      "h": 1240,
+      "radius": 28,
+      "title": "10f · Backup & restore",
+      "w": 390,
+      "x": 9870,
+      "y": 0,
+      "is_interactive": true
+    },
+    "SettingsPageLight.dc.html": {
+      "h": 1240,
+      "radius": 28,
+      "title": "10f · Backup & restore (light)",
+      "w": 390,
+      "x": 9870,
+      "y": 2560,
+      "is_interactive": true
+    },
+    "TaskReminders.dc.html": {
+      "h": 1180,
+      "radius": 28,
+      "title": "10g · Task reminders",
+      "w": 390,
       "x": 10340,
+      "y": 0,
+      "is_interactive": true
+    },
+    "TaskRemindersLight.dc.html": {
+      "h": 1180,
+      "radius": 28,
+      "title": "10g · Task reminders (light)",
+      "w": 390,
+      "x": 10340,
+      "y": 2560,
+      "is_interactive": true
+    },
+    "ExportLogs.dc.html": {
+      "h": 1120,
+      "radius": 28,
+      "title": "10h · Export logs",
+      "w": 390,
+      "x": 10810,
+      "y": 0,
+      "is_interactive": true
+    },
+    "ExportLogsLight.dc.html": {
+      "h": 1120,
+      "radius": 28,
+      "title": "10h · Export logs (light)",
+      "w": 390,
+      "x": 10810,
       "y": 2560,
       "is_interactive": true
     }
@@ -485,6 +539,9 @@
     "More.dc.html",
     "CategorySheet.dc.html",
     "ExpenseCategoryNew.dc.html",
+    "SettingsPage.dc.html",
+    "TaskReminders.dc.html",
+    "ExportLogs.dc.html",
     "Vault.dc.html",
     "VaultCategoryNew.dc.html",
     "Wellbeing.dc.html",
@@ -510,6 +567,9 @@
     "MoreLight.dc.html",
     "CategorySheetLight.dc.html",
     "ExpenseCategoryNewLight.dc.html",
+    "SettingsPageLight.dc.html",
+    "TaskRemindersLight.dc.html",
+    "ExportLogsLight.dc.html",
     "VaultLight.dc.html",
     "VaultCategoryNewLight.dc.html",
     "WellbeingLight.dc.html",

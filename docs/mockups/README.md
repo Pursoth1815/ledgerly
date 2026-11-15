@@ -143,6 +143,17 @@ Plan changes made in the proposal: the tabs are Today, Money, Travel, Planner an
 
 **Implementation note:** the capture sheet's chips show the offline assistant's rules at work, so it is never presented as AI. It is plain pattern matching on amounts, keywords and account names (plan section 10).
 
+## Review round 6: settings screens (16 Nov 2026)
+
+| Feedback | Change |
+| --- | --- |
+| Dark theme switch too dark | Now a medium purple, between the first and second tries |
+| Screen for Backup & restore (label renamed by the owner) | 10f: a status card with a working "Back up now" (progress, then "Backed up just now"), where backups are saved, weekly automatic backup switch, passphrase, a size breakdown of what is inside, Restore and a passphrase warning |
+| Screen for Task reminders | 10g: master switch, default reminder lead, snooze length, morning summary, quiet hours, and a live preview of how a reminder will look |
+| Screen for Export logs | 10h: a privacy note, time range, which parts to include with line counts, a redacted preview and an Export button with the file size |
+
+All three are one component, `SettingsPage.dc.html`, with a `page` of `backup`, `tasks` or `logs`. In More, tapping the Task reminders label opens its screen while the switch still turns reminders on or off.
+
 Decisions that change the plan, to be folded into the proposal:
 
 - **A credit card paid through UPI is a Credit Card expense.** The method is where the money comes from. The card shows "paid by UPI QR". The SMS rule checks for a card before UPI markers.

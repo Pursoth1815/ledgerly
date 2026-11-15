@@ -51,10 +51,10 @@
 <span style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 10px; background: {{r.tint}}; display: flex; align-items: center; justify-content: center">
 <span style="width: 10px; height: 10px; border-radius: 5px; background: {{r.dot}}"></span>
 </span>
-<span style="flex: 1; display: flex; flex-direction: column; gap: 1px">
+<a href="{{r.labelHref}}" style="flex: 1; min-height: 44px; display: flex; flex-direction: column; justify-content: center; gap: 1px; text-decoration: none; color: inherit">
 <span style="font-size: 15px; font-weight: 600">{{r.label}}</span>
 <sc-if value="{{r.hasHint}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; color: {{c.t3}}">{{r.hint}}</span></sc-if>
-</span>
+</a>
 <sc-if value="{{r.isLink}}" hint-placeholder-val="{{ true }}">
 <a href="{{r.href}}" aria-label="Open {{r.label}}" style="display: flex; align-items: center; gap: 6px; min-height: 44px; text-decoration: none; color: {{c.t3}}; font-size: 13px">{{r.value}}<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></a>
 </sc-if>
@@ -97,9 +97,9 @@ class Component extends DCLogic {
   renderVals() {
     const s = this.state || {};
     const c = this.pal(s.dark ? 'dark' : 'light');
-    const link = (label, value, dot, tint, href, hint) => ({ label, value, dot, tint, href: href || 'More.dc.html', hint: hint || '', hasHint: !!hint, isLink: true, isSwitch: false });
-    const sw = (label, key, dot, tint, hint, onColor) => ({
-      label, dot, tint, hint: hint || '', hasHint: !!hint, isLink: false, isSwitch: true,
+    const link = (label, value, dot, tint, href, hint) => ({ label, value, dot, tint, href: href || 'More.dc.html', labelHref: href || 'More.dc.html', hint: hint || '', hasHint: !!hint, isLink: true, isSwitch: false });
+    const sw = (label, key, dot, tint, hint, onColor, page) => ({
+      label, dot, tint, hint: hint || '', hasHint: !!hint, isLink: false, isSwitch: true, labelHref: page || 'More.dc.html',
       checked: s[key] ? 'true' : 'false',
       track: s[key] ? (onColor || dot) : c.off,
       knobX: s[key] ? '20px' : '0px',
@@ -113,16 +113,16 @@ class Component extends DCLogic {
         sw('SMS detection', 'sms', c.review, c.reviewT, 'Turns bank messages into cards to confirm')
       ]),
       mk('Reminders', [
-        sw('Task reminders', 'tasks', c.notes, c.notesT),
+        sw('Task reminders', 'tasks', c.notes, c.notesT, '10 min before · tap for options', null, 'TaskReminders.dc.html'),
         link('Travel reminder times', '19:00 · 07:00', c.travel, c.travelT)
       ]),
       mk('Privacy and backup', [
         link('App lock', 'Fingerprint', c.vault, c.vaultT),
-        link('Backup and restore', '9 days ago', c.vault, c.vaultT),
-        link('Export logs', '', c.t3, c.s2)
+        link('Backup & restore', '9 days ago', c.vault, c.vaultT, 'SettingsPage.dc.html'),
+        link('Export logs', '', c.t3, c.s2, 'ExportLogs.dc.html')
       ]),
       mk('Appearance', [
-        sw('Dark theme', 'dark', '#5B21B6', c.cardT, null, '#5B21B6')
+        sw('Dark theme', 'dark', '#7C3AED', c.cardT, null, '#7C3AED')
       ])
     ];
     return { c, groups };

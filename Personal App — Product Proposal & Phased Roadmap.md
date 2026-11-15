@@ -822,7 +822,7 @@ How revision 2 moved Android v1.0 from 74 days to 86:
 | Global Search removed from the Money phase | -1 |
 | Borrowing removed from the Lending phase | -1 |
 
-The final phase adds 7 days for widgets and the bubble. The former 8-day iOS phase is gone; keeping the iOS build compiling is part of each phase.
+The final phase adds 7 days for widgets and the bubble, ending at day 97. The former 8-day iOS phase is gone; keeping the iOS build compiling is part of each phase.
 
 Running cost is zero. There is no API, no server and no subscription. Fees arise only if you later publish to a store.
 

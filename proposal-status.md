@@ -2,8 +2,7 @@
 
 As of 2026-11-16. Stage reached: revision 3 of the proposal, after six rounds of design review on the mockups. No app code written yet.
 
-- Full proposal (current): `Personal App — Product Proposal & Phased Roadmap.md` in this repository.
-- The earlier Claude Doc (https://claude.ai/artifact/5E9r7cyk2nPgheaf7iyGmj) holds revision 2 and is now out of date.
+- Full proposal: `Personal App — Product Proposal & Phased Roadmap.md` in this repository, mirrored in the Claude Doc at https://claude.ai/artifact/5E9r7cyk2nPgheaf7iyGmj (both at revision 3, including the roadmap diagram).
 - Mockups and the review record: `docs/mockups/README.md`; canvas at https://claude.ai/artifact/LGbLMacN52Aq8mq8pi7bNa
 - Postponed features: `TO-DO.md`.
 

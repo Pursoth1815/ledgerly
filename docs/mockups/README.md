@@ -16,14 +16,20 @@ The files in this folder are the source of that canvas, kept in git so every rev
 | 3 | Add expense, UPI | 4 | Switch method, account and category |
 | 3b | Add expense, Credit Card | 4 | Same form with Credit Card chosen |
 | 4 | Accounts and cards | 4 | |
-| 4b | Add bank account | 4 | Pick bank, nickname, last four digits, default; live preview |
-| 4c | Add credit card | 4 | Same form for a card |
+| 4b | Add bank account (sheet, searching "hd") | 4 | Type to search banks, pick one, nickname, last four digits, default; live preview |
+| 4c | Add credit card (sheet, bank chosen) | 4 | Same sheet for a card |
 | 5 | Lending: person page | 6 | |
-| 6 | Travel ticket and the four reminder stages | 7 | |
+| 6 | Travel list | 7 | All / Train / Bus filter |
+| 6b | Ticket details, train | 7 | |
+| 6c | Ticket details, bus | 7 | |
 | 7 | Lock screen, 15 minutes before departure | 7 | |
-| 8 | Notes | 8 | |
-| 9 | Tasks | 8 | Tick tasks off |
-| 10 | Document Vault | 8 | |
+| 8 | Planner: Notes | 8 | Tap a note to press it in and show pin, edit and delete |
+| 8b | Add note sheet | 8 | Title, text, checklist, pin and note colour |
+| 9 | Planner: Tasks, Today | 8 | Today, Upcoming and Completed tabs; tick tasks off |
+| 9b | Tasks, Upcoming | 8 | Same screen on the Upcoming tab |
+| 9c | Add task sheet | 8 | Due, reminder, repeat and time |
+| 10 | More (last tab) | 3 | Opens the Vault, Screen time and Accounts and cards |
+| 10b | Document Vault (inside More) | 8 | |
 | 11 | Digital Wellbeing | 9 | |
 | 12 | Capture sheet with the command line | 10 | |
 
@@ -82,6 +88,71 @@ The owner reviewed Today and shared real bank, railway and bus SMS as reference.
 | Adding an account or card | Screens 4b and 4c: type switch, live card preview, bank grid, the SMS sender code it will match, nickname, last four digits and a default switch |
 
 **Implementation note:** Add expense (3, 3b) and Transaction details (2b) are one component, `AddExpense.dc.html`, with a `mode` of `add` or `review`. Review mode adds the delete icon, the "SMS said" line, the remember-this-shop option and the original message. The Flutter screen should follow the same pattern.
+
+## Review round 2: Accounts sheet, Lending, Travel, Lock screen (15 Nov 2026)
+
+| Feedback | Change |
+| --- | --- |
+| Bottom bar missing on Lending and Travel | The tab bar is on the Lending person page (Money active) and on the Travel list and both ticket pages (Travel active) |
+| Add bank account / card should be a sheet | It is a bottom sheet over Accounts and cards |
+| Bank should be a searchable dropdown, not chips | A search field with a dropdown. Typing filters the list and highlights the match; an unknown name can be added as a new bank. Screen 4b shows "hd" typed |
+| Travel needs a list page | New Travel list (6) with All / Train / Bus tabs, upcoming trips (including a planned trip with a book-by date) and earlier trips |
+| Ticket page should match Today | Ticket details now show what the SMS carries. Train (6b): station codes, train number, class, coach, berth, chart status and the boarding note. Bus (6c): route, seat, platform, bus number on the day and a call-conductor button. Arrival time is not in the SMS, so it is an "+ Arrival time" button |
+| Lock screen button colours | Tried a green "Done"; the owner preferred the original, so "Show ticket" is indigo and "Done" is outlined |
+| Lending wording | The person page no longer shows a due date; it shows the last repayment |
+
+The SMS sender codes shown in the bank dropdown are examples. The real list is built in Phase 3.
+
+## Review round 3: Notes, Tasks and navigation (15 Nov 2026)
+
+| Feedback | Change |
+| --- | --- |
+| Tasks: "Today" showed tomorrow's task | The Today tab shows only Overdue and Today. Everything later is under Upcoming (9b). The three tabs work |
+| Sheets for adding a task and a note | Add note (8b) and Add task (9c) are bottom sheets, opened from "+ Note" and "+ Task" |
+| Notes cards too plain | Two columns of colour-tinted cards with checklist previews. Each note has one of six colours |
+| Tapping a note | The card presses in slightly, gets a ring in its colour, and shows Pin, Edit and Delete. Delete has Undo |
+| Remove the folder tabs | Removed. Notes have no folders; pinned notes come first |
+| Settings icon on Today | Replaced by a light or dark theme switch |
+| Settings in the bottom bar; Vault moves inside | The last tab is **More**: Vault and Screen time as tiles, then settings grouped as Money, Reminders, Privacy and backup, and App. The name leaves room for later additions |
+
+Plan changes made in the proposal: the tabs are Today, Money, Travel, Planner and More (section 3), and Notes have colours and no folders (section 8).
+
+## Review round 4: Add note, tab name, More and Vault (16 Nov 2026)
+
+| Feedback | Change |
+| --- | --- |
+| "Title" and "Note" labels in Add note look poor | Labels removed. The note card has a coloured edge, a large title, a status line ("Checklist · 3 of 4 left") and tickable checklist rows with "Add item". A text / checklist switch, pin and colour dots sit below the card |
+| The "Notes" tab also holds Tasks | The tab and the page title are now **Planner**, with Notes and Tasks inside |
+| Vault tile in More looks plain | Vault and Screen time are solid colour tiles with a large faint icon |
+| Switches | Task reminders, SMS detection and Dark theme use animated on and off switches. Dark theme switches the screen live |
+| About Kanakku | Removed for now |
+| Vault header misaligned; unclear "Unlocked" label | The label is gone. Title and Add button are aligned on one line, with "27 documents, encrypted on this phone" below |
+| Category icons | Identity card, rupee, shield, plane, car, heart with a cross, graduation cap |
+| New category tile | A dashed tile with a + icon and "New category" on one line |
+
+"Categories" in More are the **expense categories** used in Money (Food, Travel, Shopping and so on). The row is renamed "Expense categories" so it is not confused with Vault categories.
+
+## Review round 5: category sheets, theme switch, capture sheet (16 Nov 2026)
+
+| Feedback | Change |
+| --- | --- |
+| Sheet for Expense categories | 10c: a sheet listing all categories with icon, colour and this month's spend, and a "New category" button |
+| New category sheets | 10d (expense) and 10e (Vault) share one component, `CategorySheet.dc.html`: a live preview, name, eight colours and an icon grid. Expense uses bright colours and money icons; Vault uses deep colours and document icons |
+| Dark theme switch too light | The switch is dark purple when on |
+| Capture sheet looked clumsy | Rebuilt around one input. As you type, it shows what it understood as labelled chips (amount, category, paid with, from), and one coloured button to save. Questions ("who owes me") show the answer in place. Below: five round shortcuts and three ready questions |
+
+**Implementation note:** the capture sheet's chips show the offline assistant's rules at work, so it is never presented as AI. It is plain pattern matching on amounts, keywords and account names (plan section 10).
+
+## Review round 6: settings screens (16 Nov 2026)
+
+| Feedback | Change |
+| --- | --- |
+| Dark theme switch too dark | Now a medium purple, between the first and second tries |
+| Screen for Backup & restore (label renamed by the owner) | 10f: a status card with a working "Back up now" (progress, then "Backed up just now"), where backups are saved, weekly automatic backup switch, passphrase, a size breakdown of what is inside, Restore and a passphrase warning |
+| Screen for Task reminders | 10g: master switch, default reminder lead, snooze length, morning summary, quiet hours, and a live preview of how a reminder will look |
+| Screen for Export logs | 10h: a privacy note, time range, which parts to include with line counts, a redacted preview and an Export button with the file size |
+
+All three are one component, `SettingsPage.dc.html`, with a `page` of `backup`, `tasks` or `logs`. In More, tapping the Task reminders label opens its screen while the switch still turns reminders on or off.
 
 Decisions that change the plan, to be folded into the proposal:
 

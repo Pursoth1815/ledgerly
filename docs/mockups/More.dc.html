@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>More</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 1300px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}; transition: background 300ms ease, color 300ms ease">
+<main style="padding: 28px 20px 120px; display: flex; flex-direction: column; gap: 20px">
+
+<header style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.5px; line-height: 44px">More</h1>
+<p style="margin: 0; font-size: 14px; color: {{c.t2}}">Everything stays on this phone.</p>
+</header>
+
+<section aria-label="Tools" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<a href="Vault.dc.html" style="position: relative; overflow: hidden; height: 148px; box-sizing: border-box; border-radius: 24px; padding: 16px; background: #3B5BDB; color: #FFFFFF; text-decoration: none; display: flex; flex-direction: column; justify-content: space-between">
+<svg aria-hidden="true" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: -26px; bottom: -28px"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"></path></svg>
+<span style="width: 42px; height: 42px; border-radius: 14px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2.5"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+</span>
+<span style="position: relative; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 17px; font-weight: 800">Vault</span>
+<span style="font-size: 12px; font-weight: 600">27 documents · 1 expiring</span>
+</span>
+</a>
+<a href="Wellbeing.dc.html" style="position: relative; overflow: hidden; height: 148px; box-sizing: border-box; border-radius: 24px; padding: 16px; background: #0F766E; color: #FFFFFF; text-decoration: none; display: flex; flex-direction: column; justify-content: space-between">
+<svg aria-hidden="true" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="1.6" stroke-linecap="round" style="position: absolute; right: -24px; bottom: -26px"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+<span style="width: 42px; height: 42px; border-radius: 14px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10M7 21h10M8 3v2.5a4 4 0 0 0 1.6 3.2L12 10.5l2.4-1.8A4 4 0 0 0 16 5.5V3M8 21v-2.5a4 4 0 0 1 1.6-3.2L12 13.5l2.4 1.8a4 4 0 0 1 1.6 3.2V21"></path></svg>
+</span>
+<span style="position: relative; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 17px; font-weight: 800">Screen time</span>
+<span style="font-size: 12px; font-weight: 600">3 h 12 m today</span>
+</span>
+</a>
+</section>
+
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="3">
+<section aria-label="{{g.name}}" style="display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{c.t3}}">{{g.name}}</h2>
+<div style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 20px; padding: 2px 16px; transition: background 300ms ease">
+<sc-for list="{{g.rows}}" as="r" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 12px; min-height: 58px; border-bottom: {{r.divider}}">
+<span style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 10px; background: {{r.tint}}; display: flex; align-items: center; justify-content: center">
+<span style="width: 10px; height: 10px; border-radius: 5px; background: {{r.dot}}"></span>
+</span>
+<a href="{{r.labelHref}}" style="flex: 1; min-height: 44px; display: flex; flex-direction: column; justify-content: center; gap: 1px; text-decoration: none; color: inherit">
+<span style="font-size: 15px; font-weight: 600">{{r.label}}</span>
+<sc-if value="{{r.hasHint}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; color: {{c.t3}}">{{r.hint}}</span></sc-if>
+</a>
+<sc-if value="{{r.isLink}}" hint-placeholder-val="{{ true }}">
+<a href="{{r.href}}" aria-label="Open {{r.label}}" style="display: flex; align-items: center; gap: 6px; min-height: 44px; text-decoration: none; color: {{c.t3}}; font-size: 13px">{{r.value}}<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></a>
+</sc-if>
+<sc-if value="{{r.isSwitch}}" hint-placeholder-val="{{ false }}">
+<button onClick="{{r.toggle}}" role="switch" aria-checked="{{r.checked}}" aria-label="{{r.label}}" style="position: relative; width: 52px; height: 32px; flex-shrink: 0; border-radius: 16px; border: 0; padding: 0; background: {{r.track}}; transition: background 220ms ease">
+<span style="position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 13px; background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.3); transform: translateX({{r.knobX}}); transition: transform 260ms cubic-bezier(.3,1.4,.5,1)"></span>
+</button>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-for>
+</main>
+
+<nav aria-label="Main" style="position: absolute; left: 0; right: 0; bottom: 0; height: 84px; box-sizing: border-box; padding: 10px 8px 20px; display: flex; justify-content: space-around; align-items: flex-start; background: {{c.s1}}; border-top: 1px solid {{c.line}}">
+<a href="Main.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5L12 4l8 6.5V20H15v-5H9v5H4z"></path></svg>Today</a>
+<a href="Accounts.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"></rect><path d="M3 10h18M16 15h2"></path></svg>Money</a>
+<a href="Travel.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"></path><path d="M14 7v10" stroke-dasharray="2 2"></path></svg>Travel</a>
+<a href="Notes.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h5"></path></svg>Planner</a>
+<a href="More.dc.html" aria-current="page" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 700; color: {{c.t1}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="2"></rect><rect x="13" y="4" width="7" height="7" rx="2"></rect><rect x="4" y="13" width="7" height="7" rx="2"></rect><rect x="13" y="13" width="7" height="7" rx="2"></rect></svg>More</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":1300}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sms: true, tasks: true, dark: !(props && props.theme === 'light') };
+  }
+  pal(t) {
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',money:'#047857',moneyT:'#E1F4EA',travel:'#4338CA',travelT:'#E8E9FD',notes:'#735E3B',notesT:'#F3ECE0',vault:'#3B5BDB',vaultT:'#E3E9FC',review:'#B03A0A',reviewT:'#FDEADB',card:'#6D28D9',cardT:'#EFE7FD',off:'#C3C8D2'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',travel:'#8F98FF',travelT:'rgba(143,152,255,0.16)',notes:'#E6CDA3',notesT:'rgba(230,205,163,0.13)',vault:'#7C9BFF',vaultT:'rgba(124,155,255,0.16)',review:'#FF9F5A',reviewT:'rgba(255,159,90,0.15)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)',off:'#3A4050'};
+  }
+  renderVals() {
+    const s = this.state || {};
+    const c = this.pal(s.dark ? 'dark' : 'light');
+    const link = (label, value, dot, tint, href, hint) => ({ label, value, dot, tint, href: href || 'More.dc.html', labelHref: href || 'More.dc.html', hint: hint || '', hasHint: !!hint, isLink: true, isSwitch: false });
+    const sw = (label, key, dot, tint, hint, onColor, page) => ({
+      label, dot, tint, hint: hint || '', hasHint: !!hint, isLink: false, isSwitch: true, labelHref: page || 'More.dc.html',
+      checked: s[key] ? 'true' : 'false',
+      track: s[key] ? (onColor || dot) : c.off,
+      knobX: s[key] ? '20px' : '0px',
+      toggle: () => this.setState({ [key]: !s[key] })
+    });
+    const mk = (name, rows) => ({ name, rows: rows.map((r, i) => ({ ...r, divider: i < rows.length - 1 ? '1px solid ' + c.line : '0' })) });
+    const groups = [
+      mk('Money', [
+        link('Accounts and cards', '4 · 5', c.money, c.moneyT, 'Accounts.dc.html'),
+        link('Expense categories', '12', c.money, c.moneyT, 'CategorySheet.dc.html', 'Food, Travel, Shopping and your own'),
+        sw('SMS detection', 'sms', c.review, c.reviewT, 'Turns bank messages into cards to confirm')
+      ]),
+      mk('Reminders', [
+        sw('Task reminders', 'tasks', c.notes, c.notesT, '10 min before · tap for options', null, 'TaskReminders.dc.html'),
+        link('Travel reminder times', '19:00 · 07:00', c.travel, c.travelT)
+      ]),
+      mk('Privacy and backup', [
+        link('App lock', 'Fingerprint', c.vault, c.vaultT),
+        link('Backup & restore', '9 days ago', c.vault, c.vaultT, 'SettingsPage.dc.html'),
+        link('Export logs', '', c.t3, c.s2, 'ExportLogs.dc.html')
+      ]),
+      mk('Appearance', [
+        sw('Dark theme', 'dark', '#7C3AED', c.cardT, null, '#7C3AED')
+      ])
+    ];
+    return { c, groups };
+  }
+}
+</script>
+</body>
+</html>

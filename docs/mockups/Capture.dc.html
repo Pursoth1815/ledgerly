@@ -13,61 +13,80 @@
 </helmet>
 <div style="width: 390px; height: 844px; position: relative; overflow: hidden; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
 
-<div aria-hidden="true" style="padding: 28px 20px; display: flex; flex-direction: column; gap: 14px">
+<div aria-hidden="true" style="padding: 24px 20px; display: flex; flex-direction: column; gap: 14px">
 <span style="font-size: 34px; font-weight: 800">Today</span>
-<span style="height: 180px; border-radius: 24px; background: {{c.s1}}"></span>
-<span style="height: 120px; border-radius: 24px; background: {{c.travelT}}"></span>
+<span style="height: 160px; border-radius: 24px; background: {{c.s1}}"></span>
 </div>
 <div aria-hidden="true" style="position: absolute; inset: 0; background: {{c.scrim}}"></div>
 
-<section aria-label="Capture" style="position: absolute; left: 0; right: 0; bottom: 0; top: 150px; background: {{c.s1}}; border-radius: 30px 30px 0 0; padding: 10px 20px 28px; display: flex; flex-direction: column; gap: 18px">
+<section aria-label="Add anything" style="position: absolute; left: 0; right: 0; bottom: 0; top: 64px; background: {{c.s1}}; border-radius: 30px 30px 0 0; padding: 10px 20px 28px; display: flex; flex-direction: column; gap: 18px">
 <span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: {{c.line}}"></span>
 <div style="display: flex; align-items: center; justify-content: space-between">
-<h1 style="margin: 0; font-size: 22px; font-weight: 800">Add</h1>
+<h1 style="margin: 0; font-size: 22px; font-weight: 800">Add anything</h1>
 <a href="Main.dc.html" aria-label="Close" style="width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t1}}">
 <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
 </a>
 </div>
 
-<div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px">
-<sc-for list="{{actions}}" as="a" hint-placeholder-count="5">
-<a href="{{a.href}}" style="height: 76px; border-radius: 18px; background: {{a.tint}}; color: {{c.t1}}; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; font-size: 12px; font-weight: 700">
-<span style="width: 30px; height: 30px; border-radius: 15px; background: {{a.color}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center">
-<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 6v12M6 12h12"></path></svg>
-</span>{{a.label}}</a>
+<div style="display: flex; flex-direction: column; gap: 12px; padding: 14px; border-radius: 24px; background: {{c.s2}}; border: 1.5px solid {{accent}}; transition: border-color 200ms ease">
+<div style="display: flex; align-items: center; gap: 10px">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg>
+<input aria-label="Type what happened" value="{{q}}" onChange="{{setQ}}" placeholder="spent 250 on lunch hdfc upi" style="flex: 1; min-width: 0; border: 0; outline: none; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 17px; font-weight: 700; padding: 0">
+<sc-if value="{{hasQ}}" hint-placeholder-val="{{ true }}">
+<button onClick="{{clear}}" aria-label="Clear" style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 16px; border: 0; background: {{c.line}}; color: {{c.t2}}; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+</button>
+</sc-if>
+</div>
+<sc-if value="{{hasTokens}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{tokens}}" as="t" hint-placeholder-count="4">
+<span style="display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 11px; border-radius: 15px; background: {{t.bg}}; color: {{t.fg}}; font-size: 13px; font-weight: 800">
+<span style="font-size: 10px; font-weight: 700; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px">{{t.k}}</span>{{t.v}}</span>
 </sc-for>
 </div>
+</sc-if>
+<sc-if value="{{hasAnswer}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 4px; padding: 4px 2px 2px">
+<span style="font-size: 24px; font-weight: 800">{{answerBig}}</span>
+<span style="font-size: 13px; color: {{c.t2}}">{{answerSmall}}</span>
+</div>
+</sc-if>
+<sc-if value="{{showHint}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 13px; color: {{c.t3}}">Type a payment, a loan, a task or a question.</span>
+</sc-if>
+</div>
+
+<sc-if value="{{hasAction}}" hint-placeholder-val="{{ true }}">
+<button style="width: 100%; height: 54px; flex-shrink: 0; margin-top: -6px; border-radius: 27px; border: 0; background: {{accent}}; color: {{c.onAccent}}; font-family: inherit; font-size: 16px; font-weight: 800">{{actionText}}</button>
+</sc-if>
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 12px; font-weight: 700; color: {{c.t3}}">Or start from</span>
+<div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px">
+<sc-for list="{{shortcuts}}" as="a" hint-placeholder-count="5">
+<a href="{{a.href}}" style="display: flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none; color: {{c.t2}}; font-size: 12px; font-weight: 700">
+<span style="width: 54px; height: 54px; border-radius: 27px; background: {{a.color}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center">
+<sc-if value="{{a.isExp}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h11M7 8.5h11M7 4h3a4.5 4.5 0 0 1 0 9H7l8 7"></path></svg></sc-if>
+<sc-if value="{{a.isLoan}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M3 20c.8-3.4 3.2-5.5 6-5.5s5.2 2.1 6 5.5M16 8h5M18.5 5.5L21 8l-2.5 2.5"></path></svg></sc-if>
+<sc-if value="{{a.isTrip}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"></path><path d="M14 7v10" stroke-dasharray="2 2"></path></svg></sc-if>
+<sc-if value="{{a.isNote}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h5"></path></svg></sc-if>
+<sc-if value="{{a.isTask}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M8 12.5l2.8 2.8L16 10"></path></svg></sc-if>
+</span>
+{{a.label}}</a>
+</sc-for>
+</div>
+</div>
 
 <div style="display: flex; flex-direction: column; gap: 8px">
-<label for="cmd" style="font-size: 13px; font-weight: 700; color: {{c.t3}}">Or type one line</label>
-<div style="display: flex; align-items: center; gap: 10px; height: 54px; padding: 0 16px; border-radius: 18px; background: {{c.s2}}; border: 1.5px solid {{c.money}}">
-<span aria-hidden="true" style="font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600; color: {{c.money}}">›</span>
-<input id="cmd" value="spent 250 on lunch hdfc upi" style="flex: 1; min-width: 0; border: 0; outline: none; background: transparent; color: {{c.t1}}; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 500">
-</div>
-</div>
-
-<article aria-label="Expense draft" style="border-radius: 22px; background: {{c.moneyT}}; padding: 16px; display: flex; flex-direction: column; gap: 12px">
-<div style="display: flex; align-items: center; justify-content: space-between">
-<span style="font-size: 13px; font-weight: 700; color: {{c.money}}">Expense draft</span>
-<span style="font-size: 12px; color: {{c.t2}}">Today</span>
-</div>
-<span style="font-size: 30px; font-weight: 800; letter-spacing: -0.5px">₹250.00</span>
-<div style="display: flex; flex-wrap: wrap; gap: 6px">
-<span style="display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 14px; background: {{c.s1}}; font-size: 12px; font-weight: 700"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{c.food}}"></span>Food</span>
-<span style="display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: 14px; background: {{c.s1}}; font-size: 12px; font-weight: 800; color: {{c.money}}">UPI</span>
-<span style="display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: 14px; background: {{c.s1}}; font-size: 12px; font-weight: 700; color: {{c.t2}}">Salary account ••4821</span>
-</div>
-<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
-<button style="height: 46px; border-radius: 23px; border: 1.5px solid {{c.money}}; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 14px; font-weight: 700">Review</button>
-<button style="height: 46px; border-radius: 23px; border: 0; background: {{c.money}}; color: {{c.onAccent}}; font-family: inherit; font-size: 14px; font-weight: 800">Looks Good ✓</button>
-</div>
-</article>
-
-<div style="display: flex; flex-direction: column; gap: 8px">
-<span style="font-size: 12px; font-weight: 700; color: {{c.t3}}">Try</span>
-<div style="display: flex; flex-wrap: wrap; gap: 6px">
-<sc-for list="{{tries}}" as="t" hint-placeholder-count="4">
-<button style="height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid {{c.line}}; background: transparent; color: {{c.t2}}; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500">{{t}}</button>
+<span style="font-size: 12px; font-weight: 700; color: {{c.t3}}">Ask</span>
+<div style="display: flex; flex-direction: column; border-radius: 20px; border: 1px solid {{c.line}}; overflow: hidden">
+<sc-for list="{{asks}}" as="k" hint-placeholder-count="3">
+<button onClick="{{k.pick}}" style="display: flex; align-items: center; gap: 12px; min-height: 54px; padding: 0 14px; border: 0; border-bottom: {{k.divider}}; background: transparent; color: {{c.t1}}; font-family: inherit; text-align: left">
+<span style="width: 8px; height: 8px; flex-shrink: 0; border-radius: 4px; background: {{k.dot}}"></span>
+<span style="flex: 1; font-size: 15px; font-weight: 600">{{k.q}}</span>
+<span style="font-size: 13px; font-weight: 700; color: {{c.t2}}">{{k.peek}}</span>
+</button>
 </sc-for>
 </div>
 </div>
@@ -76,21 +95,102 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":844}}'>
 class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { q: 'spent 250 on lunch hdfc upi' };
+  }
   pal(t) {
-    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',money:'#047857',moneyT:'#E1F4EA',lend:'#A14A06',lendT:'#FDF0D8',travel:'#4338CA',travelT:'#E8E9FD',notes:'#735E3B',notesT:'#F3ECE0',food:'#E8590C',onAccent:'#FFFFFF',scrim:'rgba(17,20,27,0.45)'};
-    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',lend:'#FBBF24',lendT:'rgba(251,191,36,0.13)',travel:'#8F98FF',travelT:'rgba(143,152,255,0.16)',notes:'#E6CDA3',notesT:'rgba(230,205,163,0.13)',food:'#FF8A4C',onAccent:'#0D0F14',scrim:'rgba(0,0,0,0.6)'};
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',lend:'#A14A06',lendT:'#FDF0D8',travel:'#4338CA',travelT:'#E8E9FD',notes:'#735E3B',notesT:'#F3ECE0',task:'#0F766E',taskT:'#DBF3EF',neutral:'#5D6474',onAccent:'#FFFFFF',scrim:'rgba(17,20,27,0.45)'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',money:'#34D399',moneyT:'rgba(52,211,153,0.16)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.16)',lend:'#FBBF24',lendT:'rgba(251,191,36,0.15)',travel:'#8F98FF',travelT:'rgba(143,152,255,0.18)',notes:'#E6CDA3',notesT:'rgba(230,205,163,0.16)',task:'#2DD4BF',taskT:'rgba(45,212,191,0.16)',neutral:'#8F96A6',onAccent:'#0D0F14',scrim:'rgba(0,0,0,0.6)'};
+  }
+  parse(q, c) {
+    const text = (q || '').toLowerCase().trim();
+    const out = { tokens: [], intent: null, action: '', accent: c.neutral, answer: null };
+    if (!text) return out;
+    const tok = (k, v, fg, bg) => out.tokens.push({ k, v, fg, bg });
+    const fmt = (n) => '₹' + Math.round(n).toLocaleString('en-IN');
+    const m = text.match(/(\d[\d,]*(?:\.\d+)?)\s*(k)?\b/);
+    const amount = m ? parseFloat(m[1].replace(/,/g, '')) * (m[2] ? 1000 : 1) : null;
+    if (/^(who|how|what|next|when|spent this)/.test(text) || text.endsWith('?')) {
+      out.intent = 'ask'; out.accent = c.travel;
+      if (/owe/.test(text)) out.answer = ['₹6,200 with 3 friends', 'Arun ₹3,500 · Karthik ₹2,000 · Divya ₹700'];
+      else if (/trip|train|bus/.test(text)) out.answer = ['Thu 19 Nov · 23:30', 'Train 12653 · MS → TPJ · S7 / 80'];
+      else if (/spen|spent/.test(text)) out.answer = ['₹18,420 in November', 'UPI ₹4,180 · Credit Card ₹14,240'];
+      else out.answer = ['Not sure yet', 'Try “who owes me” or “next trip”'];
+      return out;
+    }
+    if (/^(lent|lend|gave)/.test(text)) {
+      out.intent = 'loan'; out.accent = c.lend;
+      if (amount) tok('Amount', fmt(amount), c.lend, c.lendT);
+      const p = text.match(/to ([a-z]+)/);
+      if (p) tok('Friend', p[1][0].toUpperCase() + p[1].slice(1), c.lend, c.lendT);
+      out.action = 'Record loan' + (amount ? ' · ' + fmt(amount) : '');
+      return out;
+    }
+    if (/^(task|remind|todo)/.test(text)) {
+      out.intent = 'task'; out.accent = c.task;
+      if (/tomorrow/.test(text)) tok('Due', 'Tomorrow', c.task, c.taskT);
+      else if (/today/.test(text)) tok('Due', 'Today', c.task, c.taskT);
+      const t = text.match(/(\d{1,2})\s*(am|pm)/);
+      if (t) tok('Time', t[1] + ' ' + t[2], c.task, c.taskT);
+      out.action = 'Add task';
+      return out;
+    }
+    if (/^note/.test(text)) {
+      out.intent = 'note'; out.accent = c.notes;
+      tok('Note', (q.slice(4).trim() || 'Empty').slice(0, 24), c.notes, c.notesT);
+      out.action = 'Save note';
+      return out;
+    }
+    if (amount) {
+      out.intent = 'expense'; out.accent = c.money;
+      tok('Amount', fmt(amount), c.money, c.moneyT);
+      const cats = [[/lunch|dinner|food|biryani|meal/, 'Food'], [/tea|coffee|snack|juice/, 'Snacks'], [/bus|train|auto|cab|metro/, 'Travel'], [/amazon|shop|clothes/, 'Shopping'], [/grocer|vegetable|milk/, 'Groceries'], [/petrol|fuel/, 'Fuel']];
+      const cat = cats.find((x) => x[0].test(text));
+      if (cat) tok('Category', cat[1], c.money, c.moneyT);
+      const accts = [[/hdfc/, 'HDFC Savings', 'upi'], [/federal/, 'Federal Primary', 'upi'], [/icici/, 'ICICI Salary', 'upi'], [/kiwi|yes/, 'Kiwi card', 'card'], [/amazon pay/, 'Amazon Pay card', 'card'], [/swiggy/, 'Swiggy card', 'card']];
+      const acct = accts.find((x) => x[0].test(text));
+      const card = /\bcard\b|\bcc\b/.test(text) || (acct && acct[2] === 'card');
+      tok('Paid with', card ? 'Credit Card' : 'UPI', card ? c.card : c.money, card ? c.cardT : c.moneyT);
+      tok('From', acct ? acct[1] : (card ? 'Kiwi card' : 'Federal Primary'), card ? c.card : c.money, card ? c.cardT : c.moneyT);
+      out.action = 'Add expense · ' + fmt(amount);
+    }
+    return out;
   }
   renderVals() {
     const c = this.pal(this.props.theme);
-    const actions = [
-      { label: 'Expense', color: c.money, tint: c.moneyT, href: 'AddExpense.dc.html' },
-      { label: 'Loan', color: c.lend, tint: c.lendT, href: 'Lending.dc.html' },
-      { label: 'Trip', color: c.travel, tint: c.travelT, href: 'Ticket.dc.html' },
-      { label: 'Note', color: c.notes, tint: c.notesT, href: 'Notes.dc.html' },
-      { label: 'Task', color: c.notes, tint: c.notesT, href: 'Tasks.dc.html' }
-    ];
-    const tries = ['who owes me', 'next trip', 'tasks today', 'lent 5000 to Arun'];
-    return { c, actions, tries };
+    const s = this.state || {};
+    const r = this.parse(s.q, c);
+    const asks = [
+      ['Who owes me?', '₹6,200', c.lend],
+      ['Next trip', 'Thu 19 Nov', c.travel],
+      ['Spent this month', '₹18,420', c.money]
+    ].map((a, i, all) => ({ q: a[0], peek: a[1], dot: a[2], pick: () => this.setState({ q: a[0] }), divider: i < all.length - 1 ? '1px solid ' + c.line : '0' }));
+    const sc = (label, color, href, key) => ({ label, color, href, isExp: key === 'exp', isLoan: key === 'loan', isTrip: key === 'trip', isNote: key === 'note', isTask: key === 'task' });
+    return {
+      c,
+      q: s.q,
+      setQ: (e) => this.setState({ q: e.target.value }),
+      clear: () => this.setState({ q: '' }),
+      hasQ: !!s.q,
+      accent: r.intent ? r.accent : c.line,
+      tokens: r.tokens,
+      hasTokens: r.tokens.length > 0,
+      hasAnswer: !!r.answer,
+      answerBig: r.answer ? r.answer[0] : '',
+      answerSmall: r.answer ? r.answer[1] : '',
+      showHint: !r.intent,
+      hasAction: !!r.action,
+      actionText: r.action,
+      shortcuts: [
+        sc('Expense', c.money, 'AddExpense.dc.html', 'exp'),
+        sc('Loan', c.lend, 'Lending.dc.html', 'loan'),
+        sc('Trip', c.travel, 'Travel.dc.html', 'trip'),
+        sc('Note', c.notes, 'AddNote.dc.html', 'note'),
+        sc('Task', c.task, 'AddTask.dc.html', 'task')
+      ],
+      asks
+    };
   }
 }
 </script>

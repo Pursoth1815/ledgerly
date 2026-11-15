@@ -11,8 +11,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
 <style>body{margin:0}</style>
 </helmet>
-<div style="width: 390px; height: 1300px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
-<main style="padding: 20px 20px 40px; display: flex; flex-direction: column; gap: 20px">
+<div style="width: 390px; height: 1380px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+<main style="padding: 20px 20px 120px; display: flex; flex-direction: column; gap: 20px">
 
 <header style="display: flex; align-items: center; justify-content: space-between">
 <a href="Main.dc.html" aria-label="Back to Lending" style="width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t1}}">
@@ -28,13 +28,13 @@
 <span style="width: 52px; height: 52px; border-radius: 26px; background: {{c.lend}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800">A</span>
 <div style="display: flex; flex-direction: column; gap: 2px">
 <h1 style="margin: 0; font-size: 24px; font-weight: 800">Arun</h1>
-<span style="font-size: 13px; color: {{c.t2}}">2 open loans · monthly repayments</span>
+<span style="font-size: 13px; color: {{c.t2}}">2 open loans · since 10 Sep</span>
 </div>
 </div>
 <div style="display: flex; flex-direction: column; gap: 2px">
 <span style="font-size: 13px; font-weight: 700; color: {{c.lend}}">Owes you</span>
 <span style="font-size: 44px; font-weight: 800; letter-spacing: -1px">₹9,500</span>
-<span style="font-size: 14px; color: {{c.t2}}">Next: ₹1,500 due tomorrow, 15 Nov</span>
+<span style="font-size: 14px; color: {{c.t2}}">Last repayment: ₹1,500 on 15 Oct</span>
 </div>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
 <button style="height: 50px; border-radius: 25px; border: 0; background: {{c.lend}}; color: {{c.onAccent}}; font-family: inherit; font-size: 15px; font-weight: 800">Mark received</button>
@@ -85,12 +85,25 @@
 <div style="display: flex; flex-direction: column; gap: 10px">
 <button style="display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 16px; border-radius: 18px; border: 0; background: {{c.s1}}; color: {{c.t1}}; font-family: inherit; font-size: 14px; font-weight: 700">
 <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5M5 14v5h14v-5"></path></svg>Share a plain-text statement</button>
-<p style="margin: 0; font-size: 12px; color: {{c.t3}}">Reminders are only for you. Arun is never messaged by the app.</p>
+<p style="margin: 0; font-size: 12px; color: {{c.t3}}">Nothing here is sent to Arun. The app never messages anyone.</p>
 </div>
 </main>
+
+<nav aria-label="Main" style="position: absolute; left: 0; right: 0; bottom: 0; height: 84px; box-sizing: border-box; padding: 10px 8px 20px; display: flex; justify-content: space-around; align-items: flex-start; background: {{c.s1}}; border-top: 1px solid {{c.line}}">
+<a href="Main.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5L12 4l8 6.5V20H15v-5H9v5H4z"></path></svg>Today</a>
+<a href="Accounts.dc.html" aria-current="page" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 700; color: {{c.t1}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"></rect><path d="M3 10h18M16 15h2"></path></svg>Money</a>
+<a href="Travel.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"></path><path d="M14 7v10" stroke-dasharray="2 2"></path></svg>Travel</a>
+<a href="Notes.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h5"></path></svg>Planner</a>
+<a href="More.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="2"></rect><rect x="13" y="4" width="7" height="7" rx="2"></rect><rect x="4" y="13" width="7" height="7" rx="2"></rect><rect x="13" y="13" width="7" height="7" rx="2"></rect></svg>More</a>
+</nav>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":1300}}'>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":1380}}'>
 class Component extends DCLogic {
   pal(t) {
     if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',lend:'#A14A06',lendT:'#FDF0D8',travel:'#4338CA',travelT:'#E8E9FD',notes:'#735E3B',notesT:'#F3ECE0',vault:'#44536A',vaultT:'#E6EBF2',well:'#0F766E',wellT:'#DBF3EF',review:'#B03A0A',reviewT:'#FDEADB',red:'#B91C1C',redT:'#FBE3E3',food:'#E8590C',onAccent:'#FFFFFF',scrim:'rgba(17,20,27,0.45)'};
@@ -99,13 +112,13 @@ class Component extends DCLogic {
   renderVals() {
     const c = this.pal(this.props.theme);
     const loans = [
-      { purpose: 'Bike repair', meta: 'Lent 10 Sep · from HDFC ••4821', left: '₹3,500 left', total: '₹5,000', paidPct: '30%', a11y: '1,500 of 5,000 rupees repaid' },
-      { purpose: 'Rent help', meta: 'Lent 2 Oct · from SBI ••1093', left: '₹6,000 left', total: '₹6,000', paidPct: '0%', a11y: 'Nothing repaid yet' }
+      { purpose: 'Bike repair', meta: 'Lent 10 Sep · from HDFC Savings ••8124', left: '₹3,500 left', total: '₹5,000', paidPct: '30%', a11y: '1,500 of 5,000 rupees repaid' },
+      { purpose: 'Rent help', meta: 'Lent 2 Oct · from ICICI Salary ••5530', left: '₹6,000 left', total: '₹6,000', paidPct: '0%', a11y: 'Nothing repaid yet' }
     ];
     const out = { iconBg: c.lendT, iconFg: c.lend, amountColor: c.t1, sign: '↗' };
     const inn = { iconBg: c.moneyT, iconFg: c.money, amountColor: c.money, sign: '↙' };
     const history = [
-      { ...inn, title: 'Received ₹1,500', sub: '15 Oct · to HDFC ••4821 · Bike repair', balance: '₹9,500' },
+      { ...inn, title: 'Received ₹1,500', sub: '15 Oct · to HDFC Savings ••8124 · Bike repair', balance: '₹9,500' },
       { ...out, title: 'Lent ₹6,000', sub: '2 Oct · Rent help', balance: '₹11,000' },
       { ...out, title: 'Lent ₹5,000', sub: '10 Sep · Bike repair', balance: '₹5,000' }
     ].map((h, i, all) => ({ ...h, divider: i < all.length - 1 ? '1px solid ' + c.line : '0' }));

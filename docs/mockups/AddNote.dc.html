@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add note</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+
+<div aria-hidden="true" style="padding: 28px 20px; display: flex; flex-direction: column; gap: 14px">
+<span style="font-size: 34px; font-weight: 800">Planner</span>
+<span style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<span style="height: 150px; border-radius: 20px; background: {{c.ghostA}}"></span>
+<span style="height: 150px; border-radius: 20px; background: {{c.ghostB}}"></span>
+</span>
+</div>
+<div aria-hidden="true" style="position: absolute; inset: 0; background: {{c.scrim}}"></div>
+
+<section aria-label="New note" style="position: absolute; left: 0; right: 0; bottom: 0; top: 96px; background: {{c.s1}}; border-radius: 30px 30px 0 0; padding: 10px 20px 28px; display: flex; flex-direction: column; gap: 14px">
+<span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: {{c.line}}"></span>
+<div style="display: flex; align-items: center; justify-content: space-between">
+<h1 style="margin: 0; font-size: 22px; font-weight: 800">New note</h1>
+<a href="Notes.dc.html" aria-label="Close" style="width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t1}}">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+</a>
+</div>
+
+<div style="flex: 1; min-height: 0; position: relative; border-radius: 24px; background: {{tintBg}}; padding: 18px 18px 14px; display: flex; flex-direction: column; gap: 12px; overflow: hidden; transition: background 250ms ease">
+<span aria-hidden="true" style="position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: {{tintAccent}}"></span>
+<div style="display: flex; align-items: center; gap: 10px">
+<input aria-label="Title" value="{{title}}" onChange="{{setTitle}}" placeholder="Give it a title" style="flex: 1; min-width: 0; border: 0; outline: none; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 24px; font-weight: 800; letter-spacing: -0.3px; padding: 0">
+<sc-if value="{{pin}}" hint-placeholder-val="{{ false }}"><svg role="img" aria-label="Pinned" width="18" height="18" viewBox="0 0 24 24" fill="{{tintAccent}}" stroke="{{tintAccent}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6l-1 6 4 4H6l4-4zM12 14v6"></path></svg></sc-if>
+</div>
+<span style="font-size: 12px; font-weight: 600; color: {{tintAccent}}">{{meta}}</span>
+
+<sc-if value="{{isList}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column">
+<sc-for list="{{items}}" as="it" hint-placeholder-count="4">
+<div style="display: flex; align-items: center; gap: 4px; min-height: 44px">
+<button onClick="{{it.toggle}}" aria-pressed="{{it.pressed}}" aria-label="{{it.a11y}}" style="width: 40px; height: 40px; margin-left: -10px; flex-shrink: 0; border: 0; background: transparent; display: flex; align-items: center; justify-content: center">
+<span style="width: 20px; height: 20px; border-radius: 6px; box-sizing: border-box; border: 1.8px solid {{tintAccent}}; background: {{it.box}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center; transition: background 200ms ease">
+<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="24" stroke-dashoffset="{{it.dash}}" style="transition: stroke-dashoffset 260ms ease 80ms"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+</span>
+</button>
+<span style="flex: 1; font-size: 16px; color: {{it.color}}; text-decoration: {{it.strike}}; transition: color 200ms ease">{{it.text}}</span>
+</div>
+</sc-for>
+<div style="display: flex; align-items: center; gap: 10px; min-height: 44px; color: {{c.t3}}; font-size: 15px">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+Add item
+</div>
+</div>
+</sc-if>
+<sc-if value="{{isText}}" hint-placeholder-val="{{ false }}">
+<textarea aria-label="Note" value="{{body}}" onChange="{{setBody}}" placeholder="Start typing…" style="flex: 1; min-height: 0; resize: none; border: 0; outline: none; background: transparent; color: {{c.t2}}; font-family: inherit; font-size: 16px; line-height: 1.6; padding: 0"></textarea>
+</sc-if>
+</div>
+
+<div style="display: flex; align-items: center; gap: 8px">
+<div role="group" aria-label="Note type" style="display: flex; gap: 4px; padding: 4px; border-radius: 18px; background: {{c.s2}}">
+<button onClick="{{useText}}" aria-pressed="{{textPressed}}" aria-label="Text note" style="width: 44px; height: 36px; border-radius: 14px; border: 0; background: {{textBg}}; color: {{textFg}}; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h9"></path></svg>
+</button>
+<button onClick="{{useList}}" aria-pressed="{{listPressed}}" aria-label="Checklist" style="width: 44px; height: 36px; border-radius: 14px; border: 0; background: {{listBg}}; color: {{listFg}}; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="6" height="6" rx="1.5"></rect><path d="M13 7h8M13 17h8"></path><rect x="3" y="14" width="6" height="6" rx="1.5"></rect></svg>
+</button>
+</div>
+<button onClick="{{togglePin}}" aria-pressed="{{pinPressed}}" aria-label="Pin note" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: {{pinBg}}; color: {{pinFg}}; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="{{pinFill}}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6l-1 6 4 4H6l4-4zM12 14v6"></path></svg>
+</button>
+<div role="group" aria-label="Note colour" style="flex: 1; display: flex; justify-content: flex-end">
+<sc-for list="{{colours}}" as="k" hint-placeholder-count="6">
+<button onClick="{{k.pick}}" aria-pressed="{{k.pressed}}" aria-label="{{k.name}}" style="width: 30px; height: 44px; border: 0; padding: 0; background: transparent; display: flex; align-items: center; justify-content: center">
+<span style="width: 22px; height: 22px; border-radius: 11px; background: {{k.dot}}; box-shadow: {{k.ring}}; transition: box-shadow 160ms ease"></span>
+</button>
+</sc-for>
+</div>
+</div>
+
+<button style="width: 100%; height: 56px; flex-shrink: 0; border-radius: 28px; border: 0; background: {{c.money}}; color: {{c.onAccent}}; font-family: inherit; font-size: 17px; font-weight: 800">Save note</button>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      title: 'Trichy trip', tint: 'lilac', mode: 'list', pin: false,
+      body: 'Leave by 9 pm. Charge the power bank tonight.',
+      items: [{ t: 'ID card', d: true }, { t: 'Charger', d: false }, { t: 'Umbrella', d: false }, { t: 'Call Karthik after reaching', d: false }]
+    };
+  }
+  pal(t) {
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',money:'#047857',onAccent:'#FFFFFF',scrim:'rgba(17,20,27,0.45)',ghostA:'#DDF3E7',ghostB:'#F6EBD6',
+      tints:{sand:['#F6EBD6','#735E3B'],mint:['#DDF3E7','#047857'],sky:['#DDEBFB','#1D4ED8'],rose:['#FBE1EA','#BE185D'],lilac:['#E9E3FB','#6D28D9'],lemon:['#FBF3C9','#854D0E']}};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',money:'#34D399',onAccent:'#0D0F14',scrim:'rgba(0,0,0,0.6)',ghostA:'rgba(52,211,153,0.14)',ghostB:'rgba(230,205,163,0.16)',
+      tints:{sand:['rgba(230,205,163,0.16)','#E6CDA3'],mint:['rgba(52,211,153,0.14)','#34D399'],sky:['rgba(96,165,250,0.16)','#7CB7FF'],rose:['rgba(244,114,182,0.15)','#F58BC0'],lilac:['rgba(167,139,250,0.17)','#B9A3FF'],lemon:['rgba(250,204,21,0.13)','#F5D547']}};
+  }
+  renderVals() {
+    const c = this.pal(this.props.theme);
+    const s = this.state || {};
+    const tint = c.tints[s.tint] || c.tints.sand;
+    const list = s.mode === 'list';
+    const items = (s.items || []).map((it, i) => ({
+      text: it.t,
+      pressed: it.d ? 'true' : 'false',
+      a11y: (it.d ? 'Untick ' : 'Tick ') + it.t,
+      box: it.d ? tint[1] : 'transparent',
+      dash: it.d ? '0' : '24',
+      color: it.d ? c.t3 : c.t1,
+      strike: it.d ? 'line-through' : 'none',
+      toggle: () => this.setState({ items: s.items.map((x, j) => j === i ? { t: x.t, d: !x.d } : x) })
+    }));
+    const left = (s.items || []).filter((x) => !x.d).length;
+    const colours = Object.keys(c.tints).map((name) => ({
+      name,
+      dot: c.tints[name][1],
+      pick: () => this.setState({ tint: name }),
+      pressed: s.tint === name ? 'true' : 'false',
+      ring: s.tint === name ? '0 0 0 2px ' + c.s1 + ', 0 0 0 4px ' + c.tints[name][1] : 'none'
+    }));
+    return {
+      c, colours, items,
+      tintBg: tint[0],
+      tintAccent: tint[1],
+      title: s.title,
+      setTitle: (e) => this.setState({ title: e.target.value }),
+      body: s.body,
+      setBody: (e) => this.setState({ body: e.target.value }),
+      meta: list ? 'Checklist · ' + left + ' of ' + (s.items || []).length + ' left' : 'Note · just now',
+      isList: list,
+      isText: !list,
+      useText: () => this.setState({ mode: 'text' }),
+      useList: () => this.setState({ mode: 'list' }),
+      textPressed: list ? 'false' : 'true',
+      listPressed: list ? 'true' : 'false',
+      textBg: list ? 'transparent' : tint[1],
+      textFg: list ? c.t2 : c.onAccent,
+      listBg: list ? tint[1] : 'transparent',
+      listFg: list ? c.onAccent : c.t2,
+      pin: !!s.pin,
+      togglePin: () => this.setState({ pin: !s.pin }),
+      pinPressed: s.pin ? 'true' : 'false',
+      pinBg: s.pin ? tint[1] : c.s2,
+      pinFg: s.pin ? c.onAccent : c.t2,
+      pinFill: s.pin ? 'currentColor' : 'none'
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -11,33 +11,64 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
 <style>body{margin:0}</style>
 </helmet>
-<div style="width: 390px; height: 900px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+<div style="width: 390px; height: 980px; position: relative; overflow: hidden; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
 <main style="padding: 28px 20px 120px; display: flex; flex-direction: column; gap: 16px">
 
 <header style="display: flex; flex-direction: column; gap: 14px">
-<h1 style="margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.5px">Notes</h1>
+<div style="display: flex; align-items: center; justify-content: space-between">
+<h1 style="margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.5px; line-height: 44px">Planner</h1>
+<a href="AddNote.dc.html" style="height: 44px; padding: 0 16px; border-radius: 22px; background: {{c.notes}}; color: {{c.onAccent}}; display: flex; align-items: center; font-size: 14px; font-weight: 800; text-decoration: none">+ Note</a>
+</div>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 20px; background: {{c.s2}}">
 <span aria-current="page" style="height: 40px; border-radius: 16px; background: {{c.notes}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800">Notes</span>
 <a href="Tasks.dc.html" style="height: 40px; border-radius: 16px; color: {{c.t2}}; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; text-decoration: none">Tasks</a>
 </div>
-<div role="group" aria-label="Folders" style="display: flex; gap: 8px; flex-wrap: wrap">
-<sc-for list="{{folders}}" as="f" hint-placeholder-count="5">
-<button aria-pressed="{{f.pressed}}" style="height: 34px; padding: 0 14px; border-radius: 17px; border: {{f.border}}; background: {{f.bg}}; color: {{f.fg}}; font-family: inherit; font-size: 13px; font-weight: 700">{{f.name}}</button>
-</sc-for>
-</div>
 </header>
 
-<sc-for list="{{notes}}" as="n" hint-placeholder-count="4">
-<article style="background: {{n.bg}}; border: 1px solid {{n.border}}; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
-<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
-<h2 style="margin: 0; font-size: 16px; font-weight: 800">{{n.title}}</h2>
-<sc-if value="{{n.pinned}}" hint-placeholder-val="{{ false }}"><svg role="img" aria-label="Pinned" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{c.notes}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6l-1 6 4 4H6l4-4zM12 14v6"></path></svg></sc-if>
-</div>
-<p style="margin: 0; font-size: 14px; line-height: 1.5; color: {{c.t2}}; white-space: pre-line">{{n.body}}</p>
-<span style="font-size: 12px; color: {{c.t3}}">{{n.meta}}</span>
-</article>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; align-items: start">
+<sc-for list="{{cols}}" as="col" hint-placeholder-count="2">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{col.items}}" as="n" hint-placeholder-count="3">
+<div style="border-radius: 20px; background: {{n.bg}}; box-shadow: {{n.ring}}; transform: scale({{n.scale}}); transition: transform 200ms cubic-bezier(.3,1.4,.5,1), box-shadow 200ms ease; overflow: hidden">
+<button onClick="{{n.tap}}" aria-expanded="{{n.selAttr}}" style="display: flex; flex-direction: column; gap: 8px; width: 100%; padding: 14px 14px 12px; border: 0; background: transparent; color: {{c.t1}}; font-family: inherit; text-align: left">
+<span style="display: flex; align-items: flex-start; justify-content: space-between; gap: 6px">
+<span style="font-size: 15px; font-weight: 800; line-height: 1.25">{{n.title}}</span>
+<sc-if value="{{n.pinned}}" hint-placeholder-val="{{ false }}"><svg role="img" aria-label="Pinned" width="15" height="15" viewBox="0 0 24 24" fill="{{n.accent}}" stroke="{{n.accent}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px"><path d="M9 4h6l-1 6 4 4H6l4-4zM12 14v6"></path></svg></sc-if>
+</span>
+<span style="display: flex; flex-direction: column; gap: 5px">
+<sc-for list="{{n.lines}}" as="l" hint-placeholder-count="3">
+<span style="display: flex; align-items: flex-start; gap: 7px; font-size: 13px; line-height: 1.4; color: {{l.color}}; text-decoration: {{l.strike}}">
+<sc-if value="{{l.isCheck}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 14px; height: 14px; flex-shrink: 0; margin-top: 2px; border-radius: 4px; box-sizing: border-box; border: 1.5px solid {{n.accent}}; background: {{l.boxBg}}"></span></sc-if>
+<span>{{l.text}}</span>
+</span>
 </sc-for>
+</span>
+<span style="font-size: 11px; font-weight: 700; color: {{n.accent}}">{{n.date}}</span>
+</button>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); max-height: {{n.actH}}; opacity: {{n.actOp}}; overflow: hidden; transition: max-height 240ms ease, opacity 200ms ease">
+<button onClick="{{n.togglePin}}" aria-label="{{n.pinLabel}}" style="height: 46px; border: 0; background: {{n.actBg}}; color: {{c.t1}}; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="{{n.pinFill}}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6l-1 6 4 4H6l4-4zM12 14v6"></path></svg>
+</button>
+<a href="AddNote.dc.html" aria-label="Edit note" style="height: 46px; background: {{n.actBg}}; color: {{c.t1}}; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg>
+</a>
+<button onClick="{{n.remove}}" aria-label="Delete note" style="height: 46px; border: 0; background: {{n.actBg}}; color: {{c.red}}; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg>
+</button>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-for>
+</div>
 </main>
+
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: absolute; left: 20px; right: 96px; bottom: 104px; display: flex; align-items: center; gap: 8px; padding: 10px 10px 10px 16px; border-radius: 18px; background: {{c.btn}}; color: {{c.btnT}}">
+<span style="flex: 1; font-size: 14px; font-weight: 700">Note deleted</span>
+<button onClick="{{undo}}" style="height: 36px; padding: 0 12px; border-radius: 18px; border: 0; background: transparent; color: {{c.btnT}}; font-family: inherit; font-size: 14px; font-weight: 800; text-decoration: underline">Undo</button>
+</div>
+</sc-if>
 
 <a href="Capture.dc.html" aria-label="Capture" style="position: absolute; right: 20px; bottom: 104px; width: 60px; height: 60px; border-radius: 30px; background: {{c.btn}}; color: {{c.btnT}}; display: flex; align-items: center; justify-content: center">
 <svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
@@ -48,37 +79,77 @@
 <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5L12 4l8 6.5V20H15v-5H9v5H4z"></path></svg>Today</a>
 <a href="Accounts.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
 <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"></rect><path d="M3 10h18M16 15h2"></path></svg>Money</a>
-<a href="Ticket.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<a href="Travel.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
 <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"></path><path d="M14 7v10" stroke-dasharray="2 2"></path></svg>Travel</a>
 <a href="Notes.dc.html" aria-current="page" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 700; color: {{c.t1}}">
-<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h5"></path></svg>Notes</a>
-<a href="Vault.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
-<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2.5"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Vault</a>
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h5"></path></svg>Planner</a>
+<a href="More.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="2"></rect><rect x="13" y="4" width="7" height="7" rx="2"></rect><rect x="4" y="13" width="7" height="7" rx="2"></rect><rect x="13" y="13" width="7" height="7" rx="2"></rect></svg>More</a>
 </nav>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":980}}'>
 class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sel: 's', pinned: { g: true }, gone: {}, last: null };
+  }
   pal(t) {
-    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',notes:'#735E3B',notesT:'#F3ECE0',onAccent:'#FFFFFF'};
-    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',btn:'#F3F5F9',btnT:'#0D0F14',notes:'#E6CDA3',notesT:'rgba(230,205,163,0.13)',onAccent:'#0D0F14'};
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',notes:'#735E3B',red:'#B91C1C',onAccent:'#FFFFFF',act:'rgba(17,20,27,0.06)',
+      tints:{sand:['#F6EBD6','#735E3B'],mint:['#DDF3E7','#047857'],sky:['#DDEBFB','#1D4ED8'],rose:['#FBE1EA','#BE185D'],lilac:['#E9E3FB','#6D28D9'],lemon:['#FBF3C9','#854D0E']}};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',btn:'#F3F5F9',btnT:'#0D0F14',notes:'#E6CDA3',red:'#FF7B7B',onAccent:'#0D0F14',act:'rgba(255,255,255,0.07)',
+      tints:{sand:['rgba(230,205,163,0.16)','#E6CDA3'],mint:['rgba(52,211,153,0.14)','#34D399'],sky:['rgba(96,165,250,0.16)','#7CB7FF'],rose:['rgba(244,114,182,0.15)','#F58BC0'],lilac:['rgba(167,139,250,0.17)','#B9A3FF'],lemon:['rgba(250,204,21,0.13)','#F5D547']}};
   }
   renderVals() {
     const c = this.pal(this.props.theme);
-    const folders = ['All', 'Personal', 'Home', 'Bike', 'Ideas'].map((name, i) => ({
-      name,
-      pressed: i === 0 ? 'true' : 'false',
-      bg: i === 0 ? c.notesT : 'transparent',
-      fg: i === 0 ? c.notes : c.t2,
-      border: i === 0 ? '1.5px solid ' + c.notes : '1px solid ' + c.line
-    }));
-    const notes = [
-      { title: 'Gate code and office hours', body: 'Gate code is 4471.\nSociety office: 9 am to 6 pm, closed Tuesday.', meta: 'Home · edited today', pinned: true },
-      { title: 'Groceries for Sunday', body: '☑ Rice 5 kg\n☐ Curd\n☐ Tomatoes, onions', meta: 'Home · edited yesterday', pinned: false },
-      { title: 'Bike service', body: 'Chain cleaned on 2 Nov. Next service at 12,000 km.', meta: 'Bike · 2 Nov', pinned: false },
-      { title: 'Gift ideas', body: 'A book on design for Divya. Ask about sizes first.', meta: 'Ideas · 28 Oct', pinned: false }
-    ].map((n) => ({ ...n, bg: n.pinned ? c.notesT : c.s1, border: n.pinned ? 'transparent' : c.line }));
-    return { c, folders, notes };
+    const s = this.state || {};
+    const pinned = s.pinned || {};
+    const gone = s.gone || {};
+    const defs = [
+      { id: 'g', title: 'Gate code and office hours', tint: 'sand', date: 'Today', lines: [['Gate code is 4471.'], ['Society office: 9 am to 6 pm, closed Tuesday.']] },
+      { id: 's', title: 'Groceries for Sunday', tint: 'mint', date: 'Yesterday', lines: [['Rice 5 kg', 'on'], ['Curd', 'off'], ['Tomatoes', 'off'], ['Onions', 'off']] },
+      { id: 'b', title: 'Bike service', tint: 'sky', date: '2 Nov', lines: [['Chain cleaned on 2 Nov.'], ['Next service at 12,000 km.']] },
+      { id: 't', title: 'Trichy trip', tint: 'lilac', date: '13 Nov', lines: [['ID card', 'on'], ['Charger', 'off'], ['Umbrella', 'off']] },
+      { id: 'i', title: 'Gift ideas', tint: 'rose', date: '28 Oct', lines: [['A book on design for Divya.'], ['Ask about sizes first.']] },
+      { id: 'w', title: 'Wi-Fi at home', tint: 'lemon', date: '20 Oct', lines: [['Restarting the router fixes most issues.'], ['Plan renews on the 5th.']] }
+    ];
+    const visible = defs.filter((d) => !gone[d.id]);
+    const sorted = visible.filter((d) => pinned[d.id]).concat(visible.filter((d) => !pinned[d.id]));
+    const items = sorted.map((d) => {
+      const tint = c.tints[d.tint];
+      const sel = s.sel === d.id;
+      const isPinned = !!pinned[d.id];
+      return {
+        title: d.title, date: d.date, bg: tint[0], accent: tint[1], pinned: isPinned,
+        lines: d.lines.map((l) => ({
+          text: l[0], isCheck: !!l[1],
+          boxBg: l[1] === 'on' ? tint[1] : 'transparent',
+          color: l[1] === 'on' ? c.t3 : c.t2,
+          strike: l[1] === 'on' ? 'line-through' : 'none'
+        })),
+        tap: () => this.setState({ sel: sel ? null : d.id }),
+        selAttr: sel ? 'true' : 'false',
+        scale: sel ? '0.96' : '1',
+        ring: sel ? 'inset 0 0 0 2px ' + tint[1] : 'inset 0 0 0 0 transparent',
+        actH: sel ? '46px' : '0px',
+        actOp: sel ? '1' : '0',
+        actBg: c.act,
+        pinFill: isPinned ? 'currentColor' : 'none',
+        pinLabel: isPinned ? 'Unpin note' : 'Pin note',
+        togglePin: () => this.setState({ pinned: { ...pinned, [d.id]: !isPinned } }),
+        remove: () => this.setState({ gone: { ...gone, [d.id]: true }, last: d.id, sel: null })
+      };
+    });
+    const cols = [{ items: items.filter((x, i) => i % 2 === 0) }, { items: items.filter((x, i) => i % 2 === 1) }];
+    return {
+      c, cols,
+      hasToast: !!s.last,
+      undo: () => {
+        const g = { ...gone };
+        delete g[s.last];
+        this.setState({ gone: g, last: null });
+      }
+    };
   }
 }
 </script>

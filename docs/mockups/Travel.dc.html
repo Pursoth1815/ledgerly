@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Travel</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 1180px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+<main style="padding: 28px 20px 120px; display: flex; flex-direction: column; gap: 18px">
+
+<header style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; justify-content: space-between">
+<h1 style="margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.5px; line-height: 44px">Travel</h1>
+<button style="height: 44px; padding: 0 16px; border-radius: 22px; border: 0; background: {{c.travel}}; color: {{c.onAccent}}; font-family: inherit; font-size: 14px; font-weight: 800">+ Add trip</button>
+</div>
+<div role="group" aria-label="Filter" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 20px; background: {{c.s2}}">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
+<button onClick="{{t.pick}}" aria-pressed="{{t.pressed}}" style="height: 40px; border-radius: 16px; border: 0; background: {{t.bg}}; color: {{t.fg}}; font-family: inherit; font-size: 14px; font-weight: 800">{{t.label}}</button>
+</sc-for>
+</div>
+</header>
+
+<section aria-label="Upcoming" style="display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{c.t3}}">Upcoming</h2>
+<sc-for list="{{upcoming}}" as="u" hint-placeholder-count="3">
+<a href="{{u.href}}" aria-label="{{u.a11y}}" style="display: flex; flex-direction: column; gap: 12px; text-decoration: none; color: {{c.t1}}; background: {{u.bg}}; border: {{u.border}}; border-radius: 22px; padding: 16px">
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="width: 34px; height: 34px; flex-shrink: 0; border-radius: 11px; background: {{u.iconBg}}; color: {{u.iconFg}}; display: flex; align-items: center; justify-content: center">
+<sc-if value="{{u.isTrain}}" hint-placeholder-val="{{ true }}"><svg role="img" aria-label="Train" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="14" rx="3"></rect><path d="M6 10h12M9 21l1.5-4M15 21l-1.5-4"></path><circle cx="9.5" cy="13.5" r="0.8"></circle><circle cx="14.5" cy="13.5" r="0.8"></circle></svg></sc-if>
+<sc-if value="{{u.isBus}}" hint-placeholder-val="{{ false }}"><svg role="img" aria-label="Bus" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="15" rx="3"></rect><path d="M4 11h16M8 6h8M8 18v3M16 18v3"></path><circle cx="8" cy="14.5" r="0.8"></circle><circle cx="16" cy="14.5" r="0.8"></circle></svg></sc-if>
+</span>
+<span style="flex: 1; font-size: 13px; font-weight: 700; color: {{c.t2}}">{{u.label}}</span>
+<span style="padding: 4px 10px; border-radius: 999px; background: {{u.chipBg}}; color: {{u.chipFg}}; font-size: 12px; font-weight: 700">{{u.status}}</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 24px; font-weight: 800">{{u.route}}</span>
+<span style="font-size: 12px; color: {{c.t2}}">{{u.routeSub}}</span>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; color: {{c.t2}}">
+<span><span style="font-weight: 800; color: {{c.t1}}">{{u.when}}</span> · {{u.away}}</span>
+<span>{{u.seat}}</span>
+</div>
+</a>
+</sc-for>
+</section>
+
+<section aria-label="Earlier" style="display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{c.t3}}">Earlier</h2>
+<div style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 20px; padding: 4px 16px">
+<sc-for list="{{past}}" as="p" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 12px; min-height: 60px; border-bottom: {{p.divider}}">
+<span style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 10px; background: {{c.s2}}; color: {{c.t2}}; display: flex; align-items: center; justify-content: center">
+<sc-if value="{{p.isTrain}}" hint-placeholder-val="{{ true }}"><svg role="img" aria-label="Train" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="14" rx="3"></rect><path d="M6 10h12M9 21l1.5-4M15 21l-1.5-4"></path></svg></sc-if>
+<sc-if value="{{p.isBus}}" hint-placeholder-val="{{ false }}"><svg role="img" aria-label="Bus" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="15" rx="3"></rect><path d="M4 11h16M8 18v3M16 18v3"></path></svg></sc-if>
+</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 15px; font-weight: 700">{{p.route}}</span>
+<span style="font-size: 12px; color: {{c.t3}}">{{p.sub}}</span>
+</span>
+<span style="font-size: 13px; font-weight: 600; color: {{c.t2}}">{{p.date}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+</main>
+
+<a href="Capture.dc.html" aria-label="Capture" style="position: absolute; right: 20px; bottom: 104px; width: 60px; height: 60px; border-radius: 30px; background: {{c.btn}}; color: {{c.btnT}}; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+</a>
+
+<nav aria-label="Main" style="position: absolute; left: 0; right: 0; bottom: 0; height: 84px; box-sizing: border-box; padding: 10px 8px 20px; display: flex; justify-content: space-around; align-items: flex-start; background: {{c.s1}}; border-top: 1px solid {{c.line}}">
+<a href="Main.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5L12 4l8 6.5V20H15v-5H9v5H4z"></path></svg>Today</a>
+<a href="Accounts.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"></rect><path d="M3 10h18M16 15h2"></path></svg>Money</a>
+<a href="Travel.dc.html" aria-current="page" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 700; color: {{c.t1}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"></path><path d="M14 7v10" stroke-dasharray="2 2"></path></svg>Travel</a>
+<a href="Notes.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h5"></path></svg>Planner</a>
+<a href="More.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="2"></rect><rect x="13" y="4" width="7" height="7" rx="2"></rect><rect x="4" y="13" width="7" height="7" rx="2"></rect><rect x="13" y="13" width="7" height="7" rx="2"></rect></svg>More</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":1180}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { filter: 'all' };
+  }
+  pal(t) {
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',travel:'#4338CA',travelT:'#E8E9FD',lend:'#A14A06',lendT:'#FDF0D8',onAccent:'#FFFFFF'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',btn:'#F3F5F9',btnT:'#0D0F14',travel:'#8F98FF',travelT:'rgba(143,152,255,0.16)',lend:'#FBBF24',lendT:'rgba(251,191,36,0.13)',onAccent:'#0D0F14'};
+  }
+  renderVals() {
+    const c = this.pal(this.props.theme);
+    const f = (this.state && this.state.filter) || 'all';
+    const tabs = [['all', 'All'], ['train', 'Train'], ['bus', 'Bus']].map((t) => ({
+      label: t[1],
+      pick: () => this.setState({ filter: t[0] }),
+      pressed: f === t[0] ? 'true' : 'false',
+      bg: f === t[0] ? c.travel : 'transparent',
+      fg: f === t[0] ? c.onAccent : c.t2
+    }));
+    const show = (k) => f === 'all' || f === k;
+    const booked = { bg: c.travelT, border: '1px solid transparent', iconBg: c.travel, iconFg: c.onAccent, chipBg: c.travel, chipFg: c.onAccent };
+    const upcoming = [
+      { kind: 'train', ...booked, href: 'Ticket.dc.html', label: 'Train · 12653', status: 'Chart prepared', route: 'MS → TPJ', routeSub: 'Chennai Egmore to Tiruchchirappalli', when: 'Thu 19 Nov · 23:30', away: 'in 4 days', seat: 'SL · S7 / 80' },
+      { kind: 'bus', ...booked, href: 'TicketBus.dc.html', label: 'Bus · TNSTC', status: 'Booked', route: 'Trichy → Chennai', routeSub: 'Route 123LB · bus number arrives on travel day', when: 'Sat 21 Nov · 21:30', away: 'in 6 days', seat: 'Seat 14' },
+      { kind: 'train', href: 'Ticket.dc.html', label: 'Planned · no ticket yet', status: 'Book by 20 Nov', route: 'MAS → CBE', routeSub: 'Chennai Central to Coimbatore', when: 'Fri 27 Nov', away: 'in 12 days', seat: 'Add ticket',
+        bg: 'transparent', border: '1.5px dashed ' + c.line, iconBg: c.s2, iconFg: c.t2, chipBg: c.lendT, chipFg: c.lend }
+    ].filter((u) => show(u.kind)).map((u) => ({ ...u, isTrain: u.kind === 'train', isBus: u.kind === 'bus', a11y: u.label + ', ' + u.route + ', ' + u.when }));
+    const pastAll = [
+      { kind: 'bus', route: 'Chennai → Trichy', sub: 'TNSTC · Route 123LB', date: '9 Nov' },
+      { kind: 'train', route: 'MAS → CSMT', sub: '22160 · 3E · M2 / 40', date: '8 Nov' },
+      { kind: 'train', route: 'MS → TPJ', sub: '12653 · SL · S7 / 80', date: '6 Nov' }
+    ].filter((p) => show(p.kind));
+    const past = pastAll.map((p, i) => ({ ...p, isTrain: p.kind === 'train', isBus: p.kind === 'bus', divider: i < pastAll.length - 1 ? '1px solid ' + c.line : '0' }));
+    return { c, tabs, upcoming, past };
+  }
+}
+</script>
+</body>
+</html>

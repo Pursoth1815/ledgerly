@@ -80,10 +80,10 @@ Navigation has five tabs and one capture button.
 - **Today**
 - **Money**, with two segments: Expenses and Lending
 - **Travel**
-- **Notes**, with two segments: Notes and Tasks
-- **Vault**
+- **Planner**, with two segments: Notes and Tasks
+- **More**, a flexible last tab. It holds the Document Vault, Digital Wellbeing and Settings, and has room for later additions
 
-Digital Wellbeing and Settings open from the corner of Today. The capture button is reachable from every tab and opens one sheet for a new expense, loan, trip, note or task, plus the command line described in section 10.
+Digital Wellbeing and the light or dark theme switch open from the corner of Today. The capture button is reachable from every tab and opens one sheet for a new expense, loan, trip, note or task, plus the command line described in section 10.
 
 The Review Inbox opens from the first Today card. It holds every item that is detected but not yet confirmed.
 
@@ -287,10 +287,10 @@ All three are core modules, kept deliberately small: quick to open, quick to add
 | Feature | Detail |
 | --- | --- |
 | Create and edit | A title and a plain-text body with simple lists and checkboxes, saved as you type |
-| Organise | Folders one level deep, pin to top, archive, delete with Undo |
+| Organise | Pin to top, a colour for each note, delete with Undo. No folders |
 | Quick capture | From the capture sheet, by sharing text into the app, or with "Save to Kanakku" in another app's text-selection menu on Android |
 | Note to task | Long-press a line to turn it into a task |
-| Order | Most recently edited first, filtered by folder |
+| Order | Pinned notes first, then most recently edited |
 
 Not included: images inside notes, rich formatting, shared notes.
 

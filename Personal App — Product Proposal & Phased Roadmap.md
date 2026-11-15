@@ -109,9 +109,8 @@ You can add any number of each from the first build.
 | Nickname | For example "Salary account" | For example "Travel card" |
 | Last four digits | Of the account number | Of the card number |
 | Default | One default bank account | One default card |
-| State | Active or archived; history is kept | Active or archived; history is kept |
 
-The last four digits are how an SMS is tied to the right account or card.
+The last four digits are how an SMS is tied to the right account or card. There is no archived state: removing an account or card keeps its past transactions under the name they were saved with.
 
 ### Tracking and correction
 

@@ -98,10 +98,10 @@ class Component extends DCLogic {
     const s = this.state || {};
     const c = this.pal(s.dark ? 'dark' : 'light');
     const link = (label, value, dot, tint, href, hint) => ({ label, value, dot, tint, href: href || 'More.dc.html', hint: hint || '', hasHint: !!hint, isLink: true, isSwitch: false });
-    const sw = (label, key, dot, tint, hint) => ({
+    const sw = (label, key, dot, tint, hint, onColor) => ({
       label, dot, tint, hint: hint || '', hasHint: !!hint, isLink: false, isSwitch: true,
       checked: s[key] ? 'true' : 'false',
-      track: s[key] ? dot : c.off,
+      track: s[key] ? (onColor || dot) : c.off,
       knobX: s[key] ? '20px' : '0px',
       toggle: () => this.setState({ [key]: !s[key] })
     });
@@ -109,7 +109,7 @@ class Component extends DCLogic {
     const groups = [
       mk('Money', [
         link('Accounts and cards', '4 · 5', c.money, c.moneyT, 'Accounts.dc.html'),
-        link('Expense categories', '12', c.money, c.moneyT, null, 'Food, Travel, Shopping and your own'),
+        link('Expense categories', '12', c.money, c.moneyT, 'CategorySheet.dc.html', 'Food, Travel, Shopping and your own'),
         sw('SMS detection', 'sms', c.review, c.reviewT, 'Turns bank messages into cards to confirm')
       ]),
       mk('Reminders', [
@@ -122,7 +122,7 @@ class Component extends DCLogic {
         link('Export logs', '', c.t3, c.s2)
       ]),
       mk('Appearance', [
-        sw('Dark theme', 'dark', c.card, c.cardT)
+        sw('Dark theme', 'dark', '#5B21B6', c.cardT, null, '#5B21B6')
       ])
     ];
     return { c, groups };

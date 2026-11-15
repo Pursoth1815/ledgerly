@@ -129,18 +129,20 @@
     "Capture.dc.html": {
       "h": 844,
       "radius": 28,
-      "title": "12 · Capture sheet",
+      "title": "12 · Capture sheet (+ button)",
       "w": 390,
-      "x": 9870,
-      "y": 0
+      "x": 11280,
+      "y": 0,
+      "is_interactive": true
     },
     "CaptureLight.dc.html": {
       "h": 844,
       "radius": 28,
       "title": "12 · Capture sheet (light)",
       "w": 390,
-      "x": 9870,
-      "y": 2560
+      "x": 11280,
+      "y": 2560,
+      "is_interactive": true
     },
     "Lending.dc.html": {
       "h": 1380,
@@ -353,7 +355,7 @@
       "radius": 28,
       "title": "10b · Document Vault (inside More)",
       "w": 390,
-      "x": 8930,
+      "x": 9870,
       "y": 0
     },
     "VaultLight.dc.html": {
@@ -361,7 +363,7 @@
       "radius": 28,
       "title": "10b · Document Vault (light)",
       "w": 390,
-      "x": 8930,
+      "x": 9870,
       "y": 2560
     },
     "Wellbeing.dc.html": {
@@ -369,7 +371,7 @@
       "radius": 28,
       "title": "11 · Digital Wellbeing",
       "w": 390,
-      "x": 9400,
+      "x": 10810,
       "y": 0
     },
     "WellbeingLight.dc.html": {
@@ -377,8 +379,62 @@
       "radius": 28,
       "title": "11 · Digital Wellbeing (light)",
       "w": 390,
-      "x": 9400,
+      "x": 10810,
       "y": 2560
+    },
+    "CategorySheet.dc.html": {
+      "h": 1060,
+      "radius": 28,
+      "title": "10c · Expense categories sheet",
+      "w": 390,
+      "x": 8930,
+      "y": 0,
+      "is_interactive": true
+    },
+    "CategorySheetLight.dc.html": {
+      "h": 1060,
+      "radius": 28,
+      "title": "10c · Expense categories sheet (light)",
+      "w": 390,
+      "x": 8930,
+      "y": 2560,
+      "is_interactive": true
+    },
+    "ExpenseCategoryNew.dc.html": {
+      "h": 980,
+      "radius": 28,
+      "title": "10d · New expense category",
+      "w": 390,
+      "x": 9400,
+      "y": 0,
+      "is_interactive": true
+    },
+    "ExpenseCategoryNewLight.dc.html": {
+      "h": 980,
+      "radius": 28,
+      "title": "10d · New expense category (light)",
+      "w": 390,
+      "x": 9400,
+      "y": 2560,
+      "is_interactive": true
+    },
+    "VaultCategoryNew.dc.html": {
+      "h": 980,
+      "radius": 28,
+      "title": "10e · New Vault category",
+      "w": 390,
+      "x": 10340,
+      "y": 0,
+      "is_interactive": true
+    },
+    "VaultCategoryNewLight.dc.html": {
+      "h": 980,
+      "radius": 28,
+      "title": "10e · New Vault category (light)",
+      "w": 390,
+      "x": 10340,
+      "y": 2560,
+      "is_interactive": true
     }
   },
   "createdOnFiles": {
@@ -427,7 +483,10 @@
     "TasksUpcoming.dc.html",
     "AddTask.dc.html",
     "More.dc.html",
+    "CategorySheet.dc.html",
+    "ExpenseCategoryNew.dc.html",
     "Vault.dc.html",
+    "VaultCategoryNew.dc.html",
     "Wellbeing.dc.html",
     "Capture.dc.html",
     "TodayLight.dc.html",
@@ -449,7 +508,10 @@
     "TasksUpcomingLight.dc.html",
     "AddTaskLight.dc.html",
     "MoreLight.dc.html",
+    "CategorySheetLight.dc.html",
+    "ExpenseCategoryNewLight.dc.html",
     "VaultLight.dc.html",
+    "VaultCategoryNewLight.dc.html",
     "WellbeingLight.dc.html",
     "CaptureLight.dc.html"
   ],

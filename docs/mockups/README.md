@@ -132,6 +132,17 @@ Plan changes made in the proposal: the tabs are Today, Money, Travel, Planner an
 
 "Categories" in More are the **expense categories** used in Money (Food, Travel, Shopping and so on). The row is renamed "Expense categories" so it is not confused with Vault categories.
 
+## Review round 5: category sheets, theme switch, capture sheet (16 Nov 2026)
+
+| Feedback | Change |
+| --- | --- |
+| Sheet for Expense categories | 10c: a sheet listing all categories with icon, colour and this month's spend, and a "New category" button |
+| New category sheets | 10d (expense) and 10e (Vault) share one component, `CategorySheet.dc.html`: a live preview, name, eight colours and an icon grid. Expense uses bright colours and money icons; Vault uses deep colours and document icons |
+| Dark theme switch too light | The switch is dark purple when on |
+| Capture sheet looked clumsy | Rebuilt around one input. As you type, it shows what it understood as labelled chips (amount, category, paid with, from), and one coloured button to save. Questions ("who owes me") show the answer in place. Below: five round shortcuts and three ready questions |
+
+**Implementation note:** the capture sheet's chips show the offline assistant's rules at work, so it is never presented as AI. It is plain pattern matching on amounts, keywords and account names (plan section 10).
+
 Decisions that change the plan, to be folded into the proposal:
 
 - **A credit card paid through UPI is a Credit Card expense.** The method is where the money comes from. The card shows "paid by UPI QR". The SMS rule checks for a card before UPI markers.

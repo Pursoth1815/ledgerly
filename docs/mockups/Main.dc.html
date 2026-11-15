@@ -22,8 +22,9 @@
 <a href="Wellbeing.dc.html" aria-label="Digital Wellbeing" style="width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; background: {{c.wellT}}; color: {{c.well}}">
 <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10M7 21h10M8 3v2.5a4 4 0 0 0 1.6 3.2L12 10.5l2.4-1.8A4 4 0 0 0 16 5.5V3M8 21v-2.5a4 4 0 0 1 1.6-3.2L12 13.5l2.4 1.8a4 4 0 0 1 1.6 3.2V21"></path></svg>
 </a>
-<button aria-label="Settings" style="width: 44px; height: 44px; border-radius: 22px; border: 0; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t2}}">
-<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+<button onClick="{{toggleTheme}}" aria-label="{{themeLabel}}" style="width: 44px; height: 44px; border-radius: 22px; border: 0; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t1}}">
+<sc-if value="{{isDark}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"></path></svg></sc-if>
+<sc-if value="{{isLight}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></sc-if>
 </button>
 </div>
 </div>
@@ -230,8 +231,8 @@
 <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"></path><path d="M14 7v10" stroke-dasharray="2 2"></path></svg>Travel</a>
 <a href="Notes.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
 <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h5"></path></svg>Notes</a>
-<a href="Vault.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
-<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2.5"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Vault</a>
+<a href="More.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="2"></rect><rect x="13" y="4" width="7" height="7" rx="2"></rect><rect x="4" y="13" width="7" height="7" rx="2"></rect><rect x="13" y="13" width="7" height="7" rx="2"></rect></svg>More</a>
 </nav>
 </div>
 </x-dc>
@@ -246,8 +247,10 @@ class Component extends DCLogic {
     return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',btn:'#F3F5F9',btnT:'#0D0F14',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)',lend:'#FBBF24',lendT:'rgba(251,191,36,0.13)',travel:'#8F98FF',travelT:'rgba(143,152,255,0.16)',notes:'#E6CDA3',notesT:'rgba(230,205,163,0.13)',well:'#2DD4BF',wellT:'rgba(45,212,191,0.14)',review:'#FF9F5A',reviewT:'rgba(255,159,90,0.15)',red:'#FF7B7B',onAccent:'#0D0F14'};
   }
   renderVals() {
-    const c = this.pal(this.props.theme);
     const s = this.state || {};
+    const baseLight = this.props.theme === 'light';
+    const light = s.flip ? !baseLight : baseLight;
+    const c = this.pal(light ? 'light' : 'dark');
     const pending = 4;
     const done = s.done || {};
     const taskDefs = [
@@ -285,6 +288,10 @@ class Component extends DCLogic {
     return {
       c,
       badge: pending > 1 ? pending + ' New' : 'New',
+      isDark: !light,
+      isLight: light,
+      themeLabel: light ? 'Switch to dark theme' : 'Switch to light theme',
+      toggleTheme: () => this.setState({ flip: !s.flip }),
       tasks,
       tasksLeft: left === 0 ? 'all done' : left + ' due',
       friends,

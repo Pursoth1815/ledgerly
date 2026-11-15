@@ -11,35 +11,42 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
 <style>body{margin:0}</style>
 </helmet>
-<div style="width: 390px; height: 960px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+<div style="width: 390px; height: 960px; position: relative; overflow: hidden; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
 <main style="padding: 28px 20px 120px; display: flex; flex-direction: column; gap: 18px">
 
 <header style="display: flex; flex-direction: column; gap: 14px">
-<h1 style="margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.5px">Notes</h1>
+<div style="display: flex; align-items: center; justify-content: space-between">
+<h1 style="margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.5px; line-height: 44px">Notes</h1>
+<a href="AddTask.dc.html" style="height: 44px; padding: 0 16px; border-radius: 22px; background: {{c.notes}}; color: {{c.onAccent}}; display: flex; align-items: center; font-size: 14px; font-weight: 800; text-decoration: none">+ Task</a>
+</div>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 20px; background: {{c.s2}}">
 <a href="Notes.dc.html" style="height: 40px; border-radius: 16px; color: {{c.t2}}; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; text-decoration: none">Notes</a>
 <span aria-current="page" style="height: 40px; border-radius: 16px; background: {{c.notes}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800">Tasks</span>
 </div>
 <div role="group" aria-label="View" style="display: flex; gap: 8px">
-<button aria-pressed="true" style="height: 34px; padding: 0 14px; border-radius: 17px; border: 1.5px solid {{c.notes}}; background: {{c.notesT}}; color: {{c.notes}}; font-family: inherit; font-size: 13px; font-weight: 700">Today</button>
-<button aria-pressed="false" style="height: 34px; padding: 0 14px; border-radius: 17px; border: 1px solid {{c.line}}; background: transparent; color: {{c.t2}}; font-family: inherit; font-size: 13px; font-weight: 700">Upcoming</button>
-<button aria-pressed="false" style="height: 34px; padding: 0 14px; border-radius: 17px; border: 1px solid {{c.line}}; background: transparent; color: {{c.t2}}; font-family: inherit; font-size: 13px; font-weight: 700">Completed</button>
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
+<button onClick="{{t.pick}}" aria-pressed="{{t.pressed}}" style="height: 36px; padding: 0 14px; border-radius: 18px; border: {{t.border}}; background: {{t.bg}}; color: {{t.fg}}; font-family: inherit; font-size: 13px; font-weight: 700">{{t.label}}</button>
+</sc-for>
 </div>
 </header>
+
+<sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 44px 20px; border-radius: 22px; border: 1.5px dashed {{c.line}}; text-align: center; font-size: 14px; color: {{c.t3}}">Nothing here yet. Tick a task to see it in Completed.</div>
+</sc-if>
 
 <sc-for list="{{groups}}" as="g" hint-placeholder-count="2">
 <section aria-label="{{g.name}}" style="display: flex; flex-direction: column; gap: 8px">
 <h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{g.color}}">{{g.name}}</h2>
 <div style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 20px; padding: 4px 14px">
 <sc-for list="{{g.tasks}}" as="t" hint-placeholder-count="2">
-<div style="display: flex; align-items: center; gap: 12px; min-height: 64px; border-bottom: {{t.divider}}">
+<div style="display: flex; align-items: center; gap: 4px; min-height: 60px; border-bottom: {{t.divider}}">
 <button onClick="{{t.toggle}}" aria-pressed="{{t.pressed}}" aria-label="{{t.a11y}}" style="width: 44px; height: 44px; margin-left: -10px; flex-shrink: 0; border: 0; background: transparent; display: flex; align-items: center; justify-content: center">
-<span style="width: 24px; height: 24px; border-radius: 12px; box-sizing: border-box; border: {{t.ring}}; background: {{t.fill}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center">
-<sc-if value="{{t.done}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+<span style="width: 20px; height: 20px; border-radius: 10px; box-sizing: border-box; border: {{t.ring}}; background: {{t.fill}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center; transform: scale({{t.scale}}); transition: background 220ms ease, border-color 220ms ease, transform 260ms cubic-bezier(.3,1.6,.5,1)">
+<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="24" stroke-dashoffset="{{t.dash}}" style="transition: stroke-dashoffset 300ms ease 120ms"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
 </span>
 </button>
 <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
-<span style="font-size: 15px; font-weight: 600; color: {{t.titleColor}}; text-decoration: {{t.strike}}">{{t.title}}</span>
+<span style="font-size: 15px; font-weight: 600; color: {{t.titleColor}}; text-decoration: {{t.strike}}; transition: color 200ms ease">{{t.title}}</span>
 <span style="font-size: 12px; font-weight: 600; color: {{t.subColor}}">{{t.sub}}</span>
 </span>
 </div>
@@ -62,54 +69,72 @@
 <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"></path><path d="M14 7v10" stroke-dasharray="2 2"></path></svg>Travel</a>
 <a href="Notes.dc.html" aria-current="page" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 700; color: {{c.t1}}">
 <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h5"></path></svg>Notes</a>
-<a href="Vault.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
-<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2.5"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Vault</a>
+<a href="More.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="2"></rect><rect x="13" y="4" width="7" height="7" rx="2"></rect><rect x="4" y="13" width="7" height="7" rx="2"></rect><rect x="13" y="13" width="7" height="7" rx="2"></rect></svg>More</a>
 </nav>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":960}}'>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"view":{"editor":"enum","options":["today","upcoming","completed"],"default":"today"},"$preview":{"width":390,"height":960}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { done: { water: true } };
+    const v = props && props.view;
+    this.state = { tab: v === 'upcoming' || v === 'completed' ? v : 'today', done: { water: true } };
   }
   pal(t) {
-    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',notes:'#735E3B',notesT:'#F3ECE0',red:'#B91C1C',onAccent:'#FFFFFF'};
-    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',btn:'#F3F5F9',btnT:'#0D0F14',notes:'#E6CDA3',notesT:'rgba(230,205,163,0.13)',red:'#FF7B7B',onAccent:'#0D0F14'};
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',notes:'#735E3B',notesT:'#F3ECE0',money:'#047857',red:'#B91C1C',onAccent:'#FFFFFF'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',btn:'#F3F5F9',btnT:'#0D0F14',notes:'#E6CDA3',notesT:'rgba(230,205,163,0.13)',money:'#34D399',red:'#FF7B7B',onAccent:'#0D0F14'};
   }
   renderVals() {
     const c = this.pal(this.props.theme);
-    const done = (this.state && this.state.done) || {};
-    const mk = (list) => list.map((t, i) => {
-      const d = !!done[t.id];
+    const s = this.state || {};
+    const tab = s.tab || 'today';
+    const done = s.done || {};
+    const all = [
+      { id: 'bill', group: 'Overdue', when: 'today', title: 'Pay electricity bill', sub: 'Yesterday · monthly', overdue: true },
+      { id: 'elec', group: 'Today · Sun 15 Nov', when: 'today', title: 'Call electrician', sub: '18:00 · reminder set' },
+      { id: 'ins', group: 'Today · Sun 15 Nov', when: 'today', title: 'Renew bike insurance', sub: 'Any time today' },
+      { id: 'water', group: 'Today · Sun 15 Nov', when: 'today', title: 'Water the plants', sub: 'Daily' },
+      { id: 'pack', group: 'Tomorrow · Mon 16 Nov', when: 'upcoming', title: 'Pack for the Trichy trip', sub: '20:00 · reminder set' },
+      { id: 'book', group: 'Fri 20 Nov', when: 'upcoming', title: 'Book Coimbatore ticket', sub: 'Book-by date from Travel' },
+      { id: 'rent', group: 'Tue 1 Dec', when: 'upcoming', title: 'Pay rent', sub: 'Monthly' }
+    ];
+    const inTab = all.filter((t) => tab === 'completed' ? !!done[t.id] : t.when === tab);
+    const names = [];
+    inTab.forEach((t) => { const n = tab === 'completed' ? 'Completed' : t.group; if (names.indexOf(n) < 0) names.push(n); });
+    const groups = names.map((name) => {
+      const list = inTab.filter((t) => (tab === 'completed' ? 'Completed' : t.group) === name);
       return {
-        ...t,
-        done: d,
-        pressed: d ? 'true' : 'false',
-        a11y: (d ? 'Mark not done: ' : 'Mark done: ') + t.title,
-        toggle: () => this.setState({ done: { ...done, [t.id]: !d } }),
-        ring: d ? '0' : '2px solid ' + (t.overdue ? c.red : c.t3),
-        fill: d ? c.notes : 'transparent',
-        titleColor: d ? c.t3 : c.t1,
-        strike: d ? 'line-through' : 'none',
-        subColor: t.overdue && !d ? c.red : c.t3,
-        divider: i < list.length - 1 ? '1px solid ' + c.line : '0'
+        name,
+        color: name === 'Overdue' ? c.red : c.t3,
+        tasks: list.map((t, i) => {
+          const d = !!done[t.id];
+          return {
+            title: t.title, sub: t.sub,
+            pressed: d ? 'true' : 'false',
+            a11y: (d ? 'Mark not done: ' : 'Mark done: ') + t.title,
+            toggle: () => this.setState({ done: { ...done, [t.id]: !d } }),
+            ring: d ? '1.5px solid ' + c.money : '1.5px solid ' + (t.overdue ? c.red : c.t3),
+            fill: d ? c.money : 'transparent',
+            scale: d ? '1.08' : '1',
+            dash: d ? '0' : '24',
+            titleColor: d ? c.t3 : c.t1,
+            strike: d ? 'line-through' : 'none',
+            subColor: t.overdue && !d ? c.red : c.t3,
+            divider: i < list.length - 1 ? '1px solid ' + c.line : '0'
+          };
+        })
       };
     });
-    const groups = [
-      { name: 'Overdue', color: c.red, tasks: mk([
-        { id: 'bill', title: 'Pay electricity bill', sub: 'Yesterday · monthly', overdue: true }
-      ]) },
-      { name: 'Today · Sat 14 Nov', color: c.t3, tasks: mk([
-        { id: 'elec', title: 'Call electrician', sub: '18:00 · reminder set' },
-        { id: 'ins', title: 'Renew bike insurance', sub: 'Today · policy in Vault' },
-        { id: 'water', title: 'Water the plants', sub: 'Daily' }
-      ]) },
-      { name: 'Next · Mon 16 Nov', color: c.t3, tasks: mk([
-        { id: 'pack', title: 'Pack for Coimbatore trip', sub: '20:00 · reminder set' }
-      ]) }
-    ];
-    return { c, groups };
+    const tabs = [['today', 'Today'], ['upcoming', 'Upcoming'], ['completed', 'Completed']].map((t) => ({
+      label: t[1],
+      pick: () => this.setState({ tab: t[0] }),
+      pressed: tab === t[0] ? 'true' : 'false',
+      border: tab === t[0] ? '1.5px solid ' + c.notes : '1px solid ' + c.line,
+      bg: tab === t[0] ? c.notesT : 'transparent',
+      fg: tab === t[0] ? c.notes : c.t2
+    }));
+    return { c, tabs, groups, empty: groups.length === 0 };
   }
 }
 </script>

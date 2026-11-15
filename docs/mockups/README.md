@@ -23,9 +23,13 @@ The files in this folder are the source of that canvas, kept in git so every rev
 | 6b | Ticket details, train | 7 | |
 | 6c | Ticket details, bus | 7 | |
 | 7 | Lock screen, 15 minutes before departure | 7 | |
-| 8 | Notes | 8 | |
-| 9 | Tasks | 8 | Tick tasks off |
-| 10 | Document Vault | 8 | |
+| 8 | Notes | 8 | Tap a note to press it in and show pin, edit and delete |
+| 8b | Add note sheet | 8 | Title, text, checklist, pin and note colour |
+| 9 | Tasks, Today | 8 | Today, Upcoming and Completed tabs; tick tasks off |
+| 9b | Tasks, Upcoming | 8 | Same screen on the Upcoming tab |
+| 9c | Add task sheet | 8 | Due, reminder, repeat and time |
+| 10 | More (last tab) | 3 | Opens the Vault, Screen time and Accounts and cards |
+| 10b | Document Vault (inside More) | 8 | |
 | 11 | Digital Wellbeing | 9 | |
 | 12 | Capture sheet with the command line | 10 | |
 
@@ -94,10 +98,24 @@ The owner reviewed Today and shared real bank, railway and bus SMS as reference.
 | Bank should be a searchable dropdown, not chips | A search field with a dropdown. Typing filters the list and highlights the match; an unknown name can be added as a new bank. Screen 4b shows "hd" typed |
 | Travel needs a list page | New Travel list (6) with All / Train / Bus tabs, upcoming trips (including a planned trip with a book-by date) and earlier trips |
 | Ticket page should match Today | Ticket details now show what the SMS carries. Train (6b): station codes, train number, class, coach, berth, chart status and the boarding note. Bus (6c): route, seat, platform, bus number on the day and a call-conductor button. Arrival time is not in the SMS, so it is an "+ Arrival time" button |
-| Lock screen button colours | "Show ticket" stays indigo; "Done" is green with a tick. This needs the custom notification layout already planned for the final ticket notice, to be confirmed in the Phase 0 spike |
+| Lock screen button colours | Tried a green "Done"; the owner preferred the original, so "Show ticket" is indigo and "Done" is outlined |
 | Lending wording | The person page no longer shows a due date; it shows the last repayment |
 
 The SMS sender codes shown in the bank dropdown are examples. The real list is built in Phase 3.
+
+## Review round 3: Notes, Tasks and navigation (15 Nov 2026)
+
+| Feedback | Change |
+| --- | --- |
+| Tasks: "Today" showed tomorrow's task | The Today tab shows only Overdue and Today. Everything later is under Upcoming (9b). The three tabs work |
+| Sheets for adding a task and a note | Add note (8b) and Add task (9c) are bottom sheets, opened from "+ Note" and "+ Task" |
+| Notes cards too plain | Two columns of colour-tinted cards with checklist previews. Each note has one of six colours |
+| Tapping a note | The card presses in slightly, gets a ring in its colour, and shows Pin, Edit and Delete. Delete has Undo |
+| Remove the folder tabs | Removed. Notes have no folders; pinned notes come first |
+| Settings icon on Today | Replaced by a light or dark theme switch |
+| Settings in the bottom bar; Vault moves inside | The last tab is **More**: Vault and Screen time as tiles, then settings grouped as Money, Reminders, Privacy and backup, and App. The name leaves room for later additions |
+
+Plan changes made in the proposal: the tabs are Today, Money, Travel, Notes and More (section 3), and Notes have colours and no folders (section 8).
 
 Decisions that change the plan, to be folded into the proposal:
 

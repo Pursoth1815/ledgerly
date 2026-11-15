@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add note</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+
+<div aria-hidden="true" style="padding: 28px 20px; display: flex; flex-direction: column; gap: 14px">
+<span style="font-size: 34px; font-weight: 800">Notes</span>
+<span style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<span style="height: 150px; border-radius: 20px; background: {{c.ghostA}}"></span>
+<span style="height: 150px; border-radius: 20px; background: {{c.ghostB}}"></span>
+</span>
+</div>
+<div aria-hidden="true" style="position: absolute; inset: 0; background: {{c.scrim}}"></div>
+
+<section aria-label="New note" style="position: absolute; left: 0; right: 0; bottom: 0; top: 120px; background: {{c.s1}}; border-radius: 30px 30px 0 0; padding: 10px 20px 28px; display: flex; flex-direction: column; gap: 16px">
+<span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: {{c.line}}"></span>
+<div style="display: flex; align-items: center; justify-content: space-between">
+<h1 style="margin: 0; font-size: 22px; font-weight: 800">New note</h1>
+<a href="Notes.dc.html" aria-label="Close" style="width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t1}}">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+</a>
+</div>
+
+<div style="flex: 1; min-height: 0; border-radius: 22px; background: {{tintBg}}; padding: 16px; display: flex; flex-direction: column; gap: 10px; transition: background 250ms ease">
+<label style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 11px; font-weight: 700; color: {{tintAccent}}">Title</span>
+<input value="{{title}}" onChange="{{setTitle}}" placeholder="Title" style="border: 0; outline: none; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 20px; font-weight: 800; padding: 0">
+</label>
+<label style="flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 11px; font-weight: 700; color: {{tintAccent}}">Note</span>
+<textarea value="{{body}}" onChange="{{setBody}}" placeholder="Start typing…" style="flex: 1; min-height: 0; resize: none; border: 0; outline: none; background: transparent; color: {{c.t2}}; font-family: inherit; font-size: 15px; line-height: 1.6; padding: 0"></textarea>
+</label>
+<div style="display: flex; gap: 8px">
+<button onClick="{{toggleList}}" aria-pressed="{{listPressed}}" style="height: 38px; padding: 0 12px; border-radius: 19px; border: {{listBorder}}; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="4"></rect><path d="M8 12.5l3 3 5-6"></path></svg>Checklist</button>
+<button onClick="{{togglePin}}" aria-pressed="{{pinPressed}}" style="height: 38px; padding: 0 12px; border-radius: 19px; border: {{pinBorder}}; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="{{pinFill}}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6l-1 6 4 4H6l4-4zM12 14v6"></path></svg>Pin</button>
+</div>
+</div>
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+<span style="font-size: 13px; font-weight: 700; color: {{c.t3}}">Colour</span>
+<div role="group" aria-label="Note colour" style="display: flex; gap: 4px">
+<sc-for list="{{colours}}" as="k" hint-placeholder-count="6">
+<button onClick="{{k.pick}}" aria-pressed="{{k.pressed}}" aria-label="{{k.name}}" style="width: 44px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center">
+<span style="width: 28px; height: 28px; border-radius: 14px; background: {{k.dot}}; box-shadow: {{k.ring}}"></span>
+</button>
+</sc-for>
+</div>
+</div>
+
+<button style="width: 100%; height: 56px; flex-shrink: 0; border-radius: 28px; border: 0; background: {{c.money}}; color: {{c.onAccent}}; font-family: inherit; font-size: 17px; font-weight: 800">Save note</button>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { title: 'Trichy trip', body: 'ID card\nCharger\nUmbrella\nCall Karthik after reaching', tint: 'lilac', list: true, pin: false };
+  }
+  pal(t) {
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',money:'#047857',onAccent:'#FFFFFF',scrim:'rgba(17,20,27,0.45)',ghostA:'#DDF3E7',ghostB:'#F6EBD6',
+      tints:{sand:['#F6EBD6','#735E3B'],mint:['#DDF3E7','#047857'],sky:['#DDEBFB','#1D4ED8'],rose:['#FBE1EA','#BE185D'],lilac:['#E9E3FB','#6D28D9'],lemon:['#FBF3C9','#854D0E']}};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',money:'#34D399',onAccent:'#0D0F14',scrim:'rgba(0,0,0,0.6)',ghostA:'rgba(52,211,153,0.14)',ghostB:'rgba(230,205,163,0.16)',
+      tints:{sand:['rgba(230,205,163,0.16)','#E6CDA3'],mint:['rgba(52,211,153,0.14)','#34D399'],sky:['rgba(96,165,250,0.16)','#7CB7FF'],rose:['rgba(244,114,182,0.15)','#F58BC0'],lilac:['rgba(167,139,250,0.17)','#B9A3FF'],lemon:['rgba(250,204,21,0.13)','#F5D547']}};
+  }
+  renderVals() {
+    const c = this.pal(this.props.theme);
+    const s = this.state || {};
+    const tint = c.tints[s.tint] || c.tints.sand;
+    const colours = Object.keys(c.tints).map((name) => ({
+      name,
+      dot: c.tints[name][1],
+      pick: () => this.setState({ tint: name }),
+      pressed: s.tint === name ? 'true' : 'false',
+      ring: s.tint === name ? '0 0 0 3px ' + c.s1 + ', 0 0 0 5px ' + c.tints[name][1] : 'none'
+    }));
+    return {
+      c, colours,
+      tintBg: tint[0],
+      tintAccent: tint[1],
+      title: s.title,
+      setTitle: (e) => this.setState({ title: e.target.value }),
+      body: s.body,
+      setBody: (e) => this.setState({ body: e.target.value }),
+      toggleList: () => this.setState({ list: !s.list }),
+      listPressed: s.list ? 'true' : 'false',
+      listBorder: s.list ? '1.5px solid ' + tint[1] : '1px solid ' + c.line,
+      togglePin: () => this.setState({ pin: !s.pin }),
+      pinPressed: s.pin ? 'true' : 'false',
+      pinBorder: s.pin ? '1.5px solid ' + tint[1] : '1px solid ' + c.line,
+      pinFill: s.pin ? 'currentColor' : 'none'
+    };
+  }
+}
+</script>
+</body>
+</html>

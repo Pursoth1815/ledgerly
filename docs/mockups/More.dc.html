@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>More</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 1340px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+<main style="padding: 28px 20px 120px; display: flex; flex-direction: column; gap: 20px">
+
+<header style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.5px; line-height: 44px">More</h1>
+<p style="margin: 0; font-size: 14px; color: {{c.t2}}">Everything stays on this phone.</p>
+</header>
+
+<section aria-label="Tools" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<a href="Vault.dc.html" style="height: 136px; box-sizing: border-box; border-radius: 22px; padding: 16px; background: {{c.vaultT}}; color: {{c.t1}}; text-decoration: none; display: flex; flex-direction: column; justify-content: space-between">
+<span style="width: 40px; height: 40px; border-radius: 13px; background: {{c.vault}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2.5"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+</span>
+<span style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 16px; font-weight: 800">Vault</span>
+<span style="font-size: 12px; color: {{c.t2}}">27 documents · 1 expiring</span>
+</span>
+</a>
+<a href="Wellbeing.dc.html" style="height: 136px; box-sizing: border-box; border-radius: 22px; padding: 16px; background: {{c.wellT}}; color: {{c.t1}}; text-decoration: none; display: flex; flex-direction: column; justify-content: space-between">
+<span style="width: 40px; height: 40px; border-radius: 13px; background: {{c.well}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10M7 21h10M8 3v2.5a4 4 0 0 0 1.6 3.2L12 10.5l2.4-1.8A4 4 0 0 0 16 5.5V3M8 21v-2.5a4 4 0 0 1 1.6-3.2L12 13.5l2.4 1.8a4 4 0 0 1 1.6 3.2V21"></path></svg>
+</span>
+<span style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 16px; font-weight: 800">Screen time</span>
+<span style="font-size: 12px; color: {{c.t2}}">3 h 12 m today</span>
+</span>
+</a>
+</section>
+
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
+<section aria-label="{{g.name}}" style="display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{c.t3}}">{{g.name}}</h2>
+<div style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 20px; padding: 2px 16px">
+<sc-for list="{{g.rows}}" as="r" hint-placeholder-count="3">
+<a href="{{r.href}}" style="display: flex; align-items: center; gap: 12px; min-height: 56px; border-bottom: {{r.divider}}; text-decoration: none; color: {{c.t1}}">
+<span style="width: 10px; height: 10px; flex-shrink: 0; border-radius: 5px; background: {{r.dot}}"></span>
+<span style="flex: 1; font-size: 15px; font-weight: 600">{{r.label}}</span>
+<span style="font-size: 13px; color: {{c.t3}}">{{r.value}}</span>
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{c.t3}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+</a>
+</sc-for>
+</div>
+</section>
+</sc-for>
+
+<p style="margin: 0; font-size: 12px; color: {{c.t3}}; text-align: center">Kanakku 0.1 · no internet permission</p>
+</main>
+
+<nav aria-label="Main" style="position: absolute; left: 0; right: 0; bottom: 0; height: 84px; box-sizing: border-box; padding: 10px 8px 20px; display: flex; justify-content: space-around; align-items: flex-start; background: {{c.s1}}; border-top: 1px solid {{c.line}}">
+<a href="Main.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5L12 4l8 6.5V20H15v-5H9v5H4z"></path></svg>Today</a>
+<a href="Accounts.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"></rect><path d="M3 10h18M16 15h2"></path></svg>Money</a>
+<a href="Travel.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"></path><path d="M14 7v10" stroke-dasharray="2 2"></path></svg>Travel</a>
+<a href="Notes.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h5"></path></svg>Notes</a>
+<a href="More.dc.html" aria-current="page" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 700; color: {{c.t1}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="2"></rect><rect x="13" y="4" width="7" height="7" rx="2"></rect><rect x="4" y="13" width="7" height="7" rx="2"></rect><rect x="13" y="13" width="7" height="7" rx="2"></rect></svg>More</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":1340}}'>
+class Component extends DCLogic {
+  pal(t) {
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',money:'#047857',travel:'#4338CA',notes:'#735E3B',vault:'#44536A',vaultT:'#E6EBF2',well:'#0F766E',wellT:'#DBF3EF',review:'#B03A0A',card:'#6D28D9',onAccent:'#FFFFFF'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',money:'#34D399',travel:'#8F98FF',notes:'#E6CDA3',vault:'#A3B5CC',vaultT:'rgba(163,181,204,0.14)',well:'#2DD4BF',wellT:'rgba(45,212,191,0.14)',review:'#FF9F5A',card:'#C4A5FF',onAccent:'#0D0F14'};
+  }
+  renderVals() {
+    const c = this.pal(this.props.theme);
+    const mk = (name, rows) => ({ name, rows: rows.map((r, i) => ({ href: 'More.dc.html', ...r, divider: i < rows.length - 1 ? '1px solid ' + c.line : '0' })) });
+    const groups = [
+      mk('Money', [
+        { label: 'Accounts and cards', value: '4 accounts · 5 cards', dot: c.money, href: 'Accounts.dc.html' },
+        { label: 'Categories', value: '12', dot: c.money },
+        { label: 'SMS detection', value: 'On', dot: c.review }
+      ]),
+      mk('Reminders', [
+        { label: 'Travel reminder times', value: '19:00 · 07:00', dot: c.travel },
+        { label: 'Task reminders', value: 'On', dot: c.notes }
+      ]),
+      mk('Privacy and backup', [
+        { label: 'App lock', value: 'Fingerprint', dot: c.vault },
+        { label: 'Backup and restore', value: '9 days ago', dot: c.vault },
+        { label: 'Export logs', value: '', dot: c.t3 }
+      ]),
+      mk('App', [
+        { label: 'Theme', value: 'Dark', dot: c.card },
+        { label: 'About Kanakku', value: '', dot: c.t3 }
+      ])
+    ];
+    return { c, groups };
+  }
+}
+</script>
+</body>
+</html>

@@ -521,7 +521,7 @@
     "darkTitle": {
       "kind": "title1",
       "maxW": 8000,
-      "text": "Kanakku · dark theme (designed first)",
+      "text": "Loopd · dark theme (designed first)",
       "w": 240,
       "x": 0,
       "y": -280
@@ -529,7 +529,7 @@
     "lightTitle": {
       "kind": "title1",
       "maxW": 8000,
-      "text": "Kanakku · light theme",
+      "text": "Loopd · light theme",
       "w": 240,
       "x": 0,
       "y": 2280
@@ -596,5 +596,5 @@
     "CaptureLight.dc.html"
   ],
   "pages": [],
-  "title": "Kanakku Mockups"
+  "title": "Loopd Mockups"
 }

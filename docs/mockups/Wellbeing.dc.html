@@ -115,7 +115,7 @@ class Component extends DCLogic {
       { name: 'WhatsApp', initial: 'W', mins: 46, time: '46 m', opens: '62 opens' },
       { name: 'Instagram', initial: 'I', mins: 31, time: '31 m', opens: '28 opens' },
       { name: 'Chrome', initial: 'C', mins: 22, time: '22 m', opens: '9 opens' },
-      { name: 'Kanakku', initial: 'K', mins: 6, time: '6 m', opens: '11 opens' }
+      { name: 'Loopd', initial: 'L', mins: 6, time: '6 m', opens: '11 opens' }
     ].map((a, i, all) => ({ ...a, pct: Math.round(a.mins / 58 * 100) + '%', divider: i < all.length - 1 ? '1px solid ' + c.line : '0' }));
     return { c, hours, days, apps };
   }

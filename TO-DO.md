@@ -1,6 +1,6 @@
 # TO-DO.md
 
-Postponed features for the personal app (working name: Kanakku).
+Postponed features for the personal app (Loopd).
 
 Nothing in this file is part of the roadmap. No phase allocates time to it. An item moves into the plan only when you decide to schedule it.
 

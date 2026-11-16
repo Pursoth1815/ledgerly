@@ -1,10 +1,10 @@
 # Personal App — Product Proposal & Phased Roadmap
 
-Nov 16, 2026 · @Pursoth · Revision 3.1
+Nov 16, 2026 · @Pursoth · Revision 3.2
 
 ## Summary
 
-This is revision 3.1 of the proposal. It keeps revision 2's scope, folds in every decision from six rounds of design review on the mockups ([docs/mockups](docs/mockups/README.md)), and adds your answers of 16 November: cash, reminder times, the capture sheet and your phone. It describes an Android-first, fully offline personal app built on capture, confirm, remember, with nine core modules and no paid or cloud dependency of any kind.
+This is revision 3.2 of the proposal. It keeps revision 2's scope, folds in every decision from six rounds of design review on the mockups ([docs/mockups](docs/mockups/README.md)), adds your answers of 16 November (cash, reminder times, the capture sheet and your phone), and records the architecture agreed in Phase 0A (section 13). It describes an Android-first, fully offline personal app built on capture, confirm, remember, with nine core modules and no paid or cloud dependency of any kind.
 
 - **Modules.** Today, Expenses, Lending, Travel, Notes, Tasks, Document Vault, Digital Wellbeing and an offline assistant. Notes, Tasks and the Vault are core, not deferred.
 - **Navigation.** Five tabs: Today, Money, Travel, Planner (Notes and Tasks) and More (Vault, Screen time and settings).
@@ -15,11 +15,27 @@ This is revision 3.1 of the proposal. It keeps revision 2's scope, folds in ever
 - **Digital Wellbeing.** Feasible on Android through usage access. Not currently feasible on iOS.
 - **Assistant.** One input in the capture sheet that shows what it understood as chips, plus fixed questions answered from your own data. No AI service of any kind.
 - **Platform.** Android 15 (API 35) is the minimum. iOS keeps compiling, and everything on it is marked Not Yet Verified because there is no iPhone to test on.
-- **Plan.** Thirteen phases. The first is an architecture discussion and the folder structure, then native spikes on your phone. Money with SMS capture at day 37, the full core at day 80, Android v1.0 at day 93, widgets and the floating bubble last at day 100. There are no deadlines; the days only size the work.
+- **Plan.** Thirteen phases. The first is an architecture discussion and the folder structure, then native spikes on your phone. Money with SMS capture at day 39, the full core at day 83, Android v1.0 at day 96, widgets and the floating bubble last at day 103. There are no deadlines; the days only size the work.
 - **Postponed.** Multi-device sync and nine other ideas are listed in TO-DO.md and have no time in the roadmap.
-- **From you.** Two small open points in section 19: your phone's Android version, and the text tools.
+- **Architecture.** Feature-first Flutter with Riverpod and go_router, a double-entry ledger in Drift on SQLCipher, Tink encryption with Keystore-protected keys, Kotlin in the app's own Android project, and a resumable encrypted backup (section 13).
+- **From you.** Open points in section 19: your phone's Android version, the text tools, and the architecture choices still pending.
 
 ## 1. What changed
+
+### Revision 3.2: the architecture agreed in Phase 0A
+
+| Area | Revision 3.1 | Revision 3.2 |
+| --- | --- | --- |
+| Native code | One in-repo plugin | Kotlin in the app's own Android project, with one typed Pigeon interface and per-flavour source sets |
+| Notifications | A scheduling package plus Kotlin | Own Kotlin for alarms and notifications; the Dart reminder engine works out the schedule |
+| Background work | Event-driven, no detail | A short-lived headless Flutter engine started by WorkManager, and only one copy of the app writing the database at a time |
+| Ledger | Paise, totals computed when read | A double-entry ledger with signed postings, stored payment method, refunds linked to originals, opening and verified balances, edit history and undo (section 13) |
+| SQLCipher | SQLCipher | The SQLCipher build bundled by the `sqlite3` Dart package; SQLite3MultipleCiphers in SQLCipher 4 mode as the documented fallback |
+| File encryption | AES-256-GCM per file, keys wrapped in the Keystore | Tink streaming encryption (1.24.0), a derived key per file; `AndroidKeysetManager` is not used |
+| Backup | One encrypted archive | A versioned index file plus parts, resumable after interruption, read back before it counts, never overwriting the last good backup |
+| iOS encryption | Not Yet Verified | Backup and vault encryption are Coming Soon on iOS: they need iOS crypto work, Tink C++ first |
+| Name | Not chosen | **Loopd**, from the app's capture → confirm → remember loop. App id `com.pursoth.loopd`, Dart package `loopd` |
+| Effort | v1.0 at day 93 | v1.0 at day 96: one day each added to Phase 0B, Phase 2 and Phase 7 |
 
 ### Revision 3.1: your answers of 16 November
 
@@ -89,7 +105,7 @@ Every decision in your final instructions is applied below. Rejected features ar
 
 The product stays built on one loop: **capture, confirm, remember**. Information arrives by typing, by a bank or ticket SMS, or by sharing a file into the app. The app turns it into a draft, you confirm it, and it is filed where it belongs.
 
-It is an Android-first app for one person, working fully offline, with an Apple-like level of finish. Working name: **Kanakku**.
+It is an Android-first app for one person, working fully offline, with an Apple-like level of finish. Name: **Loopd** (chosen on 16 November 2026).
 
 Your resume already covers what this needs, so the plan leans on it instead of adding technology for show.
 
@@ -365,7 +381,7 @@ All three are core modules, kept deliberately small: quick to open, quick to add
 | Tap a note | The card presses in slightly, gets a ring in its colour, and shows Pin, Edit and Delete. Delete has Undo |
 | Create and edit | A sheet with a large title, a status line ("Checklist · 3 of 4 left"), and either plain text or checklist rows you can tick. Pin and six colours (sand, mint, sky, rose, lilac, lemon) sit below. Saved as you type |
 | Organise | Pin to top, a colour for each note, delete with Undo. No folders |
-| Quick capture | From the capture sheet, by sharing text into the app, or with "Save to Kanakku" in another app's text-selection menu on Android |
+| Quick capture | From the capture sheet, by sharing text into the app, or with "Save to Loopd" in another app's text-selection menu on Android |
 | Note to task | Long-press a line to turn it into a task |
 | Order | Pinned notes first, then most recently edited |
 
@@ -398,7 +414,7 @@ How the vault is protected:
 
 | Protection | How |
 | --- | --- |
-| Encryption at rest | Each file is encrypted with AES-256-GCM under its own key. Those keys are wrapped by a master key held in the Android Keystore. Thumbnails are encrypted too |
+| Encryption at rest | Each file is encrypted with Tink streaming AES-256-GCM, with its own key derived for that file. The keyset is protected by a master key held in the Android Keystore. Thumbnails are encrypted too |
 | Opening the vault | Fingerprint, face or device PIN each time, with a setting to rely on the app lock alone |
 | On screen | Screenshots are blocked and the content is hidden in the app switcher on Android |
 | Temporary files | Documents are decrypted in memory or into a private cache that is wiped on close |
@@ -497,10 +513,10 @@ These apply to every module and are built before the modules that depend on them
 | --- | --- |
 | Review Inbox | One place for every unconfirmed item from SMS, sharing or commands. Nothing leaves it without your decision |
 | Encrypted database | SQLCipher from the first build, with the key held in the Android Keystore |
-| Encrypted backup | One archive containing the database, vault files and ticket documents, encrypted with a key derived from a passphrase you choose |
+| Encrypted backup | A versioned backup (an index file plus parts) containing the database, vault files and ticket documents. It is encrypted with a backup key that your passphrase unlocks through Argon2id; details in section 13 |
 | Where backups go | Wherever you pick in the system file picker. That can be a cloud-drive folder on the phone, with no account or API inside the app |
 | Restore | Checks the archive's version and integrity before replacing anything |
-| Backup reminders | A Today nudge after seven days, and an optional weekly automatic backup to a folder you choose |
+| Backup reminders | A Today nudge after seven days, and an optional weekly automatic backup to a folder you choose. A backup counts only after it is read back, and the last good backups are never overwritten |
 | Backup & restore screen | A status card with Back up now and its progress, where backups are saved, the weekly switch, the passphrase, a size breakdown of what is inside, and Restore with a passphrase warning |
 | App lock | Fingerprint, face or device PIN on opening and after a timeout you set |
 | App-switcher privacy | Content hidden and screenshots blocked on Android. On iOS a cover screen is shown when the app leaves the foreground, Not Yet Verified |
@@ -532,11 +548,12 @@ When each permission is asked:
 | Display over other apps | You switch on the floating bubble |
 | Biometrics | You switch on the app lock |
 
-### Three shared engines
+### Shared engines
 
 - **Ledger.** Every money movement goes through it: expense, income, transfer (including ATM withdrawals into Cash in hand), cash adjustment, card settlement, loan and repayment. Modules never write money rows themselves, so the totals cannot disagree.
 - **Capture inbox.** Drafts from SMS, sharing and commands use one confirm-or-review flow.
 - **Reminders.** Trips, tasks, the daily task summary, document expiry and backup nudges use one scheduler. Quiet hours apply to task reminders only. It rebuilds its schedule after a restart and whenever the app opens.
+- **Backup.** Takes the snapshot, writes and verifies the backup, keeps the retention, and runs the restore checks.
 
 ## 12. Removed and postponed
 
@@ -588,6 +605,8 @@ The whole product runs on the phone: a Flutter app organised by feature, one enc
 
 The minimum is **Android 15 (API 35)**. Because of that, the restricted-settings step for a sideloaded build, exact alarms being off by default, and lock-screen rules for ongoing notifications always apply, and no code is needed for older versions.
 
+This section is the architecture agreed in the Phase 0A discussion on 16 November 2026. Each decision has a record in [docs/adr](docs/adr/), and the developer guide is [docs/architecture.md](docs/architecture.md). Android is the only implementation target for now; iOS only has to keep compiling.
+
 [embedded content: App architecture · 4 layers, no server
 
 Each layer depends only on the one below. Features never touch the database, the file store or the operating system directly.
@@ -596,20 +615,280 @@ Each layer depends only on the one below. Features never touch the database, the
 
 | Area | Decision | Why it fits this app |
 | --- | --- | --- |
-| Structure | One app, organised by feature, with presentation, domain and data layers inside each feature | Nine modules built by one person. Each can be built and tested in its own phase |
-| Shared screens | One widget per pattern with a mode, as in the mockups: the expense form (add or review), the category sheet (expense or Vault), the settings page (backup, task reminders or logs), the ticket details (train or bus) | Fewer screens to build and test, and they cannot drift apart |
-| Shared logic | Ledger, capture inbox and reminders live in a core layer that every feature calls | One set of money rules and one scheduler, so modules cannot disagree |
-| State management | Riverpod | The database emits live query results. Riverpod turns them into screen state with little glue and also provides dependency injection, so no second package is needed. BLoC is equally sound if you prefer it |
-| Database | Drift on SQLite, encrypted with SQLCipher | A ledger is sums, joins and date ranges. Drift gives typed queries and tested migrations. Hive and Isar lack relational queries |
-| Money values | Whole paise in integer columns; totals computed when read, never stored | An edit or a late SMS corrects every total automatically |
-| Files | An encrypted file store for vault documents and ticket files; the database holds their details and wrapped keys | Large files stay out of the database; backup copies both |
-| Native code | One in-repo plugin with a typed bridge. Kotlin for SMS, the ticket notification, usage access, sharing, the bubble and widgets. Swift only for iOS sharing and widgets, later | The risky parts are native. Writing them yourself uses your experience and avoids depending on small third-party plugins |
-| Notifications | A scheduling package for timed reminders and action buttons; Kotlin for the final ticket layout. One notification per trip, one channel per kind | Meets the update-in-place and stay-until-Done requirements |
-| Background work | Event-driven only: SMS broadcast, alarms, restart, and one daily job | No polling and no permanent service in the core app |
-| SMS parser and command parser | Two plain-Dart packages with fixture tests. The command parser runs on every keystroke in the capture sheet | They hold the most logic and are the easiest parts to test thoroughly |
-| Testing | Unit tests for parsers, ledger rules and reminder timing with a fake clock; database and migration tests; visual tests for components; a few end-to-end flows | Money and reminders must be provably right |
-| Build pipeline | Analyse, test, build both Android flavours, and compile iOS without signing on every change | Keeps the iOS build from breaking without an iPhone |
+| Structure | Feature-first: one folder per business module (today, expenses, lending, travel, notes, tasks, document_vault, digital_wellbeing, capture, settings). Each feature has domain, data and presentation layers only where it has content for them. The tabs are navigation only and live in the app shell, together with the More page | Nine modules built by one person, each in its own phase, without empty layers |
+| Boundaries | A feature exposes one public file. Other code imports only that file. Writes that cross modules go through the core engines. A CI script rejects forbidden imports | A rule that is checked does not erode |
+| Shared logic | Four engines in `core`: ledger, capture inbox, reminders and backup. Services only wrap the operating system. There is no generic "services" or "utils" folder | One owner for every rule |
+| Shared screens | One widget per pattern with a mode, as in the mockups | Fewer screens, and they cannot drift apart |
+| State management | Riverpod 3 with code generation. Classes take their dependencies in the constructor; providers only wire them together. No interface-plus-implementation pairs for repositories; a use case only for a flow that spans several owners | Little glue, easy test overrides, no ceremony |
+| Navigation | go_router with a five-tab shell and one navigator per tab. Route paths are constants in `core/routing` | Tabs keep their own history; features never import each other's screens |
+| Database | Drift on SQLite, encrypted with SQLCipher. The SQLCipher library is the build bundled by the `sqlite3` Dart package (`source: sqlcipher`). One database file with one schema version, tables grouped by owner, one DAO per owner, and only the owner writes its tables | A ledger is sums, joins and date ranges. Drift gives typed queries and generated migration tests |
+| Money | A double-entry ledger in whole paise (below). Totals are computed when read, never stored | An edit or a late SMS corrects every total |
+| Files | An encrypted file store using Tink streaming encryption, with a separate derived key for each file | Large files never sit unencrypted or whole in memory |
+| Native code | Kotlin inside the app's own Android project, not a plugin. One typed interface generated by Pigeon. Code for the personal build only (SMS) lives in that flavour's source set | Per-flavour manifests and permissions come for free; no plugin boilerplate |
+| Alarms and notifications | Own Kotlin. The reminder engine (Dart) works out the schedule; Kotlin stores it, sets the exact alarms, re-registers them after a restart, and draws and updates the notifications | One scheduler and one restart path |
+| Background work | Event-driven only: an SMS arriving, an alarm, a restart, a daily usage snapshot and the weekly backup. Dart code that must run while the app is closed runs in a short-lived headless Flutter engine started by WorkManager. Only one copy of the app writes the database at a time | No polling and no permanent service in the core app |
+| SMS parser and command parser | Two plain-Dart packages with fixture tests | They hold the most logic and are the easiest to test thoroughly |
 | Backend | None | Nothing to host, pay for or secure |
+
+### Layers and folders
+
+```text
+app/                 start-up, flavour config, router, five-tab shell, More page,
+ │                   background entry point (from Phase 0B)
+ ▼
+features/            one folder per module; each exposes one public file
+ │         ╲
+ ▼          ▼
+core engines         design_system/   (generic UI only, from Phase 1)
+(ledger, capture_inbox, reminders, backup)
+ │
+ ▼
+core infrastructure  (database, security, platform, logging, errors, routing, …)
+ │                         │
+ ▼                         ▼
+packages/ (pure Dart)  Kotlin in android/app (reached only through core/platform)
+```
+
+| Name | Meaning |
+| --- | --- |
+| Engine | Owns business rules used by several features, and its own tables. Only an engine writes its tables |
+| Service | A thin wrapper over the operating system or input and output. No business rules |
+| Repository | Data access for one owner's tables, built on its DAO. A concrete class |
+| DAO | The Drift accessor for one owner's tables, used only inside that owner's folder |
+
+The ledger owns accounts, cards, Cash in hand and categories. Their screens live in the expenses feature. The capture inbox owns drafts, the identity hash and merchant memory. The full folder map, the import rules and the naming rules are in [docs/architecture.md](docs/architecture.md).
+
+### The ledger: data model
+
+Every money event is one row in `ledger_transactions` with two or more rows in `postings`.
+
+```text
+accounts               id, kind, name, bank_code, last4, is_default, created_at, removed_at
+                       kind: bank | credit_card | cash | category | income | loan
+                             | adjustment | write_off | opening
+categories             account_id → accounts, colour, icon, sort_order
+ledger_transactions    id, kind, payment_method, channel, occurred_at (UTC ms), local_date,
+                       merchant, note, refund_of, revision, created_at, updated_at, deleted_at
+                       kind: expense | refund | income | transfer | card_payment | loan
+                             | repayment | write_off | adjustment | opening_balance
+postings               id, transaction_id, account_id, amount_paise (≠ 0)
+                       UNIQUE (transaction_id, account_id)
+transaction_sources    draft_id (primary key), transaction_id, role, linked_at      (capture inbox)
+balance_checkpoints    id, account_id, as_of, actual_paise, source, note, created_at, deleted_at
+transaction_revisions  id, transaction_id, revision, action, snapshot_json, reason,
+                       operation_id, changed_at
+loans                  account_id → accounts, person_id, purpose                    (lending)
+```
+
+**The sign convention.** Every posting says how much moved into (+) or out of (−) one account, and the postings of a transaction always sum to zero. A bank account, Cash in hand or a loan has a positive balance when you have money or are owed money. A credit card has a negative balance for the amount you owe and a positive one for a credit on the card. A category's positive balance is spending, and an income account's negative balance is income.
+
+Examples:
+
+| Event | Postings |
+| --- | --- |
+| ₹62 by UPI from Primary | Snacks +6200 · Primary −6200 |
+| ₹1,299 on the Kiwi card | Shopping +129900 · Kiwi −129900 |
+| ₹705 on Kiwi paid by UPI QR | Travel +70500 · Kiwi −70500 (method Credit Card, channel upi_qr) |
+| ₹705 card bill paid from Savings | Kiwi +70500 · Savings −70500 (not spending) |
+| ₹300 refund of the ₹1,299 order to the card | Kiwi +30000 · Shopping −30000 |
+| ₹2,000 at an ATM | Cash in hand +200000 · Savings −200000 (not spending) |
+| ₹5,000 lent to Arun | Loan (Arun) +500000 · Savings −500000 |
+| ₹1,500 of it repaid | Primary +150000 · Loan (Arun) −150000 |
+| ₹60,000 salary | Salary account +6000000 · Salary income −6000000 |
+
+Each loan is its own account, so "oldest loan first" is written directly into the postings. A write-off moves a loan balance to a written-off account, which is never spending.
+
+**Payment method.** `payment_method` is stored on its own, next to the funding account (the posting that is not a category) and the channel (how the SMS says it happened). The ledger rejects a combination that does not fit:
+
+| payment_method | Funding account | Set by |
+| --- | --- | --- |
+| upi | bank | The form and SMS |
+| credit_card | credit_card | The form and SMS |
+| cash | cash | The form and the capture line |
+| debit_card, net_banking, auto_debit | bank | SMS only; no new button in the form |
+
+It is required for expenses, refunds, loans and repayments, and empty for the other kinds. Where the three SMS-only methods appear in Today's UPI, Card and Cash split is still your decision.
+
+**Refunds.**
+
+- A refund always points to its original purchase (`refund_of` is required), and the total refunded can never exceed the original. A credit SMS with no known original stays in the Review Inbox as an unclear item.
+- The refund's `payment_method` and funding account describe where the money actually came back: the same card, a bank account, or cash.
+- Spending reports attribute a refund to the **original's** category, method and card. Balances use the **actual** destination. Example: a ₹1,299 card purchase refunded to Savings by UPI gives Savings +129900 and Shopping −129900. Shopping and the card's spending both fall to zero. The card still shows ₹1,299 owed, because that is still true, and the UPI total does not change.
+- Reports offer two modes. In purchase-month mode a refund counts in the month of the original. In cash-flow mode it counts in its own month. Over a range that covers both dates, the totals are the same. Which mode is the default, and where the switch sits, is still your decision.
+- A purchase with live refunds cannot be deleted directly. You see its refunds and choose to edit the purchase, or to delete it together with its refunds as an explicit action. Nothing is removed silently.
+
+**Many SMS, one transaction.** The capture inbox links drafts to transactions:
+
+```sql
+CREATE TABLE transaction_sources (
+  draft_id       TEXT PRIMARY KEY REFERENCES capture_drafts(id),
+  transaction_id TEXT NOT NULL REFERENCES ledger_transactions(id),
+  role           TEXT NOT NULL
+                 CHECK (role IN ('primary', 'pair_debit', 'pair_credit', 'evidence')),
+  linked_at      INTEGER NOT NULL
+) STRICT;
+
+-- At most one primary, one pair_debit and one pair_credit per transaction;
+-- any number of evidence links.
+CREATE UNIQUE INDEX transaction_sources_one_role
+  ON transaction_sources (transaction_id, role)
+  WHERE role IN ('primary', 'pair_debit', 'pair_credit');
+```
+
+- The primary key on `draft_id` means a draft belongs to at most one transaction.
+- A card bill uses `pair_debit` and `pair_credit` on one card payment. An SMS for an expense you already typed in is `evidence`, which changes no money.
+- The rule "a single primary, or a pair, but not both" spans several rows, so the ledger engine checks it, and the health check confirms it.
+- A draft gets its future transaction id when it is created, so confirming it twice (from the app and from the notification) cannot create two transactions.
+
+**Opening and verified balances.**
+
+- An optional opening balance is an `opening_balance` transaction against an opening account, dated "as of" a day you choose. The tracked balance is the opening balance plus the postings dated after it; older history does not count twice.
+- A verified balance is a figure you type in after checking your bank or card app. It is stored in `balance_checkpoints` with the **same sign as the ledger**:
+  - bank: positive is money in the account, negative an overdraft
+  - card: negative is the amount owed, positive a credit on the card
+  - The form asks for "Amount owed" or "Credit on the card" and never asks for a sign.
+- The difference shown is the actual balance minus the tracked balance.
+- Labels:
+  - "Movement since …" when there is no opening balance (never called a balance)
+  - "Tracked balance" with an opening balance
+  - "Verified … · date" when the latest check matches
+  - "Tracked … · Bank says … · ₹… unexplained" when it does not
+- The first Update count of Cash in hand becomes its opening balance; later counts are adjustments.
+
+**Edits, undo and reconciliation.**
+
+- Every create, edit, delete and restore adds a row to `transaction_revisions` with a full snapshot. History is never rewritten.
+- An edit replaces the postings inside one database transaction and keeps the transaction's id, its SMS links and its refund links.
+- A delete is a soft delete.
+- Undo applies the previous snapshot as a new revision, and only while nothing has changed since; otherwise it says it cannot undo.
+- Reconciliation never creates anything by itself:
+  - Cash in hand differences become an adjustment, outside spending.
+  - A bank or card difference is shown. You add the missing transaction, record a labelled adjustment outside spending, or leave it.
+  - Editing anything dated before a checkpoint marks that checkpoint for a recheck.
+- Unmatched card-bill halves stay in the Review Inbox. They pair on the same amount within a time window still to be confirmed (proposed ±3 days).
+
+**Guards.**
+
+- Only the ledger can import the ledger DAO (checked in CI).
+- Every kind has a fixed posting shape.
+- Postings must sum to zero, with at least two of them.
+- Amounts are never zero, and an account appears once per transaction.
+- Tables are SQLite `STRICT` and foreign keys are on.
+- Money is in 64-bit integer paise only.
+- A health check (sums, legs, refunds within originals, method matching the funding account) runs in tests, on debug starts and after every restore.
+
+### Keys and encryption
+
+| Key | Created | Stored | Protected by |
+| --- | --- | --- | --- |
+| Keystore master key (AES-256-GCM) | First launch, inside the Android Keystore | Never leaves the Keystore | Hardware or the secure area of the chip |
+| Database key (256-bit random) | First launch | Encrypted blob in app-private storage that is never backed up | The master key, through Tink's `AndroidKeystore` helper |
+| Vault keyset (Tink streaming) | First vault file | Encrypted keyset blob | The master key |
+| Backup master key | When backup is set up | Encrypted blob, plus a copy wrapped by your passphrase inside every backup | The master key, and your passphrase through Argon2id |
+
+- **Libraries, pinned.** Checked on Maven Central on 16 November 2026: `com.google.crypto.tink:tink-android` **1.24.0**, and `org.bouncycastle:bcprov-jdk18on` **1.86**, used only for Argon2id. 1.87 is the newest release but only five days old; it is taken once it is two weeks old and its release notes are clean. Each library is added in the phase that first uses it.
+- **Primitives.**
+  - Files and backups: Tink streaming `AES256_GCM_HKDF_1MB`, with associated data binding each file to its identity.
+  - Small secrets: AES-256-GCM in the Keystore.
+  - Passphrase: Argon2id, with settings tuned on your phone.
+- **`AndroidKeysetManager` is not used.** In Tink 1.24.0 it quietly stores keysets unencrypted when the Keystore fails, and it tries to read a keyset as unencrypted when decryption fails. Tink's own documentation advises against relying on it. Instead:
+  - Keysets are saved only in encrypted form, through Tink's `AndroidKeystore` helper and encrypted keyset serialisation, which have no unencrypted path.
+  - One Kotlin class writes key material, and it has a single, encrypted-only write method.
+  - A CI check fails the build on `AndroidKeysetManager`, `CleartextKeysetHandle` or unencrypted keyset serialisation.
+  - Tests check that the stored bytes cannot be read as a plain key, and that a missing Keystore key raises an error instead of falling back.
+  - At start-up, a test value is wrapped and unwrapped. If that fails, the app shows a recovery screen and never starts in a weaker mode.
+  - Keystore calls run one at a time on one background thread.
+- **Keystore key settings.** No fingerprint requirement and no "unlocked device" requirement, because SMS handling, reminders and backups run while the phone is locked. App lock and the vault's fingerprint prompt control access; they are not the encryption.
+- **Large files** are encrypted and decrypted in a stream, one segment at a time, and written to a temporary name before being renamed. A PDF is decrypted to a private temporary file, because Android's PDF renderer needs one; that file is deleted on close, on app lock and at every start.
+- **Compatibility.** Every encrypted file and backup records a format version. Committed fixture files from every version must still decrypt in every build.
+- **Not production-ready until proven on your phone.** Phase 0B stress-tests the Keystore on your Tecno phone (1,000 wrap-and-unwrap cycles, including after a restart). It also benchmarks streaming encryption and Argon2id against the targets in Phase 0B below. Until those pass, the encryption design is unverified.
+
+### Backup lifecycle
+
+**What a backup is (format version 1).** One backup run produces an index file and one or more part files, written into the folder you chose:
+
+```text
+loopd-<run>.lpdb           header: "LPDB", format version, Argon2id settings, salt,
+                           backup key id, backup key wrapped by your passphrase
+                           + Tink stream (the header is its associated data) holding the
+                           manifest: app and schema version, parts with sizes and SHA-256,
+                           entries and where each lives
+loopd-<run>-p0001.lpdp     Tink stream (associated data: run id + part number) holding a
+loopd-<run>-p0002.lpdp     tar archive of whole entries; files larger than a part are split
+…                          across numbered members
+```
+
+- The database entry is an encrypted copy made with SQLCipher's `sqlcipher_export` under a fresh random key, which travels inside the encrypted manifest. No unencrypted copy is written to disk.
+- Vault files are decrypted from the vault stream and sealed straight into the backup stream, so a backup does not depend on this phone's keys.
+- The index is written last, so a run without a readable index is not a backup.
+
+**Stages.**
+
+1. **Setup.**
+   - You choose a passphrase (minimum length still to decide) and a folder in the system folder picker. The app keeps permanent access to that folder.
+   - A random backup key is created. It is wrapped by the Keystore for the weekly runs, and by your passphrase through Argon2id for every backup file. The passphrase itself is never stored.
+2. **Weekly backup.**
+   - WorkManager starts a normal background job. It needs no visible notification and does not use the foreground-service time Android 15 limits.
+   - At the start of a run, the database copy is taken and the run's plan (which entries go into which part) is saved.
+   - Each job execution writes whole parts and records each finished part.
+3. **Interruption and resume.** If Android stops the job (time limit, low battery, restart or the app being closed), the part being written is discarded and the next execution continues from the last finished part, with the same database copy. If any foreground service is ever used for a manual backup, Android 15's `onTimeout` call is handled the same way: save progress, stop within seconds and resume later. A run that has not finished within 7 days is abandoned and its parts are removed.
+4. **Verification.** After the index is written, the run reads everything back: every part's SHA-256, and every stream authenticated. Only then does the run count as successful.
+5. **Retention.** Files are never overwritten; every run has its own names. Older backups are removed only after a new one is verified, and only files the app created. At least the last three successful backups are kept. Whether a fourth, older one is also kept is still your decision.
+6. **Restore.**
+   - Read the index and unlock the backup key with your passphrase.
+   - Check every part and entry, and restore into a staging folder.
+   - Run the integrity and ledger health checks and the migrations.
+   - Create new keys for this phone, then swap the staging folder in. The old data stays until the swap succeeds.
+
+**When things go wrong.**
+
+| Problem | What happens |
+| --- | --- |
+| Folder access lost (folder deleted, provider removed) | The run stops at once and asks you to choose the folder again; the Today nudge appears after 7 days |
+| Out of space | Stop and notify |
+| Provider error or timeout | Retry with growing waits, three tries within a day, then notify |
+| Read-back check fails | Remove the new files if allowed, retry once, then notify |
+
+A cloud provider only accepts the files; its own app uploads them later, because Loopd has no internet. Some providers may not offer folder access at all, so Phase 0B tests the providers on your phone. The fallback is a local folder that your own sync app copies.
+
+**What can be recovered.**
+
+| Situation | Data on the phone | Old backups | New backups |
+| --- | --- | --- | --- |
+| Same phone, passphrase forgotten | Untouched | Restorable on this phone only | Continue; a new passphrase can be set (how is still to decide) |
+| New phone or reinstall, passphrase known | Restored | Readable | Continue with the same passphrase |
+| New phone or reinstall, passphrase forgotten | Lost | Cannot be opened by anyone | Start fresh |
+| A damaged backup file | — | That one refused; older ones still work | Continue |
+
+Changing the passphrase creates a new backup key and an immediate fresh backup. Older backups still need the old passphrase on another phone.
+
+### Errors, logging and code standards
+
+- **Errors.** A sealed family of app exceptions (storage, keys, platform, validation and so on). Raw exceptions are converted at the data and platform edges, and the screens turn them into words through one mapping. A result type is used only where an outcome is expected rather than exceptional, such as parser results and form validation.
+- **Logs.** Structured events with safe fields only (bank code, template, counts), kept on the phone. Message text, amounts, digits and names are never written, with a redaction pass as a safety net.
+- **Code standards.** snake_case files with role suffixes (`_screen`, `_sheet`, `_notifier`, `_repository`, `_dao`, `_engine`, `_service`). Strict analyzer modes and lints, `dart format` checked in CI, and doc comments on the public APIs of engines and packages.
+
+### Testing and CI
+
+| Test | What it covers | Runs |
+| --- | --- | --- |
+| Unit | Ledger rules and invariants, lending allocation, reminder timing with a fake clock, validators, redaction | Every push |
+| Database | DAOs on a test database; SQLCipher encryption proven on a real file; generated migration tests for every schema version | Every push |
+| Parser fixtures | Scrambled SMS per bank and date format, duplicates, card-bill pairs | Every push |
+| Widget and golden | Screens with faked providers; design-system components in both themes | Every push (goldens on Linux only) |
+| Kotlin | Key storage, schedule store, crypto formats and backup format (fixtures from every version) | Every push |
+| Backup round trip | Back up, delete app data and keys, restore with the passphrase, compare every table, total and file hash | Before every release, on a device |
+| Integration | App launch, add an expense, paste an SMS and confirm, back up and restore | On demand and before a release |
+
+- There is no coverage percentage target. Money, data integrity, security and the main journeys must be covered.
+- The pipeline runs on GitHub Actions: format, analyse, the architecture check, Dart tests, Kotlin tests, and release builds of both flavours with a permission check (no internet permission in any build, no SMS permissions in the store build).
+- How often the iOS compile check runs is still your decision. Until then it runs only when started by hand.
+
+### Build flavours
+
+- Two Android flavours, `personal` and `store`. Both currently use the application id `com.pursoth.loopd`; whether the store build gets its own id is still to decide.
+- The flavours differ only in configuration, manifests and the personal-only native source set. The Dart business code is the same.
+- Android's automatic backup and phone-to-phone transfer are switched off for the app, because Keystore keys do not travel.
 
 ### Feasibility summary
 
@@ -618,12 +897,12 @@ Each layer depends only on the one below. Features never touch the database, the
 | SMS detection | Feasible on Android in the personal build | Play approval not assumed; none on iOS |
 | Ticket notification that stays until Done | Feasible on Android | iOS shows a standard notification that cannot be pinned |
 | Digital Wellbeing | Feasible on Android | Needs usage access; not feasible on iOS |
-| Document encryption | Feasible | Standard platform cryptography |
-| Encrypted backup to a folder you choose | Feasible | Through the system file picker, with no cloud API |
+| Document encryption | Feasible | Tink streaming encryption; speed to be confirmed on your phone in Phase 0B |
+| Encrypted backup to a folder you choose | Feasible | Through the system folder picker, with no cloud API; providers vary |
 | Offline assistant | Feasible as rules | Language features are out |
 | Home-screen widgets | Feasible | Buttons and read-only figures; no typing inside a widget |
 | Floating bubble | Feasible on Android, with a cost | Details below |
-| Fully offline | Feasible | The app ships without the internet permission |
+| Fully offline | Feasible | The app ships without the internet permission, checked on every build |
 
 ### The floating bubble, honestly
 
@@ -633,13 +912,20 @@ It is therefore opt-in, off by default, removed while the screen is off, and bui
 
 ### Battery and consistency
 
-- Nothing polls. Work happens when an SMS arrives, an alarm fires, the phone restarts, or once a day.
+- Nothing polls. Work happens when an SMS arrives, an alarm fires, the phone restarts, once a day for screen time, and once a week for the backup.
 - SMS parsing and import run off the main thread.
 - Every money change is one database transaction through the ledger engine.
 - Each SMS has a unique identity hash, so importing twice is harmless.
 - Reminders are derived from records and can always be rebuilt from them.
 
 Targets to measure, not results: a usable Today screen within 1.5 seconds of a cold start on a mid-range phone, and smooth scrolling with 10,000 transactions.
+
+### Technical limits to keep in mind
+
+- The Android Keystore is unreliable on a small share of phones. If Phase 0B shows problems on yours, the choice is between refusing to run and a passphrase at app start.
+- The SQLCipher build bundled by the `sqlite3` package can lag behind the newest SQLite version. Drift's documentation now favours SQLite3MultipleCiphers, which can read and write the SQLCipher 4 format. It is the documented fallback if the SQLCipher build ever causes trouble.
+- The `sqlite3` package downloads its prebuilt library during the build, never at run time.
+- iOS: Tink's iOS library has no streaming encryption. If iOS is ever built, Tink's C++ library is tried first, and a Swift implementation tested against shared fixture files only if that fails.
 
 ## 14. Android and iOS compatibility matrix
 
@@ -654,12 +940,13 @@ Android is where everything is built, tested and used. On iOS, "Not Yet Verified
 | Tasks with reminders | Yes | Not Yet Verified; at most 64 pending notifications per app ([Apple engineer](https://developer.apple.com/forums/thread/811171)) | Cross-platform |
 | Tickets and documents entered by hand | Yes | Not Yet Verified | Cross-platform |
 | Offline assistant | Yes | Not Yet Verified | Cross-platform |
-| Encrypted database, backup and restore | Yes | Not Yet Verified | Cross-platform |
+| Encrypted database | Yes | Not Yet Verified | Cross-platform |
+| Encrypted backup, restore and vault files | Yes | Coming Soon; needs iOS crypto work (Tink C++ first) | iOS-limited |
 | App lock | Yes | Not Yet Verified | Cross-platform |
 | Paste a message to get a transaction card | Yes | Not Yet Verified | Cross-platform |
 | Automatic SMS detection for payments and tickets | Yes, personal build | Not possible | Android-specific |
 | Transaction card as a notification | Yes | Not applicable | Android-specific |
-| "Save to Kanakku" from selected text | Yes | No equivalent | Android-specific |
+| "Save to Loopd" from selected text | Yes | No equivalent | Android-specific |
 | Floating bubble | Yes, opt-in, final phase | Not possible | Android-specific |
 | Four-stage reminder as one updating notification | Yes | Separate notifications in one group | iOS-limited |
 | Final ticket notification that stays until Done | Yes | A standard notification that cannot be pinned | iOS-limited |
@@ -676,47 +963,57 @@ Thirteen phases: the architecture and project structure first, core modules next
 
 Each diamond is a release gate reached when the phase before it passes its checks. Day counts are cumulative.
 
-### Phase 0: Architecture, project structure and spikes (8 days)
+### Phase 0: Architecture, project structure and spikes (9 days)
 
-Phase 0 has two parts. Part A comes first and needs no phone, so it can start now. Part B needs your phone.
+Phase 0 has two parts. Part A needs no phone. Part B needs your phone.
 
-#### Phase 0A: Architecture discussion and folder structure (4 days)
+#### Phase 0A: Architecture and project foundations (4 days), done
 
 | Item | Detail |
 | --- | --- |
-| Objective | Agree the architecture together before any feature code, then set up the project structure every later phase builds on |
-| Discussion | One session per topic, each ending in a short written decision record in `docs/adr/`: layers and how they depend on each other; feature-first folders; state management (Riverpod, or BLoC if you prefer); navigation and the five-tab shell; the database (Drift with SQLCipher) and migrations; the ledger, capture inbox and reminder engines; the encrypted file store; the native Kotlin bridge; error handling and logging; naming and code style; testing; build flavours |
-| Features | The agreed folder structure created in the repository; `docs/architecture.md` describing it; lint rules and formatting; minSdk 35; personal and store flavours; the build pipeline including an iOS compile check; an encrypted database opening an empty schema; the native bridge skeleton; an empty app that launches into the five-tab shell |
-| Technical dependencies | The approved mockups; your time for the discussion sessions |
-| Risks and platform restrictions | Over-designing for features that may never come. Each folder and decision has to serve a named phase |
-| Tested on Android | The pipeline passes; the empty app builds and launches on an emulator and opens the encrypted database |
+| Status | **Done on 17 November 2026** and approved by you. Tested on your Tecno Pova Curve 5G: the app launches into the five tabs, the Keystore-protected key is created, survives a restart and reaches Dart, and the encrypted database opens |
+| Objective | Agree the architecture before any feature code (done on 16 November 2026), then build the foundations every later phase uses |
+| Decisions | Recorded in `docs/adr/` (0001 to 0017) and summarised in section 13 |
+| Features | `docs/architecture.md`; strict lints and formatting; the architecture check script; minSdk 35; `personal` and `store` flavours with the application id `com.pursoth.loopd`; Android backup switched off; the Pigeon bridge with Keystore-protected database key storage; the encrypted database (SQLCipher) opening an empty schema, with the schema snapshot and migration test set-up; logging with redaction, including key events that never show key bytes; the app exception family; route constants; an app that launches into the five-tab shell with placeholder pages, its tab bar drawn to the mockups; the CI pipeline with the release-permission check |
+| Not included | Any feature, the design system, the ledger and the other engines, the background entry point (Phase 0B), SMS code and permissions (Phase 3), Bouncy Castle (added with backup) |
+| Technical dependencies | The approved mockups and architecture |
+| Risks and platform restrictions | Over-designing for features that may never come. Each folder has to serve a named phase, and no empty folders are created |
+| Tested on Android | Dart and Kotlin tests pass; both flavours build; the release builds have no internet permission; the app launches into the shell and opens the encrypted database on your phone. The pipeline runs on the pull request |
 | Needs an iPhone | Nothing. The iOS project only has to compile |
 
-The discussion starts from this outline, which is a proposal, not a decision:
+The folder structure Phase 0A creates (later folders arrive with their phase):
 
 ```text
 lib/
-  app/            app start, theme, router, five-tab shell
-  core/           ledger, capture inbox, reminders, database, file store, platform bridge
-  design_system/  tokens and shared components from the mockups
-  features/       today, money, lending, travel, planner, vault, wellbeing, more, capture
-                  each with data / domain / presentation
-packages/
-  sms_parser/     plain Dart, fixture tests
-  command_parser/ plain Dart, fixture tests
-android/          Kotlin plugin: SMS, notifications, usage access, sharing
-docs/adr/         one decision record per topic
+  main.dart
+  app/            start-up, flavour config, router, five-tab shell, placeholder pages
+  core/
+    database/     AppDatabase, encrypted opening, migrations
+    security/     database key access through the bridge
+    platform/     Pigeon-generated interface
+    logging/      structured logs with redaction
+    errors/       app exceptions
+    routing/      route path constants
+pigeons/          the Pigeon interface definition
+tool/             architecture check, release-permission check
+drift_schemas/    committed schema snapshots
+android/app/      flavours, Kotlin key storage and bridge, JVM tests
+test/             mirrors lib/; tool tests
+integration_test/ app launch test
+docs/architecture.md, docs/adr/
+.github/workflows/ci.yml
 ```
 
-#### Phase 0B: Native spikes on your phone (4 days)
+#### Phase 0B: Native spikes on your phone (5 days), next
 
 | Item | Detail |
 | --- | --- |
 | Objective | Prove the riskiest native pieces on your own phone before building on them |
-| Features | Four spikes: SMS receiver and inbox read; a ticket notification that shows on the lock screen, stays until Done and survives a restart; reading app usage; encrypting a file with a Keystore key |
+| Features | SMS receiver and inbox read; a ticket notification that shows on the lock screen, stays until Done and survives a restart; reading app usage; the headless background engine started by WorkManager, with the single-writer handover; Keystore stress test (1,000 wrap-and-unwrap cycles, and after a restart); Tink streaming benchmark (1, 10, 50 and 200 MB; 1 MB and 4 KB segments); Argon2id tuning; writing to and reading back from the folders and cloud providers on your phone; interrupting a long background job and resuming it |
+| Pass marks | A 20 MB PDF decrypted in under 1 second; a 10 MB photo encrypted in under 1 second; no memory failure at 200 MB, with under 10 MB of extra memory; Argon2id between 0.5 and 1.5 seconds; no Keystore failures |
 | Technical dependencies | Phase 0A; your phone, a Tecno Pova Curve 5G, and its Android version |
-| Risks and platform restrictions | A manufacturer's battery policy may delay the receiver or alarms. Tecno's HiOS manages background apps strictly, so the spikes also check its auto-start and battery settings. The restricted-settings step for a sideloaded build has to be walked through on your phone |
-| Tested on Android | All four spikes, on your phone |
+| Risks and platform restrictions | A manufacturer's battery policy may delay the receiver or alarms. Tecno's HiOS manages background apps strictly, so the spikes also check its auto-start and battery settings. The restricted-settings step for a sideloaded build has to be walked through on your phone. If the Keystore proves unreliable, a key decision returns to you |
+| Tested on Android | Every spike and benchmark, on your phone, with the results recorded in the ADRs. The encryption design counts as verified only after this |
 | Needs an iPhone | Nothing. The iOS project only has to compile |
 
 ### Phase 1: Design system and Today shell (8 days)
@@ -730,13 +1027,13 @@ docs/adr/         one decision record per topic
 | Tested on Android | Component gallery and visual tests in both themes |
 | Needs an iPhone | A visual check on a real device. Until then, Not Yet Verified |
 
-### Phase 2: Expenses with UPI, Credit Card and Cash (11 days)
+### Phase 2: Expenses with UPI, Credit Card and Cash (12 days)
 
 | Item | Detail |
 | --- | --- |
 | Objective | A manual expense tracker you can use every day, with data that is safe |
-| Features | Bank accounts and cards with nickname, last four digits and default, added from a sheet with a searchable bank list and live preview; the shared expense form with UPI, Credit Card and Cash; Cash in hand with Update count; categories with the category sheet; totals by period, category, method, account and card; editing; settlement, refund, transfer and income rules; encrypted backup and restore with its screen; app lock; app-switcher privacy |
-| Technical dependencies | Phase 1 components. The ledger engine is built here |
+| Features | Bank accounts and cards with nickname, last four digits and default, added from a sheet with a searchable bank list and live preview; the shared expense form with UPI, Credit Card and Cash; Cash in hand with Update count; categories with the category sheet; totals by period, category, method, account and card, in purchase-month and cash-flow modes; editing with history and undo; refunds linked to originals; settlement, transfer and income rules; optional opening balances and verified balances; encrypted backup and restore with its screen; app lock; app-switcher privacy |
+| Technical dependencies | Phase 1 components. The ledger engine (section 13) and the first version of the backup engine are built here; Bouncy Castle is added for Argon2id |
 | Risks and platform restrictions | The backup format must carry a version from its first release |
 | Tested on Android | Everything, including restore onto a clean install |
 | Needs an iPhone | File picker, biometric lock and cover screen. Not Yet Verified |
@@ -746,7 +1043,7 @@ docs/adr/         one decision record per topic
 | Item | Detail |
 | --- | --- |
 | Objective | Payments arrive as cards that you confirm |
-| Features | SMS setup with the restricted-settings guide; first-run import; receiver and inbox scan; templates for your banks; sender-code matching; method and account identification, card before UPI; ATM withdrawals as transfers to Cash in hand; duplicate matching; card bill payment pairing; the transaction card on Today (stacked), in the Review Inbox (with its opening animation) and as a notification; the single Review button for unclear items; delete with Undo; "Not a payment"; paste or share a message as the alternative; merchant memory |
+| Features | SMS setup with the restricted-settings guide; first-run import; receiver and inbox scan; templates for your banks; sender-code matching; method and account identification, card before UPI; ATM withdrawals as transfers to Cash in hand; duplicate matching; card bill payment pairing through the transaction sources; the transaction card on Today (stacked), in the Review Inbox (with its opening animation) and as a notification; the single Review button for unclear items; delete with Undo; "Not a payment"; paste or share a message as the alternative; merchant memory |
 | Technical dependencies | The SMS spike; scrambled fixtures exported from your phone; your list of banks and cards. The capture inbox engine is built here |
 | Risks and platform restrictions | Formats from banks you do not use are untested. Templates break when a bank rewords. A message deleted before the scan is lost. This flavour is not for Google Play |
 | Tested on Android | A replay over your own inbox, measured against the 95% target |
@@ -785,16 +1082,16 @@ docs/adr/         one decision record per topic
 | Tested on Android | Everything |
 | Needs an iPhone | Task reminders are Not Yet Verified. Sharing into the app is Coming Soon |
 
-### Phase 7: Document Vault and backup completion (6 days)
+### Phase 7: Document Vault and backup completion (7 days)
 
 | Item | Detail |
 | --- | --- |
 | Objective | Keep personal documents encrypted, viewable and recoverable |
-| Features | Everything in section 8 for the vault, including category icons and the new category sheet; vault files added to the backup archive; optional weekly automatic backup; document expiry reminders |
+| Features | Everything in section 8 for the vault, including category icons and the new category sheet; vault files added to the backup; the optional weekly automatic backup, resumable after interruption; read-back verification and retention; the full backup and restore round-trip test; document expiry reminders |
 | Technical dependencies | The encrypted file store from Phase 5; the app lock; the reminder engine |
 | Risks and platform restrictions | Memory use when decrypting large files. A forgotten backup passphrase cannot be recovered |
 | Tested on Android | Encryption round trips and a restore onto a clean install |
-| Needs an iPhone | Key storage and file import. Not Yet Verified |
+| Needs an iPhone | Vault encryption is Coming Soon on iOS (needs iOS crypto work); file import Not Yet Verified |
 
 ### Phase 8: Digital Wellbeing (6 days)
 
@@ -837,7 +1134,7 @@ docs/adr/         one decision record per topic
 | Features | Performance pass against the targets; accessibility pass; first-run onboarding and permission walkthrough; the Export logs screen; signed personal APK from the pipeline; README and decision records; a review of TO-DO.md |
 | Technical dependencies | All earlier phases |
 | Risks and platform restrictions | Polish is time-boxed. Android developer verification for sideloaded apps is planned to roll out globally in 2027, and a free limited-distribution account covers a small number of devices ([guide](https://developer.android.com/developer-verification/guides)) |
-| Tested on Android | A full regression checklist and a 24-hour battery check with detection switched on |
+| Tested on Android | A full regression checklist, a 24-hour battery check with detection switched on, and a restore drill of a real backup into a second install (an emulator, or the store flavour once it has its own application id) |
 | Needs an iPhone | Nothing new. The README states that iOS is Not Yet Verified |
 
 ### Phase 12: Home-screen widgets and floating bubble (7 days), final phase
@@ -853,19 +1150,19 @@ docs/adr/         one decision record per topic
 
 ## 16. Effort and milestones
 
-The core product is complete at day 80 and Android v1.0 at day 93. A build worth using every day, Expenses with SMS capture, exists at day 37.
+The core product is complete at day 83 and Android v1.0 at day 96. A build worth using every day, Expenses with SMS capture, exists at day 39.
 
 There is no deadline. You said on 16 November that time is not a constraint, so the focused days below only size the work and order it. They are not dates.
 
 | Milestone | Phases | Focused days |
 | --- | --- | --- |
 | Architecture and folder structure agreed | 0A | 4 |
-| Money with SMS capture | 0 to 3 | 37 |
-| Core product, all nine modules | 0 to 9 | 80 |
-| v1.0 Android | 0 to 11 | 93 |
-| v1.1 with widgets and bubble | 0 to 12 | 100 |
+| Money with SMS capture | 0 to 3 | 39 |
+| Core product, all nine modules | 0 to 9 | 83 |
+| v1.0 Android | 0 to 11 | 96 |
+| v1.1 with widgets and bubble | 0 to 12 | 103 |
 
-Revision 3.1 adds one day: Cash and Cash in hand in Phase 2.
+Revision 3.1 adds one day: Cash and Cash in hand in Phase 2. Revision 3.2 adds three: the background engine and the extra spikes and benchmarks in Phase 0B, the fuller ledger (opening and verified balances, history and undo, refund modes) in Phase 2, and the resumable, verified backup in Phase 7.
 
 How revision 3 moved Android v1.0 from 86 days to 92:
 
@@ -888,7 +1185,7 @@ How revision 2 moved Android v1.0 from 74 days to 86:
 | Global Search removed from the Money phase | -1 |
 | Borrowing removed from the Lending phase | -1 |
 
-The final phase adds 7 days for widgets and the bubble, ending at day 100. The former 8-day iOS phase is gone; keeping the iOS build compiling is part of each phase.
+The final phase adds 7 days for widgets and the bubble, ending at day 103. The former 8-day iOS phase is gone; keeping the iOS build compiling is part of each phase.
 
 Running cost is zero. There is no API, no server and no subscription. Fees arise only if you later publish to a store.
 
@@ -900,6 +1197,10 @@ The largest risks are device behaviour on Android and the size of the scope for 
 | --- | --- | --- |
 | A manufacturer's battery policy delays the SMS receiver or alarms | Late cards or a late reminder | The inbox scan catches missed messages. A missed reminder is detected on next open with a one-time guide to exempt the app. Proven on your phone in Phase 0 |
 | Exact alarms refused | The 15-minute reminder loses precision | It is scheduled ten minutes earlier so it cannot be late |
+| The Android Keystore misbehaves on your phone | Keys cannot be read; the app cannot open its data | No weaker fallback is ever used silently. Stress-tested in Phase 0B; if it fails, the choice returns to you. Backups restore with your passphrase |
+| The SQLCipher build behind the `sqlite3` package lags or breaks | An upgrade is blocked | Pinned versions; SQLite3MultipleCiphers in SQLCipher 4 mode is the documented fallback |
+| A cloud provider does not offer folder access, or uploads late | Backups do not reach the cloud | Tested in Phase 0B; a local folder plus your own sync app as the fallback; a backup counts only after it is read back |
+| Android stops a long background backup | A backup is left half-written | Backups are written in parts and resume from the last finished part; the last good backup is never touched |
 | Restricted settings on a sideloaded build | SMS, usage access and the bubble stay off until allowed | One guided step covers all three |
 | A bank rewords its SMS | Cards from that bank become unclear items that need Review | Generic extractor, then a template update with new fixtures |
 | Google Play refuses SMS access | No store version with detection | The personal build is the product. Play is in TO-DO.md |
@@ -946,7 +1247,7 @@ The interface is colourful but calm: each module has its own accent, and numbers
 | Wellbeing | Teal | Bars for days, a ranked list of apps with their icons |
 | Assistant | Follows the type being added | One input with labelled chips. No sparkle icons and no gradient, because it is not AI |
 
-The mockups were reviewed in six rounds between 14 and 16 November 2026. The next step is Phase 0A, the architecture discussion.
+The mockups were reviewed in six rounds between 14 and 16 November 2026. Phase 0A was finished on 17 November 2026; the next step is Phase 0B on your phone.
 
 ## 19. Questions that still need your answer
 
@@ -964,6 +1265,7 @@ Your confirmed decisions are applied and are not reopened here. Each open point 
 - [x] **On-device language features.** Not built.
 - [x] **Reminder times.** Travel stages are counted from departure, with no clock times. Only task reminders use times you choose: the lead, the snooze, the daily summary and quiet hours. Payment cards, travel stages and other alerts follow their own rules.
 - [x] **Your time.** No limit. The effort table sizes the work and is not a schedule.
+- [x] **Architecture.** Approved on 16 November 2026 as described in section 13, with Kotlin and Tink for encryption. Phase 0A was finished on 17 November 2026.
 
 ### Still open
 
@@ -972,9 +1274,37 @@ Your confirmed decisions are applied and are not reopened here. Each open point 
 - [ ] **Text tools** in section 10 (tidy spacing, sort lines, count words, pull out amounts) have no screen in the mockups. Should they be commands typed in the capture line, or be dropped?
   If you say nothing: commands in the capture line, built in Phase 9.
 
-Defaults taken because nothing was said: Riverpod for state management, Kanakku as the working name, and no text filter in Notes.
+Architecture choices still pending. Nothing that depends on them is built until you decide:
+
+- [ ] **Other bank methods in the split.** Where debit-card, net-banking and auto-debit payments appear in Today's UPI, Card and Cash split. Needed in Phase 2.
+- [ ] **Refund reporting.** Which mode is the default (purchase month or cash-flow), and where the switch sits. Needed in Phase 2.
+- [ ] **Pairing window.** The time allowed between the two SMS of a card bill or own transfer (proposed ±3 days). Needed in Phase 3.
+- [ ] **Backup retention.** At least the last three successful backups are kept. Should a fourth, at least 28 days old, also be kept? Needed in Phase 2.
+- [ ] **Weekly backup conditions.** Battery not low only, or also while charging. Needed in Phase 7.
+- [ ] **Restore without the passphrase** on the same phone, after a PIN or fingerprint check. Needed in Phase 2.
+- [ ] **Resetting a forgotten passphrase** on the same phone, after a PIN or fingerprint check. Needed in Phase 2.
+- [ ] **Minimum passphrase length** (12 characters suggested). Needed in Phase 2.
+- [ ] **An in-app "Test restore"** that restores into a staging area and discards it. This would be new scope. Needed in Phase 7 if wanted.
+- [ ] **Exact alarms in the personal build:** keep the permission prompt, or use the install-time permission that only sideloaded apps may use. Needed in Phase 5.
+- [ ] **The original SMS text** after a transaction is confirmed: keep it (encrypted) or delete it. Needed in Phase 3.
+- [ ] **The iOS compile check:** how often it runs in CI. Until you decide, it runs only when started by hand.
+- [ ] **Application ids.** Both flavours use `com.pursoth.loopd` for now. Should the store build get its own id, so both can be installed side by side?
+- [ ] **If the Keystore proves unreliable** on your phone in Phase 0B: refuse to run, or ask for a passphrase at app start.
+
+Defaults taken because nothing was said: Riverpod for state management and no text filter in Notes. The app is named Loopd (16 November 2026).
 
 ## Sources
+
+Checked on 16 Nov 2026 for the architecture in section 13:
+
+- [Maven Central: tink-android versions](https://repo1.maven.org/maven2/com/google/crypto/tink/tink-android/maven-metadata.xml) and [bcprov-jdk18on versions](https://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk18on/maven-metadata.xml)
+- [Tink 1.24.0 AndroidKeysetManager source](https://github.com/tink-crypto/tink-java/blob/v1.24.0/src/main/java/com/google/crypto/tink/integration/android/AndroidKeysetManager.java) and [AndroidKeystore source](https://github.com/tink-crypto/tink-java/blob/v1.24.0/src/main/java/com/google/crypto/tink/integration/android/AndroidKeystore.java)
+- [Tink primitives by language](https://developers.google.com/tink/primitives-by-language), [Tink C++](https://github.com/tink-crypto/tink-cc), [Tink Objective-C](https://github.com/tink-crypto/tink-objc)
+- [Drift: encryption](https://drift.simonbinder.eu/platforms/encryption/) and [sqlite3 package build hook options](https://github.com/simolus3/sqlite3.dart/blob/main/sqlite3/doc/hook.md)
+- [SQLCipher API, sqlcipher_export](https://www.zetetic.net/sqlcipher/sqlcipher-api)
+- [Android: foreground service timeouts](https://developer.android.com/develop/background-work/services/fgs/timeout)
+
+Earlier sources:
 
 Pages opened on 13 and 14 Nov 2026. Platform policies change, so re-check before acting on them.
 

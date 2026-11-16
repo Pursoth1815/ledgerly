@@ -2,7 +2,7 @@
 
 Rules for working on this repository. Read this before doing anything.
 
-The app's working name is **Kanakku** (the repository is `ledgerly`). It is an Android-first, fully offline personal app built on capture, confirm, remember.
+The app is called **Loopd**. It is an Android-first, fully offline personal app built on capture, confirm, remember.
 
 ## Source of truth
 
@@ -39,6 +39,7 @@ The owner reviews and merges everything. Claude never merges its own work.
 
 ## Platform targets
 
+- **Android is the only implementation target for now.** iOS only has to compile.
 - **Android 15 (API 35) is the minimum.** Set `minSdk = 35`. `targetSdk` and `compileSdk` follow the latest stable Android SDK.
 - Because the minimum is Android 15, these always apply and need no fallback for older versions:
   - The sideloaded build needs "Allow restricted settings" once for SMS, usage access and the overlay bubble.
@@ -65,8 +66,10 @@ The repository is private, but treat it as if it might become public later.
 
 ## Current stage
 
-- The plan is at revision 3.1 and the mockups were reviewed in six rounds (14 to 16 Nov 2026). Revision 3.1 adds the owner's answers of 16 Nov: Cash as a third method, travel reminders counted from departure, and the owner's phone.
-- The next step is **Phase 0A: an architecture discussion with the owner, one topic at a time, each ending in a decision record in `docs/adr/`, then the agreed folder structure**. Propose, discuss and wait for agreement; do not create folders or write feature code before the owner agrees. Phase 0B (native spikes) runs on the owner's Tecno Pova Curve 5G and needs its Android version confirmed.
+- The plan is at revision 3.2. The architecture was agreed on 16 Nov 2026 (proposal section 13, `docs/adr/`), and Phase 0A, the project foundations, was finished on 17 Nov 2026. Phase 0B is next.
+- **Follow `docs/architecture.md`.** Run `dart run tool/check_architecture.dart` before handing anything over; it enforces the import rules and bans unsafe key APIs.
+- Do not build anything that depends on a pending decision (proposal section 19); mark it pending instead.
+- Phase 0B (native spikes) runs on the owner's Tecno Pova Curve 5G and needs its Android version confirmed. The encryption design is not production-ready until the Phase 0B tests and benchmarks pass on that phone.
 - The mockups in `docs/mockups/` are the design reference. Build screens to match them, and record any change the owner asks for in `docs/mockups/README.md` and the proposal.
 - Screens that share a pattern are one widget with a mode, as in the mockups: the expense form (add or review), the category sheet (expense or Vault), the settings page (backup, task reminders or logs), and the ticket details (train or bus).
 - Every phase ends with the owner's approval before the next one starts.

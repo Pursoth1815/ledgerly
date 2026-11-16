@@ -15,7 +15,7 @@ This is revision 3 of the proposal. It keeps revision 2's scope and folds in eve
 - **Digital Wellbeing.** Feasible on Android through usage access. Not currently feasible on iOS.
 - **Assistant.** One input in the capture sheet that shows what it understood as chips, plus fixed questions answered from your own data. No AI service of any kind.
 - **Platform.** Android 15 (API 35) is the minimum. iOS keeps compiling, and everything on it is marked Not Yet Verified because there is no iPhone to test on.
-- **Plan.** Thirteen phases. Money with SMS capture at day 34, the full core at day 77, Android v1.0 at day 90, widgets and the floating bubble last at day 97. The design review added four days.
+- **Plan.** Thirteen phases. The first is an architecture discussion and the folder structure, then native spikes on your phone. Money with SMS capture at day 36, the full core at day 79, Android v1.0 at day 92, widgets and the floating bubble last at day 99.
 - **Postponed.** Multi-device sync and nine other ideas are listed in TO-DO.md and have no time in the roadmap.
 - **From you.** Six open points in section 19, the first being the capture sheet.
 
@@ -45,7 +45,8 @@ Each row comes from the owner's review of the mockups between 14 and 16 November
 | Settings screens | Not designed | Backup & restore, Task reminders and Export logs screens, and animated switches |
 | About screen | Phase 11 | Postponed to TO-DO.md |
 | Minimum Android | Not stated | Android 15 (API 35) |
-| Effort | v1.0 at day 86 | v1.0 at day 90 |
+| First phase | Foundation and spikes; folder structure left out of the plan | **Architecture discussion and folder structure first** (Phase 0A, no phone needed), then the native spikes (Phase 0B) |
+| Effort | v1.0 at day 86 | v1.0 at day 92 |
 
 ### Revision 2: from the original proposal
 
@@ -188,7 +189,7 @@ On Android, in a build you install yourself, the app can detect transaction SMS 
 7. **Match existing records.** By reference number first, then by account, amount and date. A message for an expense you already typed in attaches to it as evidence. A repeat of the same payment is dropped.
 8. **Show the card.**
 
-&#91;embedded content: SMS to transaction card · 2 triggers, 5 steps, confirmation before saving\]
+[embedded content: SMS to transaction card · 2 triggers, 5 steps, confirmation before saving
 
 Both triggers feed the same scan. A new transaction always stops at the card and waits for you.
 
@@ -393,20 +394,20 @@ On Android the app can show screen-time figures much like the system's own, thro
 - An hour-by-hour pattern for today.
 - How many times each app was opened.
 - A weekly summary: most-used apps and the heaviest day.
-- A small card on Today with the total and the top app.
+- A card on Today with the total and the top three apps with their icons, and a tile in More.
 
 ### How it works on Android
 
-| Topic | Finding |
-| --- | --- |
-| API | Android's UsageStatsManager provides usage history aggregated by day, week, month and year ([reference](https://developer.android.com/reference/android/app/usage/UsageStatsManager)) |
-| Permission | PACKAGE\_USAGE\_STATS is not a normal permission dialog. You switch it on for the app in Settings under Usage access, and the app opens that screen for you the first time you open Wellbeing |
+| Topic                                    | Finding                                                                                                                                                                                                                |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| API                                      | Android's UsageStatsManager provides usage history aggregated by day, week, month and year ([reference](https://developer.android.com/reference/android/app/usage/UsageStatsManager))                                  |
+| Permission                               | PACKAGEUSAGESTATS is not a normal permission dialog. You switch it on for the app in Settings under Usage access, and the app opens that screen for you the first time you open Wellbeing                              |
 | Sideloaded build on Android 15 and later | Usage access is one of the restricted settings, so it needs the same one-time "Allow restricted settings" step as SMS ([explanation](https://androidauthority.com/android-15-restricted-settings-sideloading-3481098)) |
-| History | The system keeps only limited history. The app saves a small daily snapshot of minutes per app, so trends build up from the day you grant access |
-| Battery | Figures are read when you open the screen, plus one daily job for the snapshot. No continuous monitoring, no accessibility service |
-| App names and icons | Resolved for launchable apps only, without the broad "see all installed apps" permission |
-| Accuracy | Totals can differ slightly from the system's own Digital Wellbeing screen, because the two aggregate differently |
-| Privacy | The data stays in the app's encrypted database and never leaves the phone |
+| History                                  | The system keeps only limited history. The app saves a small daily snapshot of minutes per app, so trends build up from the day you grant access                                                                       |
+| Battery                                  | Figures are read when you open the screen, plus one daily job for the snapshot. No continuous monitoring, no accessibility service                                                                                     |
+| App names and icons                      | Resolved for launchable apps only, without the broad "see all installed apps" permission                                                                                                                               |
+| Accuracy                                 | Totals can differ slightly from the system's own Digital Wellbeing screen, because the two aggregate differently                                                                                                       |
+| Privacy                                  | The data stays in the app's encrypted database and never leaves the phone                                                                                                                                              |
 
 Not included: app timers, blocking or a focus mode. Those need accessibility or overlay control and are a different product.
 
@@ -560,7 +561,7 @@ The whole product runs on the phone: a Flutter app organised by feature, one enc
 
 The minimum is **Android 15 (API 35)**. Because of that, the restricted-settings step for a sideloaded build, exact alarms being off by default, and lock-screen rules for ongoing notifications always apply, and no code is needed for older versions.
 
-&#91;embedded content: App architecture · 4 layers, no server\]
+[embedded content: App architecture · 4 layers, no server
 
 Each layer depends only on the one below. Features never touch the database, the file store or the operating system directly.
 
@@ -642,20 +643,52 @@ Android is where everything is built, tested and used. On iOS, "Not Yet Verified
 
 ## 15. Phased roadmap
 
-Thirteen phases, core modules first, optional enhancements after them, and widgets with the floating bubble last. Estimates are focused days of about six hours and carry roughly 30% uncertainty either way. No time is allocated to anything removed in section 12.
+Thirteen phases: the architecture and project structure first, core modules next, optional enhancements after them, and widgets with the floating bubble last. Estimates are focused days of about six hours and carry roughly 30% uncertainty either way. No time is allocated to anything removed in section 12.
 
-&#91;embedded content: Roadmap · 13 phases, 4 release gates\]
+[embedded content: Roadmap · 13 phases, 4 release gates
 
 Each diamond is a release gate reached when the phase before it passes its checks. Day counts are cumulative.
 
-### Phase 0: Foundation and spikes (6 days)
+### Phase 0: Architecture, project structure and spikes (8 days)
+
+Phase 0 has two parts. Part A comes first and needs no phone, so it can start now. Part B needs your phone.
+
+#### Phase 0A: Architecture discussion and folder structure (4 days)
 
 | Item | Detail |
 | --- | --- |
-| Objective | Prove the riskiest native pieces on your own phone and set up the skeleton everything else builds on |
-| Features | Project with personal and store flavours; build pipeline including an iOS compile check; encrypted database opening an empty schema; native bridge skeleton. Four spikes: SMS receiver and inbox read; a ticket notification that shows on the lock screen, stays until Done and survives a restart; reading app usage; encrypting a file with a Keystore key |
-| Technical dependencies | Your phone model and Android version; about 200 real bank and ticket SMS for test fixtures; your answers in section 19 |
-| Risks and platform restrictions | A manufacturer's battery policy may delay the receiver or alarms. The restricted-settings step differs between Android versions |
+| Objective | Agree the architecture together before any feature code, then set up the project structure every later phase builds on |
+| Discussion | One session per topic, each ending in a short written decision record in `docs/adr/`: layers and how they depend on each other; feature-first folders; state management (Riverpod, or BLoC if you prefer); navigation and the five-tab shell; the database (Drift with SQLCipher) and migrations; the ledger, capture inbox and reminder engines; the encrypted file store; the native Kotlin bridge; error handling and logging; naming and code style; testing; build flavours |
+| Features | The agreed folder structure created in the repository; `docs/architecture.md` describing it; lint rules and formatting; minSdk 35; personal and store flavours; the build pipeline including an iOS compile check; an encrypted database opening an empty schema; the native bridge skeleton; an empty app that launches into the five-tab shell |
+| Technical dependencies | The approved mockups; your time for the discussion sessions |
+| Risks and platform restrictions | Over-designing for features that may never come. Each folder and decision has to serve a named phase |
+| Tested on Android | The pipeline passes; the empty app builds and launches on an emulator and opens the encrypted database |
+| Needs an iPhone | Nothing. The iOS project only has to compile |
+
+The discussion starts from this outline, which is a proposal, not a decision:
+
+```text
+lib/
+  app/            app start, theme, router, five-tab shell
+  core/           ledger, capture inbox, reminders, database, file store, platform bridge
+  design_system/  tokens and shared components from the mockups
+  features/       today, money, lending, travel, planner, vault, wellbeing, more, capture
+                  each with data / domain / presentation
+packages/
+  sms_parser/     plain Dart, fixture tests
+  command_parser/ plain Dart, fixture tests
+android/          Kotlin plugin: SMS, notifications, usage access, sharing
+docs/adr/         one decision record per topic
+```
+
+#### Phase 0B: Native spikes on your phone (4 days)
+
+| Item | Detail |
+| --- | --- |
+| Objective | Prove the riskiest native pieces on your own phone before building on them |
+| Features | Four spikes: SMS receiver and inbox read; a ticket notification that shows on the lock screen, stays until Done and survives a restart; reading app usage; encrypting a file with a Keystore key |
+| Technical dependencies | Phase 0A; your phone model and Android version |
+| Risks and platform restrictions | A manufacturer's battery policy may delay the receiver or alarms. The restricted-settings step for a sideloaded build has to be walked through on your phone |
 | Tested on Android | All four spikes, on your phone |
 | Needs an iPhone | Nothing. The iOS project only has to compile |
 
@@ -793,19 +826,21 @@ Each diamond is a release gate reached when the phase before it passes its check
 
 ## 16. Effort and milestones
 
-The core product is complete at day 77 and Android v1.0 at day 90. A build worth using every day, Expenses with SMS capture, exists at day 34.
+The core product is complete at day 79 and Android v1.0 at day 92. A build worth using every day, Expenses with SMS capture, exists at day 36.
 
 | Milestone | Phases | Focused days | At 15 hours a week | At 25 hours a week |
 | --- | --- | --- | --- | --- |
-| Money with SMS capture | 0 to 3 | 34 | 14 weeks | 8 weeks |
-| Core product, all nine modules | 0 to 9 | 77 | 31 weeks | 19 weeks |
-| v1.0 Android | 0 to 11 | 90 | 36 weeks | 22 weeks |
-| v1.1 with widgets and bubble | 0 to 12 | 97 | 39 weeks | 23 weeks |
+| Architecture and folder structure agreed | 0A | 4 | 2 weeks | 1 week |
+| Money with SMS capture | 0 to 3 | 36 | 14 weeks | 9 weeks |
+| Core product, all nine modules | 0 to 9 | 79 | 32 weeks | 19 weeks |
+| v1.0 Android | 0 to 11 | 92 | 37 weeks | 22 weeks |
+| v1.1 with widgets and bubble | 0 to 12 | 99 | 40 weeks | 24 weeks |
 
-How revision 3 moved Android v1.0 from 86 days to 90:
+How revision 3 moved Android v1.0 from 86 days to 92:
 
-| Change from the design review | Days |
+| Change | Days |
 | --- | --- |
+| Architecture discussion with decision records and the folder structure as the first step (Phase 0A) | +2 |
 | More tab, theme switch and new shared components in the design system (Phase 1) | +1 |
 | Add account sheet with a searchable bank list, and the category sheet (Phase 2) | +1 |
 | Travel list with filters, and separate train and bus ticket details (Phase 5) | +1 |
@@ -822,7 +857,7 @@ How revision 2 moved Android v1.0 from 74 days to 86:
 | Global Search removed from the Money phase | -1 |
 | Borrowing removed from the Lending phase | -1 |
 
-The final phase adds 7 days for widgets and the bubble, ending at day 97. The former 8-day iOS phase is gone; keeping the iOS build compiling is part of each phase.
+The final phase adds 7 days for widgets and the bubble, ending at day 99. The former 8-day iOS phase is gone; keeping the iOS build compiling is part of each phase.
 
 Running cost is zero. There is no API, no server and no subscription. Fees arise only if you later publish to a store.
 
@@ -880,7 +915,7 @@ The interface is colourful but calm: each module has its own accent, and numbers
 | Wellbeing | Teal | Bars for days, a ranked list of apps with their icons |
 | Assistant | Follows the type being added | One input with labelled chips. No sparkle icons and no gradient, because it is not AI |
 
-The mockups were reviewed in six rounds between 14 and 16 November 2026. The next step is Phase 0.
+The mockups were reviewed in six rounds between 14 and 16 November 2026. The next step is Phase 0A, the architecture discussion.
 
 ## 19. Questions that still need your answer
 
@@ -896,22 +931,16 @@ Your confirmed decisions are applied and are not reopened here. Each open point 
 ### Still open
 
 - [ ] **The capture sheet.** Now that each tab has its own add button, should the round + button and its sheet (a) stay on every tab, (b) stay only on Today, or (c) be removed together with the assistant, which saves Phase 9's five days?
-
   If you say nothing: (a).
 - [ ] **Your phone.** Which phone model and Android version do you use?
-
-  Phase 0 cannot start without this.
+  Phase 0B, the spikes on your phone, cannot start without this. Phase 0A does not need it.
 - [ ] **Cash and other bank debits.** With only UPI and Credit Card, should cash stay untracked, and may ATM, debit-card, net-banking and auto-debit messages appear in the Review Inbox to be saved under their bank account or dismissed? Your Indian Bank auto-pay debits fall in this group.
-
   If you say nothing: yes to both.
 - [ ] **On-device language features.** If your phone is on the supported list in section 10, do you want proofreading and summarising as an add-on?
-
   If you say nothing: not built.
 - [ ] **Reminder clock times.** Are 19:00 the evening before and 07:00 on the travel day right for stages 1 and 2?
-
   If you say nothing: those defaults, adjustable in More.
 - [ ] **Your time.** How many hours a week can you give to review and device testing?
-
   This decides which column of the effort table applies.
 
 Defaults taken because nothing was said: Riverpod for state management, Kanakku as the working name, and no text filter in Notes.
@@ -932,4 +961,4 @@ Pages opened on 13 and 14 Nov 2026. Platform policies change, so re-check before
 - [Apple Developer Forums: 64 pending notification limit](https://developer.apple.com/forums/thread/811171)
 - [SMS Alert knowledge base: TRAI header suffixes](https://kb.smsalert.co.in/?p=2270)
 
-Two caveats. The UsageStatsManager page did not load in full, so how long the system keeps usage history is to be measured in the Phase 0 spike. Statements about iOS notification behaviour come from platform knowledge and are untested, which is why they are marked Not Yet Verified.
+Two caveats. The UsageStatsManager page did not load in full, so how long the system keeps usage history is to be measured in the Phase 0B spike. Statements about iOS notification behaviour come from platform knowledge and are untested, which is why they are marked Not Yet Verified.

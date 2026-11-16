@@ -16,7 +16,7 @@ Planning and design are done; app code has not started.
 | Decisions and open points | [proposal-status.md](proposal-status.md) |
 | Rules for working on this repository | [CLAUDE.md](CLAUDE.md) |
 
-Next step: Phase 0, foundation and spikes.
+Next step: Phase 0A, the architecture discussion and the folder structure.
 
 ## What it does
 

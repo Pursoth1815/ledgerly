@@ -33,7 +33,7 @@ Last updated: 2026-11-16
 
 ### 6. Journey chip in the status bar (Android 16 Live Updates)
 - **What:** A live chip and lock-screen card while a journey is under way.
-- **Why it waits:** Depends on the Android version of your phone. The final ticket notification already meets the requirement.
+- **Why it waits:** Needs Android 16. Your Tecno Pova Curve 5G shipped with Android 15; check whether it has been updated. The final ticket notification already meets the requirement.
 
 ### 7. Bank statement CSV import
 - **What:** Import past transactions from a bank's CSV export.
@@ -71,6 +71,8 @@ These are out of scope and must not come back under another name:
 - Folders in Notes
 - Due dates and overdue states in Lending
 - "Choose" pickers and a disabled Looks Good on unclear review cards
+- On-device AI text features (ML Kit GenAI proofreading, rewriting, summarising), declined on 16 Nov 2026
+- Fixed clock times for travel reminders, and a travel reminder time setting (stages follow the departure time)
 
 ## Optional enhancements that are in the roadmap
 

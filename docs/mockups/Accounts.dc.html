@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
 <style>body{margin:0}</style>
 </helmet>
-<div style="width: 390px; height: 1320px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+<div style="width: 390px; height: 1460px; position: relative; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
 <main style="padding: 20px 20px 40px; display: flex; flex-direction: column; gap: 22px">
 
 <header style="display: flex; flex-direction: column; gap: 14px">
@@ -23,6 +23,23 @@
 <p style="margin: 0; font-size: 14px; color: {{c.t2}}">The last four digits link each SMS to the right one.</p>
 </div>
 </header>
+
+<section aria-label="Cash in hand" style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{c.t3}}">Cash in hand</h2>
+<span style="font-size: 13px; font-weight: 700; color: {{c.cash}}">₹650 in Nov</span>
+</div>
+<div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 22px; border: 1px solid {{c.line}}; background: {{c.cashT}}">
+<span aria-hidden="true" style="width: 44px; height: 30px; flex-shrink: 0; border-radius: 6px; background: {{c.cash}}; display: flex; align-items: center; justify-content: center">
+<svg width="24" height="16" viewBox="0 0 22 14" fill="none" stroke="{{c.onAccent}}" stroke-width="1.6"><rect x="1" y="1" width="20" height="12" rx="2"></rect><circle cx="11" cy="7" r="2.6"></circle></svg>
+</span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 22px; font-weight: 800">₹2,350</span>
+<span style="font-size: 12px; color: {{c.t2}}">₹2,000 from ATM · 12 Nov</span>
+</span>
+<button style="height: 44px; flex-shrink: 0; padding: 0 14px; border-radius: 22px; border: 1.5px solid {{c.cash}}; background: transparent; color: {{c.cash}}; font-family: inherit; font-size: 13px; font-weight: 700">Update count</button>
+</div>
+</section>
 
 <section aria-label="Bank accounts" style="display: flex; flex-direction: column; gap: 10px">
 <div style="display: flex; align-items: baseline; justify-content: space-between">
@@ -75,11 +92,11 @@
 </main>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":1320}}'>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":1460}}'>
 class Component extends DCLogic {
   pal(t) {
-    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD'};
-    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)'};
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',cash:'#0369A1',cashT:'#E0F2FE',onAccent:'#FFFFFF'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)',cash:'#38BDF8',cashT:'rgba(56,189,248,0.14)',onAccent:'#0D0F14'};
   }
   renderVals() {
     const c = this.pal(this.props.theme);

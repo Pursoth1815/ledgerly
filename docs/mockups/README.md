@@ -15,7 +15,8 @@ The files in this folder are the source of that canvas, kept in git so every rev
 | 2b | Transaction details (what Review opens) | 5 | Edit name, method, account and category |
 | 3 | Add expense, UPI | 4 | Switch method, account and category |
 | 3b | Add expense, Credit Card | 4 | Same form with Credit Card chosen |
-| 4 | Accounts and cards | 4 | |
+| 3c | Add expense, Cash | 4 | Same form with Cash chosen: Cash in hand and what is left after this expense |
+| 4 | Accounts and cards | 4 | Cash in hand at the top, with Update count |
 | 4b | Add bank account (sheet, searching "hd") | 4 | Type to search banks, pick one, nickname, last four digits, default; live preview |
 | 4c | Add credit card (sheet, bank chosen) | 4 | Same sheet for a card |
 | 5 | Lending: person page | 6 | |
@@ -37,7 +38,7 @@ Each `*Light.dc.html` file shows the same screen with the light palette.
 
 ## Design decisions
 
-- **Colour per module** (plan section 18): Money green, Lending amber, Travel indigo, Notes and Tasks warm sand, Vault slate, Wellbeing teal. Credit Card has its own violet so UPI and CC are told apart at a glance.
+- **Colour per module** (plan section 18): Money green, Lending amber, Travel indigo, Notes and Tasks warm sand, Vault slate, Wellbeing teal. Credit Card has its own violet so UPI and CC are told apart at a glance. Cash is sky blue (dark `#38BDF8`, light `#0369A1`).
 - **Reserved colours:** red only for overdue; orange only for "needs review".
 - **Type:** Plus Jakarta Sans for everything, tabular figures for amounts; JetBrains Mono for PNRs and the command line.
 - **Shape:** rounded cards, tonal layers instead of shadows, 44 px minimum touch targets.
@@ -161,3 +162,17 @@ Decisions that change the plan, to be folded into the proposal:
 - **A UPI payment to a person asks "Lent" or "Expense"** on its card.
 - **Lending has no due dates by default.** Today shows the amount still out and repayments so far.
 - **Card bill payments arrive as two messages** (a bank debit and a card credit for the same amount). They pair into one settlement, as section 5 already plans.
+
+## Update after the owner's answers (16 Nov 2026)
+
+Not a review round: these changes come from the owner's answers to the open points in the plan. Only small parts of existing screens changed.
+
+| Answer | Change |
+| --- | --- |
+| Track cash | Add expense has a third method, **Cash** (3c). Choosing it replaces the account list with Cash in hand, showing the balance and what is left after this expense |
+| Show cash in hand | Accounts and cards (4) opens with a Cash in hand card: balance, the last ATM withdrawal and an Update count button. Today's Spending card splits into UPI, Credit Card and Cash, with a Cash in hand row that opens Accounts |
+| Cash from the ATM | The Review Inbox (2) has an ATM withdrawal card with a Cash chip and "Moves to Cash in hand". Looks Good moves the money; it is not spending. Today's badge reads 5 New |
+| Travel times follow the trip | Ticket details (6b, 6c) show the four stages at 24 hours, 12 hours, 3 hours and 15 minutes before departure. The "Travel reminder times" row is removed from More |
+| Task times are the owner's choice | Task reminders (10g) has a "Daily summary at" choice (07:00, 08:00, 09:00, 21:00). Quiet hours now say they apply to tasks only; travel and payment alerts still come |
+
+The owner's own edit on the canvas, kept in this folder: the Capture sheet shortcut "Loan" is now "Lent", and the shortcut labels use a regular weight.

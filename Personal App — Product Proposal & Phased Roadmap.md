@@ -1,25 +1,38 @@
 # Personal App — Product Proposal & Phased Roadmap
 
-Nov 16, 2026 · @Pursoth · Revision 3
+Nov 16, 2026 · @Pursoth · Revision 3.1
 
 ## Summary
 
-This is revision 3 of the proposal. It keeps revision 2's scope and folds in every decision from six rounds of design review on the mockups ([docs/mockups](docs/mockups/README.md)). It describes an Android-first, fully offline personal app built on capture, confirm, remember, with nine core modules and no paid or cloud dependency of any kind.
+This is revision 3.1 of the proposal. It keeps revision 2's scope, folds in every decision from six rounds of design review on the mockups ([docs/mockups](docs/mockups/README.md)), and adds your answers of 16 November: cash, reminder times, the capture sheet and your phone. It describes an Android-first, fully offline personal app built on capture, confirm, remember, with nine core modules and no paid or cloud dependency of any kind.
 
 - **Modules.** Today, Expenses, Lending, Travel, Notes, Tasks, Document Vault, Digital Wellbeing and an offline assistant. Notes, Tasks and the Vault are core, not deferred.
 - **Navigation.** Five tabs: Today, Money, Travel, Planner (Notes and Tasks) and More (Vault, Screen time and settings).
-- **Expenses.** Two payment methods only, UPI and Credit Card. A credit card paid by UPI QR counts as Credit Card. Accounts and cards are added from a sheet with a searchable bank list.
+- **Expenses.** Three payment methods: UPI, Credit Card and Cash. A credit card paid by UPI QR counts as Credit Card. Cash comes from one Cash in hand balance, filled by ATM withdrawals you confirm. Accounts and cards are added from a sheet with a searchable bank list.
 - **SMS detection.** Feasible on Android in a build you install yourself. Every detected payment becomes a card you confirm, and nothing is saved until you do. Unclear items get a single Review button instead of half-filled choices. Google Play approval is not assumed, and iOS has no equivalent.
 - **Lending.** Money lent to friends, with no due dates or overdue state.
-- **Travel.** A trip list with train and bus filters, ticket details that match the real railway and bus SMS, and four reminder stages ending with a lock-screen ticket 15 minutes before departure that stays until you press Done.
+- **Travel.** A trip list with train and bus filters, ticket details that match the real railway and bus SMS, and four reminder stages counted from departure, ending with a lock-screen ticket 15 minutes before departure that stays until you press Done.
 - **Digital Wellbeing.** Feasible on Android through usage access. Not currently feasible on iOS.
 - **Assistant.** One input in the capture sheet that shows what it understood as chips, plus fixed questions answered from your own data. No AI service of any kind.
 - **Platform.** Android 15 (API 35) is the minimum. iOS keeps compiling, and everything on it is marked Not Yet Verified because there is no iPhone to test on.
-- **Plan.** Thirteen phases. The first is an architecture discussion and the folder structure, then native spikes on your phone. Money with SMS capture at day 36, the full core at day 79, Android v1.0 at day 92, widgets and the floating bubble last at day 99.
+- **Plan.** Thirteen phases. The first is an architecture discussion and the folder structure, then native spikes on your phone. Money with SMS capture at day 37, the full core at day 80, Android v1.0 at day 93, widgets and the floating bubble last at day 100. There are no deadlines; the days only size the work.
 - **Postponed.** Multi-device sync and nine other ideas are listed in TO-DO.md and have no time in the roadmap.
-- **From you.** Six open points in section 19, the first being the capture sheet.
+- **From you.** Two small open points in section 19: your phone's Android version, and the text tools.
 
 ## 1. What changed
+
+### Revision 3.1: your answers of 16 November
+
+| Area | Revision 3 | Revision 3.1 |
+| --- | --- | --- |
+| Cash | Not recorded | A third method, **Cash**, spending from one **Cash in hand** balance. An ATM withdrawal moves money from a bank account to Cash in hand after you confirm it. "Update count" corrects the balance |
+| Travel reminder times | Stages 1 and 2 at 19:00 the evening before and 07:00 | All four stages are counted from departure: 24 hours, 12 hours, 3 hours and 15 minutes before. No travel time setting |
+| Task reminders | Morning summary at 08:00 | A daily summary of overdue and today's tasks at a time you choose. Quiet hours apply to tasks only |
+| Capture sheet | Open point | Stays on every tab, to be confirmed once the sheet is designed and tested |
+| On-device AI text features | Open point | Not built |
+| Your phone | Unknown | Tecno Pova Curve 5G |
+| Your time | Hours a week asked | No time limit. Estimates size the work; they are not deadlines |
+| Effort | v1.0 at day 92 | v1.0 at day 93: one day added to Phase 2 for cash |
 
 ### Revision 3: decisions from the design review
 
@@ -102,7 +115,7 @@ Today is the home screen and shows only what needs your attention, in this order
 | Trips this week | Each trip in the next seven days, with a train or bus icon. Trains show station codes, class, coach and berth, and chart status; buses show route, vehicle, platform and a call-conductor button | Travel |
 | Tasks | Due today and overdue, ticked in place with a small circle that fills green | Tasks |
 | Lent to friends | The total still out, each friend's balance and how much came back, and a suggested repayment when a matching bank credit arrives. No due dates | Lending |
-| Spending | Today and month so far, split into UPI and Credit Card | Expenses |
+| Spending | Today and month so far, split into UPI, Credit Card and Cash, with a Cash in hand row that opens Accounts and cards | Expenses |
 | Screen time | Today's total and the top three apps with their icons | Digital Wellbeing, Android only |
 | Backup | A nudge when the last backup is more than seven days old | Backup |
 
@@ -116,19 +129,19 @@ Navigation has five tabs and one capture button.
 - **Planner**, with two segments: Notes and Tasks
 - **More**, a flexible last tab. It holds the Document Vault, Digital Wellbeing and Settings, and has room for later additions
 
-The capture button is reachable from every tab and opens one sheet for a new expense, loan, trip, note or task, plus the command line described in section 10. Whether it stays on every tab is an open point in section 19.
+The capture button is reachable from every tab and opens one sheet for a new expense, loan, trip, note or task, plus the command line described in section 10. It stays on every tab; you will confirm this once the sheet is designed and tested.
 
 The Review Inbox opens from the stack on Today. It holds every item that is detected but not yet confirmed. On opening, its cards start stacked and slide down one after another.
 
-## 4. Expenses: UPI and Credit Card only
+## 4. Expenses: UPI, Credit Card and Cash
 
-The app records expenses and never starts a payment. The entry screen offers exactly two payment methods, UPI and Credit Card, as in your mockup.
+The app records expenses and never starts a payment. The entry screen offers three payment methods: UPI, Credit Card and Cash.
 
 Adding an expense by hand:
 
 1. Enter the amount.
-2. Choose UPI or Credit Card.
-3. Choose the bank account (for UPI) or the card (for Credit Card). Your default is already selected.
+2. Choose UPI, Credit Card or Cash.
+3. Choose the bank account (for UPI) or the card (for Credit Card). Your default is already selected. Cash needs no choice: it is paid from Cash in hand, and the form shows what is left after this expense.
 4. Choose a category.
 5. Save with one green "Save ₹amount" button. Merchant, note and date are optional; the date defaults to today.
 
@@ -153,6 +166,19 @@ The last four digits are how an SMS is tied to the right account or card. There 
 
 A card used by family members still counts fully in your spending. There is no shared-card state.
 
+### Cash in hand
+
+Cash is one balance, Cash in hand, shown at the top of Accounts and cards and as a row on Today's Spending card. It has no bank, nickname or last four digits.
+
+| Event | What happens |
+| --- | --- |
+| ATM withdrawal SMS | A card in the Review Inbox: "ATM withdrawal ₹2,000 · HDFC Savings · Moves to Cash in hand". Looks Good records a **transfer** from the bank account to Cash in hand. It is not spending |
+| Cash expense | Added by hand with Cash as the method, or from the capture line ("spent 40 on tea cash"). It counts as spending and lowers Cash in hand |
+| Cash from someone | A loan repayment or other cash you receive can be recorded into Cash in hand |
+| Update count | You type what is really in your wallet. The difference is saved as a visible adjustment, outside spending, so the totals only hold what you entered |
+
+The app cannot detect cash spending, because no SMS is sent for it. Cash in hand is therefore only as accurate as what you enter, and Update count is the correction.
+
 ### Tracking and correction
 
 - Totals by day, week and month, by category, by method, and separately for each bank account and each card.
@@ -163,16 +189,13 @@ A card used by family members still counts fully in your spending. There is no s
 
 - Paying a credit card bill is not an expense. The purchases were counted when they were made, so the app records the payment as a settlement outside spending.
 - A refund reduces the original expense.
-- Money moved between your own bank accounts is not an expense.
+- Money moved between your own bank accounts is not an expense. An ATM withdrawal is a transfer from a bank account to Cash in hand, and is not an expense either.
 - Money lent and repaid follows the transfer rules in section 6.
 - Money received, such as salary, is recorded against the bank account as income and never mixed into spending.
 
-### Two consequences to confirm
+### Other bank debits
 
-Having only two methods leaves two kinds of spending without a home. I have not added a third method.
-
-- **Cash.** Cash spending is not recorded.
-- **Other bank debits.** ATM withdrawals, debit-card swipes, net banking and auto-debits still arrive by SMS. I propose they appear in the Review Inbox against the right bank account, where you either save them under that account or dismiss them. The entry screen keeps its two methods.
+Debit-card swipes, net banking and auto-debits (such as your auto-pay account's) still arrive by SMS. They appear in the Review Inbox against the right bank account, where you either save them under that account or dismiss them. ATM withdrawals go to Cash in hand, as above.
 
 ## 5. SMS detection and the transaction card
 
@@ -184,7 +207,7 @@ On Android, in a build you install yourself, the app can detect transaction SMS 
 2. **Check it is a transaction.** The message must come from a commercial sender header and contain a transaction verb and an amount. Indian headers have carried a suffix since 6 May 2025: -P promotional, -S service, -T transactional, -G government ([reference](https://kb.smsalert.co.in/?p=2270)). It is a signal, not a guarantee, so the wording is checked too. The same bank arrives under several two-letter prefixes (AX-, AD-, VM-YESBNK-S), which only name the telecom route, so the sender is matched on the six-letter bank code.
 3. **Ignore the rest.** OTPs, promotions, failed payments, balance alerts, KYC notices and dispute updates are dropped. OTP text is never stored.
 4. **Extract.** Amount, merchant or recipient, date and time, reference number and the last four digits. Banks write dates differently (13-11-2026, 05/11/26, 13Nov26, 03-Nov-26), so each template knows its own format.
-5. **Identify the method.** Credit Card when the message names a card, even if it also carries a UPI marker; a card paid by UPI QR ("spent on YES BANK Card X4417 @UPI_shop") is a Credit Card expense. UPI when the message carries UPI markers on a bank account. Otherwise unknown.
+5. **Identify the method.** Credit Card when the message names a card, even if it also carries a UPI marker; a card paid by UPI QR ("spent on YES BANK Card X4417 @UPI_shop") is a Credit Card expense. UPI when the message carries UPI markers on a bank account. An ATM cash withdrawal is a transfer to Cash in hand. Otherwise unknown.
 6. **Identify the account or card.** The bank comes from the sender code and the last four digits are matched to your saved accounts and cards.
 7. **Match existing records.** By reference number first, then by account, amount and date. A message for an expense you already typed in attaches to it as evidence. A repeat of the same payment is dropped.
 8. **Show the card.**
@@ -199,7 +222,7 @@ Both triggers feed the same scan. A new transaction always stops at the card and
 | --- | --- |
 | Header | A round avatar in the category's colour, the name as the SMS wrote it (for example "MALABAR CORN"), the bank and time, and a red delete icon |
 | Amount | Large, for example ₹705.00 |
-| Payment source | A strip with a mini card in the bank's colour, the account or card nickname, its last four digits, how it was paid, and a UPI or CC chip |
+| Payment source | A strip with a mini card in the bank's colour, the account or card nickname, its last four digits, how it was paid, and a UPI, CC or Cash chip |
 | Category | The category learned from earlier payments at that shop. For a new shop, one-tap category chips; choosing one is optional and is remembered with any rename |
 | Review | Opens the transaction details, where every field can be edited |
 | Looks Good ✓ | Confirms the details and saves the transaction to Money, with Undo |
@@ -220,6 +243,7 @@ The card appears in three places: on Today, in the Review Inbox, and as an Andro
 | The same message sent twice | The identity hash drops the copy |
 | Refund or reversal | Linked to the original expense and shown as refunded |
 | Transfer between your own accounts | The debit and credit pair into one transfer |
+| ATM withdrawal | A card that moves the amount from the bank account to Cash in hand. Looks Good records a transfer, not spending |
 | Money from someone who owes you | The card offers "Record as repayment" |
 | Reinstall or restore | Each message has an identity hash, so nothing is imported twice |
 | SMS deleted before the next scan | The receiver saves a copy on arrival, which reduces this risk but cannot remove it |
@@ -245,9 +269,9 @@ The Lending segment answers two questions at a glance: who owes you, and how muc
 | Feature | Detail |
 | --- | --- |
 | People list | Each person with the amount still out and a bar showing how much came back, largest balance first |
-| Recording a loan | Person, amount, date, purpose, notes, and the bank account it was paid from. A UPI payment to a person can become a loan from its card in the Review Inbox |
+| Recording a loan | Person, amount, date, purpose, notes, and the bank account or Cash in hand it was paid from. A UPI payment to a person can become a loan from its card in the Review Inbox |
 | Several loans per person | Each loan keeps its own balance; a repayment settles the oldest loan first unless you choose another |
-| Repayments | Any amount, any time, in full or in part |
+| Repayments | Any amount, any time, in full or in part, into a bank account or Cash in hand |
 | Person page | The amount owed, the last repayment, open loans with progress bars, and a history with a running balance |
 | Mark received | One tap from the list or the person page |
 | History | Every loan, repayment and note for a person, in date order. Corrections show as visible adjustments |
@@ -301,14 +325,14 @@ A trip can also be saved as **Planned** before a ticket exists, with a "book by"
 
 ### The four reminder stages
 
-| Stage | Timing | Default clock time | Purpose |
-| --- | --- | --- | --- |
-| 1 | One day before travel | 19:00 the evening before | Prepare for the journey |
-| 2 | Travel-day morning | 07:00 | Check the journey details |
-| 3 | Three hours before departure | Departure minus 3 h | Prepare for boarding |
-| 4 | 15 minutes before departure | Departure minus 15 min | The final ticket notification |
+| Stage | When | Purpose |
+| --- | --- | --- |
+| 1 | 24 hours before departure | Prepare for the journey |
+| 2 | 12 hours before departure | Check the journey details |
+| 3 | 3 hours before departure | Prepare for boarding |
+| 4 | 15 minutes before departure | The final ticket notification |
 
-A stage whose time has already passed when the ticket is added is skipped, and so is one that would fall after the next stage. Editing a ticket reschedules every stage and cancelling it removes them.
+A trip can leave at any hour, so every stage is counted from the departure time. There are no fixed clock times and no travel time setting, and quiet hours do not apply to travel. A stage whose time has already passed when the ticket is added is skipped. Editing a ticket reschedules every stage and cancelling it removes them.
 
 ### The final ticket notification
 
@@ -352,7 +376,7 @@ Not included: images inside notes, rich formatting, shared notes, folders.
 | Feature | Detail |
 | --- | --- |
 | Create | A sheet with the task, optional details, Due (Today, Tomorrow, a date), Remind me, Repeat and a time |
-| Reminders | A notification at the due time or a lead you choose, with Done and Snooze |
+| Reminders | A notification at the due time or a lead you choose, with Done and Snooze. A daily summary of overdue and today's tasks arrives at a time you choose; the app asks for that time the first time you set a task reminder |
 | Repeat | None, daily, weekly or monthly |
 | Views | Today shows only overdue and today; everything later is under Upcoming; ticked tasks move to Completed |
 | Ticking | A small circle that fills green with an animated tick |
@@ -429,7 +453,7 @@ The assistant is a command line inside the capture sheet. It understands a fixed
 | Start from | Five round shortcuts (Expense, Loan, Trip, Note, Task) that open each form |
 | Ask | Three ready questions with a preview of the answer. Tapping one fills it in |
 
-How it reads a line, in order: the amount (a number, with "k" for thousand), the type from the first word, the category from keyword lists and from shops you have named before, the account from your own banks, nicknames and last four digits, and the method from "upi", "card" or the account's type. Each step is a few lines of plain Dart and runs in well under a millisecond.
+How it reads a line, in order: the amount (a number, with "k" for thousand), the type from the first word, the category from keyword lists and from shops you have named before, the account from your own banks, nicknames and last four digits, and the method from "upi", "card", "cash" or the account's type. Each step is a few lines of plain Dart and runs in well under a millisecond.
 
 Your section 8 is applied in full: no Claude API, no Claude Pro integration, no OpenAI, no other AI service, no free-tier cloud API and no subscription. The proxy, key handling, usage metering and cost tracking are removed from the architecture, the phases and the estimates.
 
@@ -438,6 +462,7 @@ Your section 8 is applied in full: no Claude API, no Claude Pro integration, no 
 | You type | Result |
 | --- | --- |
 | spent 250 on lunch hdfc upi | An expense draft: 250 rupees, Food, UPI, HDFC Bank |
+| spent 40 on tea cash | An expense draft: 40 rupees, Snacks, Cash |
 | lent 5000 to Arun for bike repair | A loan draft |
 | Arun paid 2000 | A repayment draft against his oldest loan |
 | task call electrician tomorrow 6pm | A task with a reminder |
@@ -460,9 +485,9 @@ Under the hood it is a tokeniser, a small set of command patterns, a local parse
 
 Grammar correction, rewriting in another tone, summarising arbitrary text, open-ended questions, and AI extraction from messages or tickets. A rule-based version of any of these would be poor, so none is offered.
 
-### One fact for your decision, with nothing built on it
+### On-device AI text features: not built
 
-Android offers on-device proofreading, rewriting and summarising through ML Kit's GenAI APIs. They process text locally, work without a connection and carry no server cost, which is within every rule in your section 8. They exist only on specific phones, including Pixel 9 and later, Galaxy S25 and later, and selected OnePlus, Xiaomi, vivo and OPPO models ([device list](https://developers.google.com/ml-kit/genai)). This is not in the plan. If your phone is on the list and you want it, it would be a small add-on labelled as on-device AI. If not, nothing changes.
+Android offers on-device proofreading, rewriting and summarising through ML Kit's GenAI APIs, on a limited list of phones ([device list](https://developers.google.com/ml-kit/genai)). You decided on 16 November not to build it. It is listed as removed in section 12 and in TO-DO.md.
 
 ## 11. Privacy, backup and shared foundations
 
@@ -489,12 +514,12 @@ More opens with two colour tiles, Vault and Screen time, followed by settings in
 
 | Group | Rows |
 | --- | --- |
-| Money | Accounts and cards; Expense categories (opens the category sheet); SMS detection (switch) |
-| Reminders | Task reminders (switch; tapping the name opens its screen); Travel reminder times |
+| Money | Accounts and cards, including Cash in hand; Expense categories (opens the category sheet); SMS detection (switch) |
+| Reminders | Task reminders (switch; tapping the name opens its screen). Travel has no time setting, because its stages follow the departure time |
 | Privacy and backup | App lock; Backup & restore; Export logs |
 | Appearance | Dark theme (switch) |
 
-The Task reminders screen sets the default lead (at the time, 10 or 30 minutes, or an hour before), the snooze length, an optional morning summary at 08:00, and optional quiet hours from 22:00 to 07:00, during which travel tickets still show. A live preview shows how a reminder will look.
+The Task reminders screen sets the default lead (at the time, 10 or 30 minutes, or an hour before), the snooze length, an optional daily summary of overdue and today's tasks at a time you pick (07:00, 08:00, 09:00 or 21:00; 08:00 until you choose), and optional quiet hours from 22:00 to 07:00. These times apply to tasks only. Travel stages, payment cards from SMS and every other alert follow their own rules and arrive when those rules say. A live preview shows how a reminder will look.
 
 When each permission is asked:
 
@@ -509,9 +534,9 @@ When each permission is asked:
 
 ### Three shared engines
 
-- **Ledger.** Every money movement goes through it: expense, income, transfer, card settlement, loan and repayment. Modules never write money rows themselves, so the totals cannot disagree.
+- **Ledger.** Every money movement goes through it: expense, income, transfer (including ATM withdrawals into Cash in hand), cash adjustment, card settlement, loan and repayment. Modules never write money rows themselves, so the totals cannot disagree.
 - **Capture inbox.** Drafts from SMS, sharing and commands use one confirm-or-review flow.
-- **Reminders.** Trips, tasks, the morning summary, document expiry and backup nudges use one scheduler, which honours quiet hours. It rebuilds its schedule after a restart and whenever the app opens.
+- **Reminders.** Trips, tasks, the daily task summary, document expiry and backup nudges use one scheduler. Quiet hours apply to task reminders only. It rebuilds its schedule after a restart and whenever the app opens.
 
 ## 12. Removed and postponed
 
@@ -537,6 +562,8 @@ Removed features have no tasks, no time and no place in the architecture. Postpo
 | Folders in Notes | Notes use colours and pins instead |
 | Due dates and overdue state in Lending | Friends repay when they can |
 | "Choose" pickers and a disabled Looks Good on unclear cards | Replaced by a single Review button |
+| On-device AI text features (ML Kit GenAI proofreading, rewriting, summarising) | Your decision on 16 November |
+| Fixed clock times for travel reminders | Every stage is counted from departure |
 
 ### Postponed in TO-DO.md
 
@@ -687,8 +714,8 @@ docs/adr/         one decision record per topic
 | --- | --- |
 | Objective | Prove the riskiest native pieces on your own phone before building on them |
 | Features | Four spikes: SMS receiver and inbox read; a ticket notification that shows on the lock screen, stays until Done and survives a restart; reading app usage; encrypting a file with a Keystore key |
-| Technical dependencies | Phase 0A; your phone model and Android version |
-| Risks and platform restrictions | A manufacturer's battery policy may delay the receiver or alarms. The restricted-settings step for a sideloaded build has to be walked through on your phone |
+| Technical dependencies | Phase 0A; your phone, a Tecno Pova Curve 5G, and its Android version |
+| Risks and platform restrictions | A manufacturer's battery policy may delay the receiver or alarms. Tecno's HiOS manages background apps strictly, so the spikes also check its auto-start and battery settings. The restricted-settings step for a sideloaded build has to be walked through on your phone |
 | Tested on Android | All four spikes, on your phone |
 | Needs an iPhone | Nothing. The iOS project only has to compile |
 
@@ -703,12 +730,12 @@ docs/adr/         one decision record per topic
 | Tested on Android | Component gallery and visual tests in both themes |
 | Needs an iPhone | A visual check on a real device. Until then, Not Yet Verified |
 
-### Phase 2: Expenses with UPI and Credit Card (10 days)
+### Phase 2: Expenses with UPI, Credit Card and Cash (11 days)
 
 | Item | Detail |
 | --- | --- |
 | Objective | A manual expense tracker you can use every day, with data that is safe |
-| Features | Bank accounts and cards with nickname, last four digits and default, added from a sheet with a searchable bank list and live preview; the shared expense form; categories with the category sheet; totals by period, category, method, account and card; editing; settlement, refund, transfer and income rules; encrypted backup and restore with its screen; app lock; app-switcher privacy |
+| Features | Bank accounts and cards with nickname, last four digits and default, added from a sheet with a searchable bank list and live preview; the shared expense form with UPI, Credit Card and Cash; Cash in hand with Update count; categories with the category sheet; totals by period, category, method, account and card; editing; settlement, refund, transfer and income rules; encrypted backup and restore with its screen; app lock; app-switcher privacy |
 | Technical dependencies | Phase 1 components. The ledger engine is built here |
 | Risks and platform restrictions | The backup format must carry a version from its first release |
 | Tested on Android | Everything, including restore onto a clean install |
@@ -719,7 +746,7 @@ docs/adr/         one decision record per topic
 | Item | Detail |
 | --- | --- |
 | Objective | Payments arrive as cards that you confirm |
-| Features | SMS setup with the restricted-settings guide; first-run import; receiver and inbox scan; templates for your banks; sender-code matching; method and account identification, card before UPI; duplicate matching; card bill payment pairing; the transaction card on Today (stacked), in the Review Inbox (with its opening animation) and as a notification; the single Review button for unclear items; delete with Undo; "Not a payment"; paste or share a message as the alternative; merchant memory |
+| Features | SMS setup with the restricted-settings guide; first-run import; receiver and inbox scan; templates for your banks; sender-code matching; method and account identification, card before UPI; ATM withdrawals as transfers to Cash in hand; duplicate matching; card bill payment pairing; the transaction card on Today (stacked), in the Review Inbox (with its opening animation) and as a notification; the single Review button for unclear items; delete with Undo; "Not a payment"; paste or share a message as the alternative; merchant memory |
 | Technical dependencies | The SMS spike; scrambled fixtures exported from your phone; your list of banks and cards. The capture inbox engine is built here |
 | Risks and platform restrictions | Formats from banks you do not use are untested. Templates break when a bank rewords. A message deleted before the scan is lost. This flavour is not for Google Play |
 | Tested on Android | A replay over your own inbox, measured against the 95% target |
@@ -741,7 +768,7 @@ docs/adr/         one decision record per topic
 | Item | Detail |
 | --- | --- |
 | Objective | Tickets are stored, and the final ticket is on your lock screen 15 minutes before departure |
-| Features | The Travel list with All, Train and Bus tabs; manual tickets and planned trips; train and bus ticket details; ticket documents; ticket detection from IRCTC and TNSTC SMS, with the journey-day bus message updating the same ticket; call conductor; share to app; the four stages; the final notification with Show Ticket and Done; re-posting after a restart; the exact-alarm permission flow |
+| Features | The Travel list with All, Train and Bus tabs; manual tickets and planned trips; train and bus ticket details; ticket documents; ticket detection from IRCTC and TNSTC SMS, with the journey-day bus message updating the same ticket; call conductor; share to app; the four stages, counted from departure; the final notification with Show Ticket and Done; re-posting after a restart; the exact-alarm permission flow |
 | Technical dependencies | The notification spike; the SMS pipeline. The reminder engine and the encrypted file store are built here and reused by Planner and the Vault |
 | Risks and platform restrictions | Refusal of exact alarms. Manufacturer battery policies. Ticket SMS wording varies far more than bank SMS. What shows on the lock screen depends on your phone's settings |
 | Tested on Android | Stage timing with a fake clock in tests, then real trips on your phone and one other brand |
@@ -752,7 +779,7 @@ docs/adr/         one decision record per topic
 | Item | Detail |
 | --- | --- |
 | Objective | Capture a thought or a to-do in seconds, and see what is due on Today |
-| Features | Everything in section 8 for Notes and Tasks: colour note cards with tap actions, the add note and add task sheets, checklists, quick capture, share and text-selection entry, repeat rules, reminder actions, and the Task reminders screen with snooze, morning summary and quiet hours |
+| Features | Everything in section 8 for Notes and Tasks: colour note cards with tap actions, the add note and add task sheets, checklists, quick capture, share and text-selection entry, repeat rules, reminder actions, and the Task reminders screen with snooze, the daily summary at a time you choose, and quiet hours for tasks |
 | Technical dependencies | The reminder engine; the capture sheet; Kotlin entry points for share and selected text |
 | Risks and platform restrictions | Scope creep is the main risk. Monthly repeats need care at month ends |
 | Tested on Android | Everything |
@@ -826,15 +853,19 @@ docs/adr/         one decision record per topic
 
 ## 16. Effort and milestones
 
-The core product is complete at day 79 and Android v1.0 at day 92. A build worth using every day, Expenses with SMS capture, exists at day 36.
+The core product is complete at day 80 and Android v1.0 at day 93. A build worth using every day, Expenses with SMS capture, exists at day 37.
 
-| Milestone | Phases | Focused days | At 15 hours a week | At 25 hours a week |
-| --- | --- | --- | --- | --- |
-| Architecture and folder structure agreed | 0A | 4 | 2 weeks | 1 week |
-| Money with SMS capture | 0 to 3 | 36 | 14 weeks | 9 weeks |
-| Core product, all nine modules | 0 to 9 | 79 | 32 weeks | 19 weeks |
-| v1.0 Android | 0 to 11 | 92 | 37 weeks | 22 weeks |
-| v1.1 with widgets and bubble | 0 to 12 | 99 | 40 weeks | 24 weeks |
+There is no deadline. You said on 16 November that time is not a constraint, so the focused days below only size the work and order it. They are not dates.
+
+| Milestone | Phases | Focused days |
+| --- | --- | --- |
+| Architecture and folder structure agreed | 0A | 4 |
+| Money with SMS capture | 0 to 3 | 37 |
+| Core product, all nine modules | 0 to 9 | 80 |
+| v1.0 Android | 0 to 11 | 93 |
+| v1.1 with widgets and bubble | 0 to 12 | 100 |
+
+Revision 3.1 adds one day: Cash and Cash in hand in Phase 2.
 
 How revision 3 moved Android v1.0 from 86 days to 92:
 
@@ -857,7 +888,7 @@ How revision 2 moved Android v1.0 from 74 days to 86:
 | Global Search removed from the Money phase | -1 |
 | Borrowing removed from the Lending phase | -1 |
 
-The final phase adds 7 days for widgets and the bubble, ending at day 99. The former 8-day iOS phase is gone; keeping the iOS build compiling is part of each phase.
+The final phase adds 7 days for widgets and the bubble, ending at day 100. The former 8-day iOS phase is gone; keeping the iOS build compiling is part of each phase.
 
 Running cost is zero. There is no API, no server and no subscription. Fees arise only if you later publish to a store.
 
@@ -876,13 +907,13 @@ The largest risks are device behaviour on Android and the size of the scope for 
 | No iPhone | iOS problems go unnoticed | The build compiles on every change, and nothing on iOS is described as verified |
 | Lost phone or forgotten backup passphrase | Permanent loss of data | Backup nudges, optional weekly backup, and a clear warning when the passphrase is set |
 | Nine modules for one developer | Slipping dates | Fixed "not included" lists per module, one droppable optional phase, and approval after every phase |
-| Only two payment methods | Cash and other bank debits fall outside spending totals | Your confirmation is requested in section 19 |
+| Cash in hand drifts from your real wallet | Cash totals are off, because cash spending sends no SMS | Update count records the difference as a visible adjustment |
 | Usage figures vary between manufacturers | Wellbeing totals differ from the system's | Compared over a week in Phase 8 and stated in the screen |
 | The bubble's service is stopped by the system | The bubble disappears | Opt-in, restarted when the app opens, built last |
 
 ### Dependencies
 
-- Your phone model and Android version.
+- Your phone: a Tecno Pova Curve 5G. Its current Android version is still to confirm.
 - The banks, cards and ticket services that send you SMS. Received on 15 November.
 - About 200 real messages, with digits scrambled, as parser fixtures. They are exported on your phone by a scrambling tool in the Phase 3 debug build, so raw messages never leave the phone.
 - Approved mockups before Phase 1. Reviewed in six rounds; see docs/mockups.
@@ -897,7 +928,7 @@ The interface is colourful but calm: each module has its own accent, and numbers
 | Element | Direction |
 | --- | --- |
 | Type | Plus Jakarta Sans for everything, bundled so Android and iOS match, with tabular figures for every amount. JetBrains Mono for PNRs, references and the command line |
-| Colour | Neutral surfaces, text in three strengths, one accent per module. Red for overdue and delete; orange for "needs review"; green for Save and Looks Good. UPI is green and Credit Card is violet everywhere |
+| Colour | Neutral surfaces, text in three strengths, one accent per module. Red for overdue and delete; orange for "needs review"; green for Save and Looks Good. UPI is green, Credit Card is violet and Cash is sky blue everywhere |
 | Shape and space | A 4-point grid, generous margins, rounded cards and sheets, depth through tonal layers instead of shadows |
 | Motion | Short and purposeful: sheets, the Review Inbox cards sliding down from a stack, the green tick on a task, the press-in on a note, sliding switches, and a haptic tick on Looks Good. Honours reduce-motion |
 | Touch | A custom press state instead of the Material ripple; 44 to 48 dp minimum targets |
@@ -907,7 +938,7 @@ The interface is colourful but calm: each module has its own accent, and numbers
 | Module | Accent | Signature element |
 | --- | --- | --- |
 | Today | Neutral | A stack of review cards and short cards that disappear when nothing needs you |
-| Money | Green, with violet for cards | A payment-source strip with a mini card in the bank's colour |
+| Money | Green, with violet for cards and sky blue for cash | A payment-source strip with a mini card in the bank's colour |
 | Lending | Amber | Friend rows with a progress bar of what came back |
 | Travel | Indigo | Pass-style ticket cards with train and bus icons and the PNR in monospace |
 | Planner | Warm sand, plus six note colours | Colour note cards; a small circle that fills green when a task is done |
@@ -927,21 +958,19 @@ Your confirmed decisions are applied and are not reopened here. Each open point 
 - [x] **Lending due dates.** None. Friends repay monthly or all at once.
 - [x] **A card shared with family.** Its spending counts as yours.
 - [x] **Minimum Android version.** Android 15.
+- [x] **The capture sheet.** (a): it stays on every tab. You will confirm it once the sheet is designed and tested.
+- [x] **Your phone.** Tecno Pova Curve 5G.
+- [x] **Cash and other bank debits.** Cash is tracked as a third method with one Cash in hand balance (section 4). ATM withdrawals move money to Cash in hand; debit-card, net-banking and auto-debit messages appear in the Review Inbox under their bank account.
+- [x] **On-device language features.** Not built.
+- [x] **Reminder times.** Travel stages are counted from departure, with no clock times. Only task reminders use times you choose: the lead, the snooze, the daily summary and quiet hours. Payment cards, travel stages and other alerts follow their own rules.
+- [x] **Your time.** No limit. The effort table sizes the work and is not a schedule.
 
 ### Still open
 
-- [ ] **The capture sheet.** Now that each tab has its own add button, should the round + button and its sheet (a) stay on every tab, (b) stay only on Today, or (c) be removed together with the assistant, which saves Phase 9's five days?
-  If you say nothing: (a).
-- [ ] **Your phone.** Which phone model and Android version do you use?
-  Phase 0B, the spikes on your phone, cannot start without this. Phase 0A does not need it.
-- [ ] **Cash and other bank debits.** With only UPI and Credit Card, should cash stay untracked, and may ATM, debit-card, net-banking and auto-debit messages appear in the Review Inbox to be saved under their bank account or dismissed? Your Indian Bank auto-pay debits fall in this group.
-  If you say nothing: yes to both.
-- [ ] **On-device language features.** If your phone is on the supported list in section 10, do you want proofreading and summarising as an add-on?
-  If you say nothing: not built.
-- [ ] **Reminder clock times.** Are 19:00 the evening before and 07:00 on the travel day right for stages 1 and 2?
-  If you say nothing: those defaults, adjustable in More.
-- [ ] **Your time.** How many hours a week can you give to review and device testing?
-  This decides which column of the effort table applies.
+- [ ] **Your phone's Android version.** Settings › About phone › Android version. The Pova Curve 5G shipped with Android 15 (HiOS 15); an update to 16 changes what Phase 0B checks and whether the Android 16 journey chip in TO-DO.md becomes possible.
+  Phase 0B needs this. Phase 0A does not.
+- [ ] **Text tools** in section 10 (tidy spacing, sort lines, count words, pull out amounts) have no screen in the mockups. Should they be commands typed in the capture line, or be dropped?
+  If you say nothing: commands in the capture line, built in Phase 9.
 
 Defaults taken because nothing was said: Riverpod for state management, Kanakku as the working name, and no text filter in Notes.
 

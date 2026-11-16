@@ -1,0 +1,109 @@
+# The pipeline (ADR 0016). A change is ready for review only when this passes.
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, production]
+  push:
+    branches: [develop]
+  workflow_dispatch:
+    inputs:
+      ios:
+        description: Also run the iOS compile check
+        type: boolean
+        default: false
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: 3.47.9
+
+jobs:
+  checks:
+    name: Format, analyse, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Generated code is up to date
+        run: |
+          dart run pigeon --input pigeons/platform_api.dart
+          dart run build_runner build
+          dart format lib
+          git diff --exit-code
+      - run: dart format --output=none --set-exit-if-changed lib test tool integration_test pigeons
+      - run: flutter analyze
+      - run: dart run tool/check_architecture.dart
+      - run: flutter test
+
+  android:
+    name: Android builds and Kotlin tests
+    runs-on: ubuntu-latest
+    needs: checks
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Install the Android NDK
+        # Gradle's own NDK download can arrive broken on GitHub's machines
+        # ("Error reading Zip content"). Install the version Flutter asks for
+        # (flutter.ndkVersion) up front with the SDK manager, retrying.
+        run: |
+          flutter_root="$(dirname "$(dirname "$(command -v flutter)")")"
+          ndk="$(grep -oE 'val ndkVersion: String = "[^"]+"' \
+            "$flutter_root/packages/flutter_tools/gradle/src/main/kotlin/FlutterExtension.kt" | cut -d'"' -f2)"
+          test -n "$ndk" || { echo "Could not read Flutter's NDK version"; exit 1; }
+          echo "Installing NDK $ndk"
+          for attempt in 1 2 3; do
+            if "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;$ndk" < <(yes) > /dev/null; then
+              test -f "$ANDROID_HOME/ndk/$ndk/source.properties" && exit 0
+            fi
+            echo "NDK install attempt $attempt failed; retrying"
+            rm -rf "$ANDROID_HOME/ndk/$ndk"
+            sleep 15
+          done
+          exit 1
+      - name: Kotlin unit tests
+        run: flutter build apk --debug --flavor personal && (cd android && ./gradlew :app:testPersonalDebugUnitTest)
+      - name: Release builds
+        run: |
+          flutter build apk --release --flavor personal
+          flutter build apk --release --flavor store
+      - name: Release permissions
+        run: |
+          tool/check_apk_permissions.sh build/app/outputs/flutter-apk/app-personal-release.apk \
+            android.permission.INTERNET
+          tool/check_apk_permissions.sh build/app/outputs/flutter-apk/app-store-release.apk \
+            android.permission.INTERNET android.permission.RECEIVE_SMS android.permission.READ_SMS
+
+  ios:
+    # How often this runs is a pending decision (proposal section 19).
+    # Until then it runs only when started by hand with "ios" ticked.
+    name: iOS compile check
+    if: github.event_name == 'workflow_dispatch' && inputs.ios
+    runs-on: macos-latest
+    needs: checks
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter build ios --debug --no-codesign

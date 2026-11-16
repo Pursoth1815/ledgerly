@@ -1,14 +1,14 @@
 # Personal App: proposal status
 
-As of 2026-11-16. Stage reached: revision 3.1 of the proposal, after six rounds of design review on the mockups and the owner's answers of 16 November. No app code written yet.
+As of 2026-11-17. Stage reached: revision 3.2 of the proposal (architecture agreed). **Phase 0A, the project foundations, is done** (approved and tested on the owner's phone on 17 Nov 2026). Phase 0B is next. No feature code yet.
 
-- Full proposal: `Personal App — Product Proposal & Phased Roadmap.md` in this repository, mirrored in the Claude Doc at https://claude.ai/artifact/5E9r7cyk2nPgheaf7iyGmj (both at revision 3.1, including the roadmap diagram).
+- Full proposal: `Personal App — Product Proposal & Phased Roadmap.md` in this repository, mirrored in the Claude Doc at https://claude.ai/artifact/5E9r7cyk2nPgheaf7iyGmj (the repository file is at revision 3.2; the Claude Doc is still at revision 3.1 and is updated after the owner approves 3.2).
 - Mockups and the review record: `docs/mockups/README.md`; canvas at https://claude.ai/artifact/LGbLMacN52Aq8mq8pi7bNa
 - Postponed features: `TO-DO.md`.
 
 ## Confirmed decisions (from the user's final instructions, 2026-11-13)
 
-- Concept: capture, confirm, remember. Home screen is Today. Android-first, fully offline. Working name Kanakku.
+- Concept: capture, confirm, remember. Home screen is Today. Android-first, fully offline. Name: Loopd (chosen 16 Nov 2026).
 - Core modules: Today, Expenses, Lending, Travel tickets, Notes, Tasks, Document Vault, Digital Wellbeing, offline assistant. Notes, Tasks and Vault are core, not deferred.
 - Expenses: record only, never initiate payments. Three payment methods in the UI: UPI (then which bank account), Credit Card (then which bank's card) and Cash (from one Cash in hand balance). Cash was added on 16 Nov 2026; before that there were exactly two. Multiple accounts and cards, nicknames, last four digits, a default each, per-account and per-card tracking, manual correction.
 - Lending: money lent is a transfer out, not an expense; a repayment is a transfer in, not income. No interest calculations.
@@ -42,16 +42,30 @@ As of 2026-11-16. Stage reached: revision 3.1 of the proposal, after six rounds 
 - Time: no limit. The day estimates size the work and are not a schedule.
 - Workflow: once coding starts, Claude does not commit, push or open a pull request until the owner has checked the changes and approved them (see CLAUDE.md).
 
+## Architecture decisions (2026-11-16)
+
+Approved by the owner. Details in section 13 of the proposal, `docs/architecture.md` and `docs/adr/`.
+
+- Feature-first folders with layers only where needed; one public file per feature; cross-module writes through core engines; imports checked in CI.
+- Riverpod 3 with code generation; go_router with a five-tab shell; no interface-plus-implementation pairs.
+- Drift on SQLCipher (the build bundled by the `sqlite3` package); one schema, a DAO per owner; one writer at a time.
+- Double-entry ledger: signed postings in paise, stored payment method, refunds linked to originals (both reporting modes), many-SMS-to-one-transaction sources, opening and verified balances, edit history and undo.
+- Keys: Android Keystore through Tink's `AndroidKeystore` helper; `AndroidKeysetManager` is not used; Tink streaming encryption for files; Argon2id (Bouncy Castle) for the backup passphrase. Pinned: tink-android 1.24.0, bcprov-jdk18on 1.86.
+- Kotlin in the app's own Android project, with one Pigeon interface; own Kotlin alarms and notifications; a headless background engine started by WorkManager.
+- Backup: an index file plus encrypted parts, resumable, read back before it counts, never overwriting the last good backup.
+- The encryption design counts as verified only after the Phase 0B tests and benchmarks on the owner's phone.
+
 ## Plan in brief
 
-- Architecture: Flutter, feature-first, Riverpod, Drift on SQLite with SQLCipher, encrypted file store, in-repo native plugin (Kotlin; Swift later), event-driven background work only, no backend, no internet permission. Shared screens are one widget with a mode.
-- Roadmap in focused days of about 6 hours: P0 architecture, structure and spikes 8 (0A architecture discussion and folder structure 4, 0B native spikes on the phone 4); P1 design system and shell 8; P2 expenses with cash 11; P3 SMS capture and Review Inbox 10 (day 37); P4 lending 6; P5 travel and reminders 11; P6 Planner 9; P7 vault and backup 6; P8 wellbeing 6; P9 offline assistant 5 (core complete, day 80); P10 optional enhancements 6; P11 hardening and release 7 (v1.0 Android, day 93); P12 widgets and floating bubble 7 (day 100). Sizes only, not deadlines.
+- Architecture: as above. Event-driven background work only, no backend, no internet permission. Shared screens are one widget with a mode.
+- Roadmap in focused days of about 6 hours: P0 architecture, foundations and spikes 9 (0A 4, 0B 5); P1 design system and shell 8; P2 expenses with cash 12; P3 SMS capture and Review Inbox 10 (day 39); P4 lending 6; P5 travel and reminders 11; P6 Planner 9; P7 vault and backup 7; P8 wellbeing 6; P9 offline assistant 5 (core complete, day 83); P10 optional enhancements 6; P11 hardening and release 7 (v1.0 Android, day 96); P12 widgets and floating bubble 7 (day 103). Sizes only, not deadlines.
 
 ## Open points awaiting the user
 
 1. The phone's Android version (Settings › About phone). Phase 0B needs this; Phase 0A does not.
 2. Text tools in section 10 have no screen: commands in the capture line (default), or drop them.
+3. Architecture choices still pending (listed in section 19 of the proposal): other bank methods in the split; the default refund reporting mode; the pairing window; backup retention beyond three; weekly backup conditions; restore without the passphrase on the same phone; resetting a forgotten passphrase; minimum passphrase length; an in-app test restore (new scope); exact alarms in the personal build; keeping the original SMS text; iOS compile check frequency; a separate store application id; what to do if the Keystore proves unreliable.
 
 ## Next steps
 
-Phase 0A: discuss the architecture one topic at a time, record each decision in `docs/adr/`, then create the agreed folder structure.
+Phase 0B on the owner's phone: the native spikes and the encryption tests and benchmarks. It needs the phone's Android version first. Phase 1 starts only after the owner approves Phase 0B.

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.pursoth.ledgerly"
+    namespace = "com.pursoth.loopd"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -15,24 +15,33 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.pursoth.ledgerly"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        // Whether the store build gets its own id is a pending decision
+        // (proposal section 19).
+        applicationId = "com.pursoth.loopd"
+        // Android 15 is the minimum (CLAUDE.md, ADR 0017).
+        minSdk = 35
         targetSdk = flutter.targetSdkVersion
-        // Uses the version code from pubspec.yaml. When using split APKs, 1000 * ABI_VERSION
-        // is added automatically by Flutter. (https://developer.android.com/studio/build/configure-apk-splits#configure-APK-versions)
-        // You can force using the value of versionCode by specifying the `-P force-version-code-ignoring-abi=true`
-        // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
+    // Two builds from one code base (ADR 0017). They differ only in
+    // configuration, manifests and flavour source sets; personal-only code
+    // (SMS, from Phase 3) goes in src/personal.
+    flavorDimensions += "distribution"
+    productFlavors {
+        create("personal") {
+            dimension = "distribution"
+        }
+        create("store") {
+            dimension = "distribution"
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // TODO(phase 11): a real signing config. Debug keys for now, so
+            // release builds can be produced and checked in CI.
             signingConfig = signingConfigs.getByName("debug")
         }
     }
@@ -42,6 +51,14 @@ kotlin {
     compilerOptions {
         jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
+}
+
+dependencies {
+    // Keystore key wrapping now; streaming file encryption from Phase 5 (ADR 0009).
+    // Pinned after checking Maven Central on 2026-11-16.
+    implementation("com.google.crypto.tink:tink-android:1.24.0")
+
+    testImplementation("junit:junit:4.13.2")
 }
 
 flutter {

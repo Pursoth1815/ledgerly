@@ -1,6 +1,6 @@
 # Mockups
 
-Key screens of Kanakku, in dark (designed first) and light themes, for approval before Phase 1.
+Key screens of Loopd, in dark (designed first) and light themes, for approval before Phase 1.
 
 **View them here:** https://claude.ai/artifact/LGbLMacN52Aq8mq8pi7bNa (private; share it from the page's Share menu if someone else needs to see it).
 
@@ -126,7 +126,7 @@ Plan changes made in the proposal: the tabs are Today, Money, Travel, Planner an
 | The "Notes" tab also holds Tasks | The tab and the page title are now **Planner**, with Notes and Tasks inside |
 | Vault tile in More looks plain | Vault and Screen time are solid colour tiles with a large faint icon |
 | Switches | Task reminders, SMS detection and Dark theme use animated on and off switches. Dark theme switches the screen live |
-| About Kanakku | Removed for now |
+| About Loopd | Removed for now |
 | Vault header misaligned; unclear "Unlocked" label | The label is gone. Title and Add button are aligned on one line, with "27 documents, encrypted on this phone" below |
 | Category icons | Identity card, rupee, shield, plane, car, heart with a cross, graduation cap |
 | New category tile | A dashed tile with a + icon and "New category" on one line |

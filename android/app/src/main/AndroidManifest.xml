@@ -1,8 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+      No internet permission: the app works fully offline and the CI release
+      check fails if any build gains it (ADR 0017). Android's own backup and
+      transfer are off (ADR 0011).
+    -->
     <application
-        android:label="ledgerly"
+        android:label="Loopd"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules">
         <activity
             android:name=".MainActivity"
             android:exported="true"

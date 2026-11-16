@@ -1,0 +1,36 @@
+import 'package:go_router/go_router.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../../core/routing/route_paths.dart';
+import '../shell/app_shell.dart';
+import '../shell/app_tab.dart';
+import '../shell/placeholder_page.dart';
+
+part 'app_router.g.dart';
+
+/// The app's routes (ADR 0003). Features add their routes here as they are
+/// built; they navigate to each other only by path.
+@Riverpod(keepAlive: true)
+GoRouter appRouter(Ref ref) {
+  final router = GoRouter(
+    initialLocation: RoutePaths.today,
+    routes: [
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) => AppShell(navigationShell: navigationShell),
+        branches: [
+          for (final tab in AppTab.values)
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: tab.path,
+                  builder: (context, state) => PlaceholderPage(tab: tab),
+                ),
+              ],
+            ),
+        ],
+      ),
+    ],
+  );
+  ref.onDispose(router.dispose);
+  return router;
+}

@@ -113,8 +113,7 @@ class Component extends DCLogic {
         sw('SMS detection', 'sms', c.review, c.reviewT, 'Turns bank messages into cards to confirm')
       ]),
       mk('Reminders', [
-        sw('Task reminders', 'tasks', c.notes, c.notesT, '10 min before · tap for options', null, 'TaskReminders.dc.html'),
-        link('Travel reminder times', '19:00 · 07:00', c.travel, c.travelT)
+        sw('Task reminders', 'tasks', c.notes, c.notesT, '10 min before · summary at 08:00', null, 'TaskReminders.dc.html')
       ]),
       mk('Privacy and backup', [
         link('App lock', 'Fingerprint', c.vault, c.vaultT),

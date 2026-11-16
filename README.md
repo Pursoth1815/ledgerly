@@ -10,7 +10,7 @@ Planning and design are done; app code has not started.
 
 | Item | Where |
 | --- | --- |
-| Product plan (revision 3) | [Personal App — Product Proposal & Phased Roadmap.md](Personal%20App%20—%20Product%20Proposal%20&%20Phased%20Roadmap.md) |
+| Product plan (revision 3.1) | [Personal App — Product Proposal & Phased Roadmap.md](Personal%20App%20—%20Product%20Proposal%20&%20Phased%20Roadmap.md) |
 | Mockups and the design review record | [docs/mockups](docs/mockups/README.md) |
 | Postponed and removed features | [TO-DO.md](TO-DO.md) |
 | Decisions and open points | [proposal-status.md](proposal-status.md) |
@@ -23,8 +23,8 @@ Next step: Phase 0A, the architecture discussion and the folder structure.
 | Tab | What is in it |
 | --- | --- |
 | Today | Detected items waiting for confirmation, trips this week, tasks, money lent to friends, spending, screen time, backup nudge |
-| Money | Expenses (UPI or Credit Card only), accounts and cards, lending |
-| Travel | Train and bus trips, ticket details, four reminders ending with the ticket on the lock screen 15 minutes before departure |
+| Money | Expenses (UPI, Credit Card or Cash), accounts and cards, Cash in hand, lending |
+| Travel | Train and bus trips, ticket details, four reminders counted from departure, ending with the ticket on the lock screen 15 minutes before departure |
 | Planner | Notes and tasks |
 | More | Document Vault, screen time, and settings |
 
@@ -39,4 +39,4 @@ Flutter, Riverpod, Drift on SQLite with SQLCipher, an encrypted file store, and 
 
 ## Workflow
 
-Every change goes on its own branch and reaches `develop` through a pull request that the owner reviews and merges. `production` receives merges from `develop` at release points. See [CLAUDE.md](CLAUDE.md).
+Every change goes on its own branch. Nothing is committed or pushed until the owner has checked the changes and approved them; then it reaches `develop` through a pull request that the owner reviews and merges. `production` receives merges from `develop` at release points. See [CLAUDE.md](CLAUDE.md).

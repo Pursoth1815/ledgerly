@@ -133,12 +133,12 @@ class Component extends DCLogic {
           from: 'MS', fromSub: 'Chennai Egmore', dep: '23:30', to: 'TPJ', toSub: 'Tiruchchirappalli', codeSize: '40px',
           cells: [{ k: 'Coach', v: 'S7' }, { k: 'Berth', v: '80' }, { k: 'Class', v: 'SL' }, { k: 'Passenger', v: 'P1' }],
           pnr: '410 000 0001' };
-    const times = bus ? ['Fri 19:00', 'Sat 07:00', 'Sat 18:30', 'Sat 21:15'] : ['Wed 19:00', 'Thu 07:00', 'Thu 20:30', 'Thu 23:15'];
+    const times = bus ? ['Fri 21:30', 'Sat 09:30', 'Sat 18:30', 'Sat 21:15'] : ['Wed 23:30', 'Thu 11:30', 'Thu 20:30', 'Thu 23:15'];
     const base = { dotBg: c.travelT, dotFg: c.travel, timeColor: c.t2 };
     const stages = [
-      { ...base, n: '1', title: 'Prepare for the journey', sub: 'One day before', time: times[0] },
-      { ...base, n: '2', title: 'Check journey details', sub: 'Travel-day morning', time: times[1] },
-      { ...base, n: '3', title: 'Prepare for boarding', sub: 'Three hours before', time: times[2] },
+      { ...base, n: '1', title: 'Prepare for the journey', sub: '24 hours before departure', time: times[0] },
+      { ...base, n: '2', title: 'Check journey details', sub: '12 hours before', time: times[1] },
+      { ...base, n: '3', title: 'Prepare for boarding', sub: '3 hours before', time: times[2] },
       { n: '4', title: 'Ticket on lock screen', sub: '15 minutes before · stays until Done', time: times[3], dotBg: c.travel, dotFg: c.onAccent, timeColor: c.travel }
     ].map((s, i, all) => ({ ...s, divider: i < all.length - 1 ? '1px solid ' + c.line : '0' }));
     return { c, t, isTrain: !bus, isBus: bus, stages };

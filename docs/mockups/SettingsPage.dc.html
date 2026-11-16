@@ -117,17 +117,17 @@
 <section style="display: flex; flex-direction: column; background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 22px; padding: 2px 16px">
 <div style="display: flex; align-items: center; gap: 12px; min-height: 64px; border-bottom: 1px solid {{c.line}}">
 <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
-<span style="font-size: 15px; font-weight: 600">Morning summary</span>
-<span style="font-size: 12px; color: {{c.t3}}">Today’s tasks in one notification at 08:00</span>
+<span style="font-size: 15px; font-weight: 600">Daily task summary</span>
+<span style="font-size: 12px; color: {{c.t3}}">Overdue and today’s tasks in one notification at {{summaryAt}}</span>
 </span>
-<button onClick="{{sw.morning.toggle}}" role="switch" aria-checked="{{sw.morning.checked}}" aria-label="Morning summary" style="position: relative; width: 52px; height: 32px; flex-shrink: 0; border-radius: 16px; border: 0; padding: 0; background: {{sw.morning.track}}; transition: background 220ms ease">
+<button onClick="{{sw.morning.toggle}}" role="switch" aria-checked="{{sw.morning.checked}}" aria-label="Daily task summary" style="position: relative; width: 52px; height: 32px; flex-shrink: 0; border-radius: 16px; border: 0; padding: 0; background: {{sw.morning.track}}; transition: background 220ms ease">
 <span style="position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 13px; background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.3); transform: translateX({{sw.morning.x}}); transition: transform 260ms cubic-bezier(.3,1.4,.5,1)"></span>
 </button>
 </div>
 <div style="display: flex; align-items: center; gap: 12px; min-height: 64px">
 <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
 <span style="font-size: 15px; font-weight: 600">Quiet hours</span>
-<span style="font-size: 12px; color: {{c.t3}}">22:00 to 07:00 · travel tickets still show</span>
+<span style="font-size: 12px; color: {{c.t3}}">22:00 to 07:00 · tasks only; travel and payment alerts still come</span>
 </span>
 <button onClick="{{sw.quiet.toggle}}" role="switch" aria-checked="{{sw.quiet.checked}}" aria-label="Quiet hours" style="position: relative; width: 52px; height: 32px; flex-shrink: 0; border-radius: 16px; border: 0; padding: 0; background: {{sw.quiet.track}}; transition: background 220ms ease">
 <span style="position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 13px; background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.3); transform: translateX({{sw.quiet.x}}); transition: transform 260ms cubic-bezier(.3,1.4,.5,1)"></span>
@@ -185,7 +185,7 @@
 <h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{c.t3}}">Preview</h2>
 <pre style="margin: 0; padding: 14px; border-radius: 18px; background: {{c.s2}}; font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.7; color: {{c.t2}}; white-space: pre-wrap">14:02 SMS     YESBNK  card ••••  amount [hidden]
 14:02 INBOX   card #c81 waiting
-19:00 REMIND  trip stage 1 posted
+21:30 REMIND  trip stage 1 posted
 02:00 BACKUP  done · 43.6 MB</pre>
 </section>
 
@@ -212,7 +212,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { run: 'idle', weekly: true, master: true, morning: true, quiet: false, lead: '10 min before', snooze: '30 min', range: '7 days', parts: { sms: true, remind: true, backup: true, errors: true } };
+    this.state = { run: 'idle', weekly: true, master: true, morning: true, quiet: false, lead: '10 min before', snooze: '30 min', summaryAt: '08:00', range: '7 days', parts: { sms: true, remind: true, backup: true, errors: true } };
   }
   componentWillUnmount() { clearTimeout(this.t); }
   pal(t) {
@@ -275,7 +275,7 @@ class Component extends DCLogic {
     const lines = partDefs.reduce((n, p) => n + (s.parts[p[0]] ? p[2] * mult : 0), 0);
     const meta = {
       backup: ['Backup & restore','Encrypted with your passphrase. Nothing is sent anywhere by the app.', '1240px'],
-      tasks: ['Task reminders', 'How and when tasks remind you.', '1180px'],
+      tasks: ['Task reminders', 'Only tasks use these times. Travel and payment alerts follow their own rules.', '1270px'],
       logs: ['Export logs', 'A file to help find a problem.', '1120px']
     }[page];
     return {
@@ -288,10 +288,12 @@ class Component extends DCLogic {
       tasksOpacity: s.master ? '1' : '0.4',
       chipRows: [
         chipRow('Remind me by default', 'lead', ['At the time', '10 min before', '30 min before', '1 hour before']),
-        chipRow('Snooze for', 'snooze', ['10 min', '30 min', '1 hour'])
+        chipRow('Snooze for', 'snooze', ['10 min', '30 min', '1 hour']),
+        chipRow('Daily summary at', 'summaryAt', ['07:00', '08:00', '09:00', '21:00'])
       ],
       previewWhen: s.lead === 'At the time' ? '18:00' : (s.lead === '10 min before' ? '17:50' : (s.lead === '30 min before' ? '17:30' : '17:00')),
       snoozeText: s.snooze,
+      summaryAt: s.summaryAt,
       ranges, parts,
       logSize: Math.max(1, Math.round(lines * 0.18)) + ' KB'
     };

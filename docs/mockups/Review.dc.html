@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
 <style>body{margin:0}</style>
 </helmet>
-<div style="width: 390px; height: 1880px; position: relative; overflow: hidden; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+<div style="width: 390px; height: 2200px; position: relative; overflow: hidden; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
 <main style="padding: 20px 20px 120px; display: flex; flex-direction: column; gap: 18px">
 
 <header style="display: flex; flex-direction: column; gap: 14px">
@@ -79,7 +79,7 @@
 
 <sc-if value="{{k.showCat}}" hint-placeholder-val="{{ true }}">
 <div style="display: flex; align-items: center; justify-content: space-between">
-<span style="font-size: 13px; color: {{c.t3}}">Category</span>
+<span style="font-size: 13px; color: {{c.t3}}">{{k.catLabel}}</span>
 <span style="display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 15px; background: {{c.s2}}; font-size: 13px; font-weight: 700"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{k.catColor}}"></span>{{k.catName}}</span>
 </div>
 </sc-if>
@@ -118,7 +118,7 @@
 </sc-if>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":1880}}'>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":2200}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
@@ -131,8 +131,8 @@ class Component extends DCLogic {
     clearTimeout(this.t);
   }
   pal(t) {
-    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',lend:'#A14A06',review:'#B03A0A',reviewT:'#FDEADB',red:'#B91C1C',redT:'#FBE3E3',onAccent:'#FFFFFF'};
-    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',btn:'#F3F5F9',btnT:'#0D0F14',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)',lend:'#FBBF24',review:'#FF9F5A',reviewT:'rgba(255,159,90,0.15)',red:'#FF7B7B',redT:'rgba(255,123,123,0.16)',onAccent:'#0D0F14'};
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',lend:'#A14A06',review:'#B03A0A',reviewT:'#FDEADB',red:'#B91C1C',redT:'#FBE3E3',cash:'#0369A1',cashT:'#E0F2FE',onAccent:'#FFFFFF'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',btn:'#F3F5F9',btnT:'#0D0F14',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)',lend:'#FBBF24',review:'#FF9F5A',reviewT:'rgba(255,159,90,0.15)',red:'#FF7B7B',redT:'rgba(255,123,123,0.16)',cash:'#38BDF8',cashT:'rgba(56,189,248,0.14)',onAccent:'#0D0F14'};
   }
   renderVals() {
     const c = this.pal(this.props.theme);
@@ -151,7 +151,10 @@ class Component extends DCLogic {
         cat: { name: 'Shopping', color: '#A78BFA' }, needsAction: true },
       { id: 'k4', initial: 'A', title: 'Sent to Arun', sub: 'From HDFC Bank SMS · 14 Nov, 10:48 am', amount: '₹2,000.00', person: true,
         source: { color: '#1E3A8A', last4: '8124', name: 'HDFC Bank', detail: 'Sent to a person · loan or expense?', method: 'UPI' },
-        needsAction: true }
+        needsAction: true },
+      { id: 'k5', initial: '₹', title: 'ATM withdrawal', sub: 'From HDFC Bank SMS · 12 Nov, 6:05 pm', amount: '₹2,000.00', cash: true,
+        source: { color: '#1E3A8A', last4: '8124', name: 'HDFC Bank', detail: 'Savings ••8124 · not spending', method: 'Cash' },
+        cat: { name: 'Cash in hand', color: c.cash }, catLabel: 'Moves to', toast: 'Moved to Cash in hand · ₹2,000' }
     ];
     const cats = [['Food', '#FF8A4C'], ['Snacks', '#F472B6'], ['Groceries', '#EAB308'], ['More', c.t3]];
     let visibleIndex = 0;
@@ -179,8 +182,8 @@ class Component extends DCLogic {
         op: isGone ? '0' : (closed && i > 2 ? '0' : '1'),
         delay: s.open && !isGone ? (i * 140) + 'ms' : '0ms',
         border: d.needsAction ? '1.5px solid ' + c.review : '1px solid ' + c.line,
-        avatarBg: d.person ? c.lend : (catColor || d.avatarColor || c.s2),
-        avatarFg: d.person ? c.onAccent : ((catColor || d.avatarColor) ? '#0D0F14' : c.t2),
+        avatarBg: d.person ? c.lend : (d.cash ? c.cash : (catColor || d.avatarColor || c.s2)),
+        avatarFg: (d.person || d.cash) ? c.onAccent : ((catColor || d.avatarColor) ? '#0D0F14' : c.t2),
         showSource: !!d.source,
         unknownSource: !!d.unknown,
         bankColor: d.source ? d.source.color : 'transparent',
@@ -188,9 +191,10 @@ class Component extends DCLogic {
         srcName: src.name || '',
         srcDetail: src.detail || '',
         method: d.source ? d.source.method : '',
-        methodBg: d.source && d.source.method === 'CC' ? c.cardT : c.moneyT,
-        methodFg: d.source && d.source.method === 'CC' ? c.card : c.money,
+        methodBg: d.source && d.source.method === 'CC' ? c.cardT : (d.source && d.source.method === 'Cash' ? c.cashT : c.moneyT),
+        methodFg: d.source && d.source.method === 'CC' ? c.card : (d.source && d.source.method === 'Cash' ? c.cash : c.money),
         showCat: !!d.cat,
+        catLabel: d.catLabel || 'Category',
         catName: d.cat ? d.cat.name : '',
         catColor: d.cat ? d.cat.color : 'transparent',
         showChips: chips.length > 0,
@@ -198,7 +202,7 @@ class Component extends DCLogic {
         chips,
         ready: !d.needsAction,
         needsAction: !!d.needsAction,
-        confirm: () => finish(d.id, 'Saved · ' + d.amount),
+        confirm: () => finish(d.id, d.toast || ('Saved · ' + d.amount)),
         remove: () => finish(d.id, 'Deleted from inbox')
       };
     });

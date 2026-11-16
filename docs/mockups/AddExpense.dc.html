@@ -55,10 +55,12 @@
 
 <section aria-label="Paid with" style="display: flex; flex-direction: column; gap: 10px">
 <h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{c.t3}}">Paid with</h2>
-<div role="group" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 20px; background: {{c.s2}}">
+<div role="group" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 20px; background: {{c.s2}}">
 <button onClick="{{pickUpi}}" aria-pressed="{{upiPressed}}" style="height: 46px; border-radius: 16px; border: 0; background: {{upiBg}}; color: {{upiFg}}; font-family: inherit; font-size: 15px; font-weight: 800">UPI</button>
 <button onClick="{{pickCard}}" aria-pressed="{{cardPressed}}" style="height: 46px; border-radius: 16px; border: 0; background: {{cardBg}}; color: {{cardFg}}; font-family: inherit; font-size: 15px; font-weight: 800">Credit Card</button>
+<button onClick="{{pickCash}}" aria-pressed="{{cashPressed}}" style="height: 46px; border-radius: 16px; border: 0; background: {{cashBg}}; color: {{cashFg}}; font-family: inherit; font-size: 15px; font-weight: 800">Cash</button>
 </div>
+<sc-if value="{{hasList}}" hint-placeholder-val="{{ true }}">
 <div style="display: flex; flex-direction: column; background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 22px; overflow: hidden">
 <sc-for list="{{accounts}}" as="a" hint-placeholder-count="4">
 <button onClick="{{a.pick}}" aria-pressed="{{a.pressed}}" style="display: flex; align-items: center; gap: 12px; min-height: 62px; padding: 10px 16px; border: 0; border-bottom: {{a.divider}}; background: {{a.rowBg}}; color: {{c.t1}}; font-family: inherit; text-align: left">
@@ -73,6 +75,19 @@
 </button>
 </sc-for>
 </div>
+</sc-if>
+<sc-if value="{{isCash}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 12px; min-height: 62px; padding: 10px 16px; border-radius: 22px; box-sizing: border-box; border: 1.5px solid {{c.cash}}; background: {{c.cashT}}">
+<span aria-hidden="true" style="width: 40px; height: 26px; flex-shrink: 0; border-radius: 5px; background: {{c.cash}}; display: flex; align-items: center; justify-content: center">
+<svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="{{c.onAccent}}" stroke-width="1.6"><rect x="1" y="1" width="20" height="12" rx="2"></rect><circle cx="11" cy="7" r="2.6"></circle></svg>
+</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 15px; font-weight: 700">Cash in hand</span>
+<span style="font-size: 12px; color: {{c.t2}}">₹2,350 now · {{cashAfter}}</span>
+</span>
+</div>
+<p style="margin: 0; font-size: 12px; line-height: 1.5; color: {{c.t3}}">Cash comes in from ATM withdrawals you confirm in the Review Inbox, or when you update the count in Accounts and cards.</p>
+</sc-if>
 </section>
 
 <section aria-label="Category" style="display: flex; flex-direction: column; gap: 10px">
@@ -104,30 +119,36 @@
 </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"mode":{"editor":"enum","options":["add","review"],"default":"add"},"method":{"editor":"enum","options":["upi","card"],"default":"upi"},"$preview":{"width":390,"height":1300}}'>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"mode":{"editor":"enum","options":["add","review"],"default":"add"},"method":{"editor":"enum","options":["upi","card","cash"],"default":"upi"},"$preview":{"width":390,"height":1300}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
     const review = props && props.mode === 'review';
+    const m = props && (props.method === 'card' || props.method === 'cash') ? props.method : 'upi';
     this.state = {
-      method: props && props.method === 'card' ? 'card' : 'upi',
+      method: m,
       acct: 0,
-      cat: review ? 'Snacks' : (props && props.method === 'card' ? 'Shopping' : 'Food'),
-      amount: review ? '62.00' : (props && props.method === 'card' ? '1,299' : '250'),
-      name: review ? 'Malabar Corner' : (props && props.method === 'card' ? 'Amazon' : ''),
+      cat: review ? 'Snacks' : ({ card: 'Shopping', cash: 'Snacks', upi: 'Food' })[m],
+      amount: review ? '62.00' : ({ card: '1,299', cash: '120', upi: '250' })[m],
+      name: review ? 'Malabar Corner' : ({ card: 'Amazon', cash: 'Tea stall', upi: '' })[m],
       remember: true
     };
   }
   pal(t) {
-    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',red:'#B91C1C',redT:'#FBE3E3',onAccent:'#FFFFFF'};
-    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)',red:'#FF7B7B',redT:'rgba(255,123,123,0.16)',onAccent:'#0D0F14'};
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',red:'#B91C1C',redT:'#FBE3E3',cash:'#0369A1',cashT:'#E0F2FE',onAccent:'#FFFFFF'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)',red:'#FF7B7B',redT:'rgba(255,123,123,0.16)',cash:'#38BDF8',cashT:'rgba(56,189,248,0.14)',onAccent:'#0D0F14'};
   }
   renderVals() {
     const c = this.pal(this.props.theme);
     const s = this.state || {};
     const review = this.props.mode === 'review';
-    const isUpi = s.method !== 'card';
-    const accent = isUpi ? c.money : c.card;
+    const isCash = s.method === 'cash';
+    const isUpi = s.method === 'upi' || (!isCash && s.method !== 'card');
+    const isCard = !isUpi && !isCash;
+    const accent = isUpi ? c.money : (isCard ? c.card : c.cash);
+    const spend = parseFloat(String(s.amount || '0').replace(/,/g, '')) || 0;
+    const leftCash = 2350 - spend;
+    const cashAfter = leftCash >= 0 ? '₹' + leftCash.toLocaleString('en-IN') + ' after this' : 'more than you have · update the count';
     const banks = [
       { nick: 'Primary', bank: 'Federal Bank', last4: '2210', color: '#A16207', isDefault: true, fromSms: true },
       { nick: 'Savings', bank: 'HDFC Bank', last4: '8124', color: '#1E3A8A' },
@@ -184,12 +205,19 @@ class Component extends DCLogic {
       setName: (e) => this.setState({ name: e.target.value }),
       pickUpi: () => this.setState({ method: 'upi', acct: 0 }),
       pickCard: () => this.setState({ method: 'card', acct: 0 }),
+      pickCash: () => this.setState({ method: 'cash', acct: 0 }),
       upiPressed: isUpi ? 'true' : 'false',
-      cardPressed: isUpi ? 'false' : 'true',
+      cardPressed: isCard ? 'true' : 'false',
+      cashPressed: isCash ? 'true' : 'false',
       upiBg: isUpi ? c.money : 'transparent',
       upiFg: isUpi ? c.onAccent : c.t2,
-      cardBg: isUpi ? 'transparent' : c.card,
-      cardFg: isUpi ? c.t2 : c.onAccent,
+      cardBg: isCard ? c.card : 'transparent',
+      cardFg: isCard ? c.onAccent : c.t2,
+      cashBg: isCash ? c.cash : 'transparent',
+      cashFg: isCash ? c.onAccent : c.t2,
+      isCash,
+      hasList: !isCash,
+      cashAfter,
       accounts,
       cats,
       remember: !!s.remember,

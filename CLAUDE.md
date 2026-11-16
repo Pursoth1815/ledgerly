@@ -61,7 +61,8 @@ The repository is private, but treat it as if it might become public later.
 
 ## Current stage
 
-- The plan is at revision 3 and the mockups were reviewed in six rounds (14 to 16 Nov 2026). The next step is Phase 0, once the owner gives the phone model and Android version.
+- The plan is at revision 3 and the mockups were reviewed in six rounds (14 to 16 Nov 2026).
+- The next step is **Phase 0A: an architecture discussion with the owner, one topic at a time, each ending in a decision record in `docs/adr/`, then the agreed folder structure**. Propose, discuss and wait for agreement; do not create folders or write feature code before the owner agrees. Phase 0B (native spikes) needs the owner's phone model and Android version.
 - The mockups in `docs/mockups/` are the design reference. Build screens to match them, and record any change the owner asks for in `docs/mockups/README.md` and the proposal.
 - Screens that share a pattern are one widget with a mode, as in the mockups: the expense form (add or review), the category sheet (expense or Vault), the settings page (backup, task reminders or logs), and the ticket details (train or bus).
 - Every phase ends with the owner's approval before the next one starts.

@@ -59,6 +59,25 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
+      - name: Install the Android NDK
+        # Gradle's own NDK download can arrive broken on GitHub's machines
+        # ("Error reading Zip content"). Install the version Flutter asks for
+        # (flutter.ndkVersion) up front with the SDK manager, retrying.
+        run: |
+          flutter_root="$(dirname "$(dirname "$(command -v flutter)")")"
+          ndk="$(grep -oE 'val ndkVersion: String = "[^"]+"' \
+            "$flutter_root/packages/flutter_tools/gradle/src/main/kotlin/FlutterExtension.kt" | cut -d'"' -f2)"
+          test -n "$ndk" || { echo "Could not read Flutter's NDK version"; exit 1; }
+          echo "Installing NDK $ndk"
+          for attempt in 1 2 3; do
+            if "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;$ndk" < <(yes) > /dev/null; then
+              test -f "$ANDROID_HOME/ndk/$ndk/source.properties" && exit 0
+            fi
+            echo "NDK install attempt $attempt failed; retrying"
+            rm -rf "$ANDROID_HOME/ndk/$ndk"
+            sleep 15
+          done
+          exit 1
       - name: Kotlin unit tests
         run: flutter build apk --debug --flavor personal && (cd android && ./gradlew :app:testPersonalDebugUnitTest)
       - name: Release builds

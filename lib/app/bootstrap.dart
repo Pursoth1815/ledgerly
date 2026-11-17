@@ -12,6 +12,8 @@ import '../core/errors/app_exception.dart';
 import '../core/logging/logging_setup.dart';
 import '../core/platform/platform_api.g.dart';
 import '../core/security/database_key_store.dart';
+import '../core/settings/theme_setting.dart';
+import '../design_system/font_licenses.dart';
 import 'app.dart';
 import 'background/app_jobs.dart';
 import 'config/app_config.dart';
@@ -30,6 +32,7 @@ Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
   configureLogging(debugOutput: kDebugMode);
   final config = AppConfig.fromFlavor(appFlavor);
+  registerFontLicenses();
   // iOS has no background engine yet (Not Yet Verified).
   final background = defaultTargetPlatform == TargetPlatform.android ? BackgroundHostApi() : null;
   await background?.acquireWriter();
@@ -50,10 +53,16 @@ Future<void> bootstrap() async {
     BackgroundJobApi.setUp(JobRunner(appJobs(database)));
     await background.engineReady();
   }
+  // Read before the first frame, so the app never flashes the wrong theme.
+  final themeMode = await ThemeSettingStore(database).load();
 
   runApp(
     ProviderScope(
-      overrides: [appConfigProvider.overrideWithValue(config), appDatabaseProvider.overrideWithValue(database)],
+      overrides: [
+        appConfigProvider.overrideWithValue(config),
+        appDatabaseProvider.overrideWithValue(database),
+        initialThemeModeProvider.overrideWithValue(themeMode),
+      ],
       child: const LoopdApp(),
     ),
   );

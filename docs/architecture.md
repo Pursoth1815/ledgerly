@@ -41,13 +41,14 @@ Code depends downward only, and there are no cycles. `app/` is the only place th
 | `lib/core/errors/` | The sealed `AppException` family | Feature-specific error text | [0A] |
 | `lib/core/routing/` | Route path constants | Screens | [0A] |
 | `lib/core/background/` | The job runner, the `BackgroundJob` interface and job checkpoints (ADR 0013) | Feature rules | [0B] |
-| `lib/core/settings/` | Theme, lock timeout, switches | | Phase 1 |
+| `lib/core/settings/` | App settings in the `app_settings` table, starting with the theme; later lock timeout and switches | | [1] |
 | `lib/core/ledger/` | Accounts, cards, Cash in hand, categories, transactions, postings, money rules | Screens | Phase 2 |
 | `lib/core/backup/` | Snapshot, archive, verification, retention, restore | Crypto internals | Phase 2, completed in 7 |
 | `lib/core/capture_inbox/` | Drafts, identity hash, transaction sources, merchant memory | Saving final records itself | Phase 3 |
 | `lib/core/reminders/` | The schedule worked out from records | Drawing notifications | Phase 5 |
 | `lib/core/file_store/` | Encrypted vault and ticket files | | Phase 5 |
-| `lib/design_system/` | Tokens, theme, generic components | Domain types, providers, data access | Phase 1 |
+| `lib/design_system/` | Tokens (`loopd_colors`, `loopd_typography`, `loopd_spacing`, `loopd_motion`), the theme, and generic components | Domain types, providers, data access | [1] |
+| `assets/fonts/` | Bundled Plus Jakarta Sans 2.7.1 and JetBrains Mono 2.304, with their OFL licences | Fonts fetched at run time | [1] |
 | `lib/features/<name>/` | One module: `<name>.dart` (public API) plus `domain/`, `data/`, `presentation/` only where needed | Another feature's internals; writes to another owner's tables | From Phase 1 |
 | `packages/sms_parser/`, `packages/command_parser/` | Pure Dart parsers with fixture tests | Flutter, the database, app imports | Phases 3 and 9 |
 | `pigeons/` | The Pigeon interface definition | | [0A] |

@@ -38,7 +38,7 @@ Each `*Light.dc.html` file shows the same screen with the light palette.
 
 ## Design decisions
 
-- **Colour per module** (plan section 18): Money green, Lending amber, Travel indigo, Notes and Tasks warm sand, Vault slate, Wellbeing teal. Credit Card has its own violet so UPI and CC are told apart at a glance. Cash is sky blue (dark `#38BDF8`, light `#0369A1`).
+- **Colour per module** (plan section 18): Money green, Lending amber, Travel indigo, Notes and Tasks warm sand, Vault blue (proposal section 18; an earlier slate is no longer used), Wellbeing teal. Credit Card has its own violet so UPI and CC are told apart at a glance. Cash is sky blue (dark `#38BDF8`, light `#0369A1`).
 - **Reserved colours:** red only for overdue; orange only for "needs review".
 - **Type:** Plus Jakarta Sans for everything, tabular figures for amounts; JetBrains Mono for PNRs and the command line.
 - **Shape:** rounded cards, tonal layers instead of shadows, 44 px minimum touch targets.
@@ -176,3 +176,13 @@ Not a review round: these changes come from the owner's answers to the open poin
 | Task times are the owner's choice | Task reminders (10g) has a "Daily summary at" choice (07:00, 08:00, 09:00, 21:00). Quiet hours now say they apply to tasks only; travel and payment alerts still come |
 
 The owner's own edit on the canvas, kept in this folder: the Capture sheet shortcut "Loan" is now "Lent", and the shortcut labels use a regular weight.
+
+## Built as design tokens (Phase 1, 17 Nov 2026)
+
+The colours in the mockups are now `lib/design_system/loopd_colors.dart`, read in code as `context.colors`. Where mockups disagreed slightly, the code follows the majority:
+
+- Soft tints use the opacity most mockups share; the capture sheet's slightly stronger tints are not kept.
+- Vault is blue: `#7C9BFF` as an accent on dark, `#3B5BDB` for solid tiles and in light. The slate in the Lending mockup is not used.
+
+A test checks that every text colour has at least 4.5 to 1 contrast on every surface, in both themes.
+

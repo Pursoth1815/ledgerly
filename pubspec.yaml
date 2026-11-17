@@ -40,3 +40,32 @@ hooks:
 
 flutter:
   uses-material-design: true
+
+  # Bundled fonts (proposal section 18), never downloaded. Pinned releases:
+  # Plus Jakarta Sans 2.7.1 (tokotype) and JetBrains Mono 2.304 (JetBrains),
+  # both SIL Open Font License 1.1; the licence files ship with them.
+  assets:
+    - assets/fonts/plus_jakarta_sans/OFL.txt
+    - assets/fonts/jetbrains_mono/OFL.txt
+
+  fonts:
+    - family: PlusJakartaSans
+      fonts:
+        - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/plus_jakarta_sans/PlusJakartaSans-ExtraBold.ttf
+          weight: 800
+    - family: JetBrainsMono
+      fonts:
+        - asset: assets/fonts/jetbrains_mono/JetBrainsMono-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/jetbrains_mono/JetBrainsMono-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/jetbrains_mono/JetBrainsMono-Bold.ttf
+          weight: 700

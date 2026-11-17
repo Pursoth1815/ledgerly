@@ -198,3 +198,26 @@ The owner checked the component gallery on the phone. Changes from the mockups:
 | "Back up now" | Has a cloud-upload icon before the label |
 | How a disabled button should look | Three looks were compared on the phone: a soft tint, an outline, and the whole button faded. The owner chose **faded**: a disabled button keeps its own colours at 40% opacity |
 | The sheet showed two handles | One handle (a gallery bug, fixed in the sheet component) |
+
+## Phase 1 screens (17 Nov 2026)
+
+Built from the mockups, with these additions for a phase where no features exist yet:
+
+- **Today's empty state:** an "All clear" card, which is not in the mockups. Today hides every card that has nothing to say, so with no data it would otherwise be blank.
+- **More:** each row shows which phase builds it ("Phase 2", or "Later" for App lock, which the plan does not place yet). Switches for features not built yet (SMS detection, Task reminders) are faded and cannot be turned on. The Dark theme switch works. The tiles show their phase instead of counts.
+- **Capture sheet:** the input, the five shortcuts and the three questions are in place. Shortcuts and questions say which phase builds them. Typed text is not understood until the offline assistant (Phase 9).
+- **Icons:** Material icons stand in for the mockups' line icons, except the tab bar, which is drawn from the mockup paths.
+
+
+## Review of the Phase 1 screens (17 Nov 2026)
+
+Changed in the app and on the canvas (version 57), with nothing else on the canvas changed:
+
+| Feedback | Change |
+| --- | --- |
+| SMS detection hint did not match the mockup | The app uses the mockup's text: "Turns bank messages into cards to confirm" |
+| More tiles | App: the large faint picture sits off the bottom-right corner as in the mockup (120 px, 14% white), a shield for Vault and a timer for Screen time; the small icons stay a folder with a star (Vault) and an hourglass (Screen time). Canvas: Vault's small icon is now the folder with a star instead of the padlock |
+| Capture sheet: the input's border and button were missing | App: the input has a visible border, and the Save button sits under it, faded until the assistant understands typed text (Phase 9) |
+| Task shortcut colour looked like Expense green | Rose was tried and rejected; from three options in the gallery the owner chose **blue**: `#60A5FA` dark, `#1D4ED8` light, tints `rgba(96,165,250,0.16)` and `#DBEAFE` (canvas version 60) |
+
+Canvas version 58 brings the component review into the mockups too: Today's review stack shows two clear 10 px edges (94% and 88% wide, the back one at 75%), and "Back up now" on the Backup & restore page has the cloud-upload icon and fades to 40% while a backup runs (the faded disabled look). The capture sheet's input border is green in the app, as in the mockup. The Task colour is blue (canvas version 60). The capture button stays on every tab (owner confirmed).

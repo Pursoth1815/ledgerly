@@ -1,10 +1,7 @@
 @Tags(['golden'])
 library;
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:loopd/design_system/components/loopd_button.dart';
 import 'package:loopd/design_system/components/loopd_card.dart';
@@ -18,6 +15,8 @@ import 'package:loopd/design_system/loopd_spacing.dart';
 import 'package:loopd/design_system/loopd_theme.dart';
 import 'package:loopd/design_system/loopd_typography.dart';
 
+import '../../support/golden_fonts.dart';
+
 /// Visual tests (Phase 1): the components drawn with the real fonts in both
 /// themes, compared with saved pictures in `goldens/`.
 ///
@@ -25,28 +24,6 @@ import 'package:loopd/design_system/loopd_typography.dart';
 /// Mac, not in CI: `flutter test --tags golden`. After an intended change,
 /// refresh them with `flutter test --tags golden --update-goldens` and look at
 /// the new pictures before committing.
-Future<void> _loadFonts() async {
-  Future<void> load(String family, String folder) async {
-    final loader = FontLoader(family);
-    for (final file in Directory(
-      'assets/fonts/$folder',
-    ).listSync().whereType<File>().where((f) => f.path.endsWith('.ttf'))) {
-      loader.addFont(Future.value(ByteData.sublistView(file.readAsBytesSync())));
-    }
-    await loader.load();
-  }
-
-  await load(LoopdType.sans, 'plus_jakarta_sans');
-  await load(LoopdType.mono, 'jetbrains_mono');
-
-  // Material icons come from the Flutter SDK, as in the app.
-  final sdk = Platform.environment['FLUTTER_ROOT'];
-  final icons = File('$sdk/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf');
-  if (sdk != null && icons.existsSync()) {
-    await (FontLoader('MaterialIcons')..addFont(Future.value(ByteData.sublistView(icons.readAsBytesSync())))).load();
-  }
-}
-
 Widget _sample(Brightness brightness) => MaterialApp(
   debugShowCheckedModeBanner: false,
   theme: loopdTheme(brightness),
@@ -137,7 +114,7 @@ Widget _sample(Brightness brightness) => MaterialApp(
 );
 
 void main() {
-  setUpAll(_loadFonts);
+  setUpAll(loadGoldenFonts);
 
   for (final brightness in Brightness.values) {
     testWidgets('components in ${brightness.name}', (tester) async {

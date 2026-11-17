@@ -100,8 +100,8 @@ class Component extends DCLogic {
     this.state = { q: 'spent 250 on lunch hdfc upi' };
   }
   pal(t) {
-    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',lend:'#A14A06',lendT:'#FDF0D8',travel:'#4338CA',travelT:'#E8E9FD',notes:'#735E3B',notesT:'#F3ECE0',task:'#0F766E',taskT:'#DBF3EF',neutral:'#5D6474',onAccent:'#FFFFFF',scrim:'rgba(17,20,27,0.45)'};
-    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',money:'#34D399',moneyT:'rgba(52,211,153,0.16)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.16)',lend:'#FBBF24',lendT:'rgba(251,191,36,0.15)',travel:'#8F98FF',travelT:'rgba(143,152,255,0.18)',notes:'#E6CDA3',notesT:'rgba(230,205,163,0.16)',task:'#2DD4BF',taskT:'rgba(45,212,191,0.16)',neutral:'#8F96A6',onAccent:'#0D0F14',scrim:'rgba(0,0,0,0.6)'};
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',lend:'#A14A06',lendT:'#FDF0D8',travel:'#4338CA',travelT:'#E8E9FD',notes:'#735E3B',notesT:'#F3ECE0',task:'#1D4ED8',taskT:'#DBEAFE',neutral:'#5D6474',onAccent:'#FFFFFF',scrim:'rgba(17,20,27,0.45)'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',money:'#34D399',moneyT:'rgba(52,211,153,0.16)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.16)',lend:'#FBBF24',lendT:'rgba(251,191,36,0.15)',travel:'#8F98FF',travelT:'rgba(143,152,255,0.18)',notes:'#E6CDA3',notesT:'rgba(230,205,163,0.16)',task:'#60A5FA',taskT:'rgba(96,165,250,0.16)',neutral:'#8F96A6',onAccent:'#0D0F14',scrim:'rgba(0,0,0,0.6)'};
   }
   parse(q, c) {
     const text = (q || '').toLowerCase().trim();

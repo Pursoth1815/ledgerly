@@ -93,6 +93,9 @@ class LoopdColors extends ThemeExtension<LoopdColors> {
   final Color travelPass;
   final Color notes;
   final Color notesTint;
+
+  /// The Task shortcut in the capture sheet: blue, so it is not mistaken for
+  /// Expense green (owner's choice, 17 Nov 2026, over teal and rose).
   final Color task;
   final Color taskTint;
   final Color vault;
@@ -140,8 +143,8 @@ class LoopdColors extends ThemeExtension<LoopdColors> {
     travelPass: Color(0xFF4F46E5),
     notes: Color(0xFFE6CDA3),
     notesTint: Color(0x21E6CDA3),
-    task: Color(0xFF2DD4BF),
-    taskTint: Color(0x292DD4BF),
+    task: Color(0xFF60A5FA),
+    taskTint: Color(0x2960A5FA),
     vault: Color(0xFF7C9BFF),
     vaultTint: Color(0x297C9BFF),
     vaultSolid: Color(0xFF3B5BDB),
@@ -184,8 +187,8 @@ class LoopdColors extends ThemeExtension<LoopdColors> {
     travelPass: Color(0xFF4338CA),
     notes: Color(0xFF735E3B),
     notesTint: Color(0xFFF3ECE0),
-    task: Color(0xFF0F766E),
-    taskTint: Color(0xFFDBF3EF),
+    task: Color(0xFF1D4ED8),
+    taskTint: Color(0xFFDBEAFE),
     vault: Color(0xFF3B5BDB),
     vaultTint: Color(0xFFE3E9FC),
     vaultSolid: Color(0xFF3B5BDB),

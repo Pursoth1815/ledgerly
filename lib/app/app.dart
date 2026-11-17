@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../design_system/loopd_colors.dart';
+import '../core/settings/theme_setting.dart';
+import '../design_system/loopd_theme.dart';
 import 'router/app_router.dart';
 
-/// The root widget. Stock Material themes on the mockup backgrounds until the
-/// design system (Phase 1).
+/// The root widget: Loopd's own themes, dark and light (proposal section 18),
+/// and the theme the owner chose.
 class LoopdApp extends ConsumerWidget {
   const LoopdApp({super.key});
 
@@ -13,8 +14,11 @@ class LoopdApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
     title: 'Loopd',
     debugShowCheckedModeBanner: false,
-    theme: ThemeData(scaffoldBackgroundColor: LoopdColors.light.background),
-    darkTheme: ThemeData(brightness: Brightness.dark, scaffoldBackgroundColor: LoopdColors.dark.background),
+    theme: loopdTheme(Brightness.light),
+    darkTheme: loopdTheme(Brightness.dark),
+    themeMode: ref.watch(themeSettingProvider),
+    // The theme switch is instant, as in the mockups.
+    themeAnimationDuration: Duration.zero,
     routerConfig: ref.watch(appRouterProvider),
   );
 }

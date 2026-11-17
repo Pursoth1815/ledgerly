@@ -66,10 +66,10 @@ The repository is private, but treat it as if it might become public later.
 
 ## Current stage
 
-- The plan is at revision 3.2. The architecture was agreed on 16 Nov 2026 (proposal section 13, `docs/adr/`), and Phase 0A, the project foundations, was finished on 17 Nov 2026. Phase 0B is next.
+- The plan is at revision 3.2. The architecture was agreed on 16 Nov 2026 (proposal section 13, `docs/adr/`), Phase 0A, the project foundations, was finished on 17 Nov 2026, and Phase 0B, the native spikes, was tested on the owner's phone and merged on 17 Nov 2026. Phase 1, the design system and Today shell, is in progress: one branch and pull request per part, merged one at a time.
 - **Follow `docs/architecture.md`.** Run `dart run tool/check_architecture.dart` before handing anything over; it enforces the import rules and bans unsafe key APIs.
 - Do not build anything that depends on a pending decision (proposal section 19); mark it pending instead.
-- Phase 0B (native spikes) runs on the owner's Tecno Pova Curve 5G, which runs Android 16 with HiOS 16.3. The encryption design is not production-ready until the Phase 0B tests and benchmarks pass on that phone.
+- The owner's phone is a Tecno Pova Curve 5G on Android 16 with HiOS 16.3. HiOS freezes Loopd about 10 s after it leaves the screen: reminders use alarm clocks, and SMS capture also reads the inbox when Loopd wakes (ADRs 0007, 0008 and 0013).
 - The mockups in `docs/mockups/` are the design reference. Build screens to match them, and record any change the owner asks for in `docs/mockups/README.md` and the proposal.
 - Screens that share a pattern are one widget with a mode, as in the mockups: the expense form (add or review), the category sheet (expense or Vault), the settings page (backup, task reminders or logs), and the ticket details (train or bus).
 - Every phase ends with the owner's approval before the next one starts.

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../design_system/loopd_colors.dart';
+import '../../design_system/loopd_typography.dart';
 import 'app_tab.dart';
 import 'tab_icon.dart';
 
@@ -15,7 +16,7 @@ class LoopdTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = LoopdColors.forBrightness(Theme.of(context).brightness);
+    final colors = context.colors;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: colors.surface,
@@ -74,12 +75,7 @@ class _TabButton extends StatelessWidget {
               Text(
                 tab.label,
                 maxLines: 1,
-                style: TextStyle(
-                  fontSize: 11,
-                  height: 1.3,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                  color: color,
-                ),
+                style: LoopdType.micro.copyWith(fontWeight: selected ? FontWeight.w700 : FontWeight.w600, color: color),
               ),
             ],
           ),

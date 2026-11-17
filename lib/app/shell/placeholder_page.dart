@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../design_system/loopd_colors.dart';
+import '../../design_system/loopd_spacing.dart';
+import '../../design_system/loopd_typography.dart';
 import '../config/app_config.dart';
 import 'app_tab.dart';
 
@@ -12,7 +15,7 @@ class PlaceholderPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
+    final colors = context.colors;
     final build = switch (ref.watch(appConfigProvider).distribution) {
       Distribution.personal => 'Personal build',
       Distribution.store => 'Store build',
@@ -20,14 +23,17 @@ class PlaceholderPage extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(LoopdSpace.xxl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(tab.label, style: theme.textTheme.headlineMedium),
-              const SizedBox(height: 8),
-              Text('Built in Phase ${tab.builtInPhase}', style: theme.textTheme.bodyLarge),
-              if (tab == AppTab.more) ...[const SizedBox(height: 8), Text(build, style: theme.textTheme.bodyMedium)],
+              Text(tab.label, style: LoopdType.display.copyWith(color: colors.textPrimary)),
+              const SizedBox(height: LoopdSpace.sm),
+              Text('Built in Phase ${tab.builtInPhase}', style: LoopdType.body.copyWith(color: colors.textSecondary)),
+              if (tab == AppTab.more) ...[
+                const SizedBox(height: LoopdSpace.sm),
+                Text(build, style: LoopdType.small.copyWith(color: colors.textMuted)),
+              ],
             ],
           ),
         ),

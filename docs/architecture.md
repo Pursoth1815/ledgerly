@@ -42,7 +42,7 @@ Code depends downward only, and there are no cycles. `app/` is the only place th
 | `lib/core/routing/` | Route path constants | Screens | [0A] |
 | `lib/core/background/` | The job runner, the `BackgroundJob` interface and job checkpoints (ADR 0013) | Feature rules | [0B] |
 | `lib/core/settings/` | App settings in the `app_settings` table, starting with the theme; later lock timeout and switches | | [1] |
-| `lib/core/ledger/` | Accounts, cards, Cash in hand, categories, transactions, postings, money rules | Screens | Phase 2 |
+| `lib/core/ledger/` | Accounts, cards, Cash in hand, categories, transactions, postings, money rules: `LedgerEngine` (the only writer of money), `ledger_rules.dart` (posting shapes), `LedgerDao` (used only here) | Screens | [2] |
 | `lib/core/backup/` | Snapshot, archive, verification, retention, restore | Crypto internals | Phase 2, completed in 7 |
 | `lib/core/capture_inbox/` | Drafts, identity hash, transaction sources, merchant memory | Saving final records itself | Phase 3 |
 | `lib/core/reminders/` | The schedule worked out from records | Drawing notifications | Phase 5 |

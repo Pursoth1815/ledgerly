@@ -58,5 +58,6 @@ class StartupFailureApp extends StatelessWidget {
       'This build cannot encrypt data, so it will not open any.',
     DatabaseOpenException(failure: DatabaseOpenFailure.keyMismatch) => 'The stored key does not match your data.',
     DatabaseOpenException(failure: DatabaseOpenFailure.openFailed) => 'Your data could not be opened.',
+    LedgerException() => 'Your money records could not be set up.',
   };
 }

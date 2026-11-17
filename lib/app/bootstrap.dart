@@ -9,6 +9,7 @@ import '../core/background/job_runner.dart';
 import '../core/database/app_database.dart';
 import '../core/database/database_opener.dart';
 import '../core/errors/app_exception.dart';
+import '../core/ledger/ledger_engine.dart';
 import '../core/logging/logging_setup.dart';
 import '../core/platform/platform_api.g.dart';
 import '../core/security/database_key_store.dart';
@@ -43,6 +44,15 @@ Future<void> bootstrap() async {
       keys: DatabaseKeyStore(KeyStoreApi()),
       directory: await getApplicationSupportDirectory(),
     );
+  } on AppException catch (error) {
+    _log.severe('startup_failed code=${error.code}');
+    await background?.engineFailed(error.code);
+    runApp(StartupFailureApp(error: error));
+    return;
+  }
+  // Cash in hand, the bookkeeping accounts and the default categories.
+  try {
+    await LedgerEngine(database).ensureDefaults();
   } on AppException catch (error) {
     _log.severe('startup_failed code=${error.code}');
     await background?.engineFailed(error.code);

@@ -714,7 +714,7 @@ It is required for expenses, refunds, loans and repayments, and empty for the ot
 - A refund always points to its original purchase (`refund_of` is required), and the total refunded can never exceed the original. A credit SMS with no known original stays in the Review Inbox as an unclear item.
 - The refund's `payment_method` and funding account describe where the money actually came back: the same card, a bank account, or cash.
 - Spending reports attribute a refund to the **original's** category, method and card. Balances use the **actual** destination. Example: a ₹1,299 card purchase refunded to Savings by UPI gives Savings +129900 and Shopping −129900. Shopping and the card's spending both fall to zero. The card still shows ₹1,299 owed, because that is still true, and the UPI total does not change.
-- Reports offer two modes. In purchase-month mode a refund counts in the month of the original. In cash-flow mode it counts in its own month. Over a range that covers both dates, the totals are the same. Which mode is the default, and where the switch sits, is still your decision.
+- Reports offer two modes. In purchase-month mode a refund counts in the month of the original. In cash-flow mode it counts in its own month. Over a range that covers both dates, the totals are the same. Purchase month is the default, with a switch in the Money tab (your decision, 17 November 2026).
 - A purchase with live refunds cannot be deleted directly. You see its refunds and choose to edit the purchase, or to delete it together with its refunds as an explicit action. Nothing is removed silently.
 
 **Many SMS, one transaction.** The capture inbox links drafts to transactions:

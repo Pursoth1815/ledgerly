@@ -1,6 +1,6 @@
 # Personal App: proposal status
 
-As of 2026-11-17. Stage reached: revision 3.2 of the proposal (architecture agreed). **Phase 0A, the project foundations, is done** (approved and tested on the owner's phone on 17 Nov 2026). **Phase 0B, the native spikes, is done** (tested on the owner's phone and merged on 17 Nov 2026). **Phase 1, the design system and Today shell, is in progress.**
+As of 2026-11-17. Stage reached: revision 3.2 of the proposal (architecture agreed). **Phase 0A, the project foundations, is done** (approved and tested on the owner's phone on 17 Nov 2026). **Phase 0B, the native spikes, is done** (tested on the owner's phone and merged on 17 Nov 2026). **Phase 1, the design system and Today shell, is done** (three parts, merged 17 Nov 2026). **Phase 2, expenses with UPI, Credit Card and Cash, is in progress.**
 
 - Full proposal: `Personal App — Product Proposal & Phased Roadmap.md` in this repository, mirrored in the Claude Doc at https://claude.ai/artifact/5E9r7cyk2nPgheaf7iyGmj (the repository file is at revision 3.2; the Claude Doc is still at revision 3.1 and is updated after the owner approves 3.2).
 - Mockups and the review record: `docs/mockups/README.md`; canvas at https://claude.ai/artifact/LGbLMacN52Aq8mq8pi7bNa
@@ -43,6 +43,7 @@ As of 2026-11-17. Stage reached: revision 3.2 of the proposal (architecture agre
 - Ticket notification (17 Nov 2026): posted once. It cannot be swiped away on the lock screen and survives Clear all; if it is swiped away while the phone is unlocked, it stays gone. Re-posting it after a swipe was tried in Phase 0B and dropped: HiOS freezes Loopd about 10 s after it leaves the screen, and a frozen app is not told about the swipe.
 - SMS capture (17 Nov 2026): the SMS receiver is the fast path. Each time Loopd runs, it also reads the inbox for any messages it missed, because HiOS hides new-SMS signals from a frozen Loopd (ADR 0007).
 - Screen time (17 Nov 2026): counted from apps' foreground events, which matched Digital Wellbeing to within a few minutes for the top apps. Android's daily `totalTimeVisible` was off by up to 2.5 times, so it is not used. App names need a launcher `<queries>` entry in the manifest (Phase 8). The home screen is left out of the totals.
+- Phase 2 decisions (17 Nov 2026): debit-card, net-banking and auto-debit payments count as UPI (only UPI, Credit Card and Cash exist); refunds are reported in the purchase month by default, with a cash-flow switch in the Money tab; the last three backups are kept; every restore asks for the passphrase; a forgotten passphrase can be reset on this phone after a fingerprint, face or PIN check; the passphrase is at least 12 characters.
 - Reminder alarms (17 Nov 2026): task reminders, travel stages and the final ticket use alarm-clock alarms (`setAlarmClock`). In Phase 0B they were the only kind that HiOS let through on time while Loopd was frozen; exact and normal alarms were held back until Loopd woke. Android shows the ⏰ icon and lists Loopd's next reminder as the next alarm.
 - Workflow: once coding starts, Claude does not commit, push or open a pull request until the owner has checked the changes and approved them (see CLAUDE.md).
 
@@ -67,7 +68,7 @@ Approved by the owner. Details in section 13 of the proposal, `docs/architecture
 ## Open points awaiting the user
 
 1. Text tools in section 10 have no screen: commands in the capture line (default), or drop them.
-2. Architecture choices still pending (listed in section 19 of the proposal): other bank methods in the split; the default refund reporting mode; the pairing window; backup retention beyond three; weekly backup conditions; restore without the passphrase on the same phone; resetting a forgotten passphrase; minimum passphrase length; an in-app test restore (new scope); exact alarms in the personal build; keeping the original SMS text; iOS compile check frequency; a separate store application id; what to do if the Keystore proves unreliable.
+2. Architecture choices still pending (listed in section 19 of the proposal): the pairing window; weekly backup conditions; an in-app test restore (new scope); exact alarms in the personal build; keeping the original SMS text; iOS compile check frequency; a separate store application id; what to do if the Keystore proves unreliable.
 3. How the personal build is installed (found in Phase 0B, 17 Nov 2026): Google Play Protect blocks installing it from a file (Files app, browser, messaging app) because it asks for SMS permissions. In India this is Google's anti-fraud rule for sideloaded apps. Installing from the Mac over USB (`adb`) works. Options: install and update over USB, or turn Play Protect scanning off while installing.
 
 ## Next steps
@@ -75,3 +76,6 @@ Approved by the owner. Details in section 13 of the proposal, `docs/architecture
 Phase 0B was tested on the owner's phone (Android 16, HiOS 16.3) on 17 Nov 2026. The results are in ADRs 0007, 0008, 0009, 0011 and 0013. It goes on one branch, `spike/phase0b`, and one pull request (owner's choice, 17 Nov 2026). Not working yet: the ticket coming back after a restart, which is revisited in Phase 5. Open point 3 (how the personal build is installed) waits on the owner. Phase 0B was approved and merged on 17 Nov 2026.
 
 Phase 1 is built in three parts, each on its own branch and pull request, merged one at a time (owner's choice, 17 Nov 2026): design tokens and themes; shared components with a gallery; then the five-tab shell, Today, More and the capture sheet shell.
+
+Phase 1 was finished on 17 Nov 2026 (PRs #26, #27, #28). Phase 2 is built in seven parts, each on its own branch and pull request, merged one at a time: the ledger engine; accounts and cards with Cash in hand; the expense form with editing and undo; categories; the Money tab with totals and refunds (its screen is designed on the canvas first); encrypted backup and restore; app lock and app-switcher privacy.
+

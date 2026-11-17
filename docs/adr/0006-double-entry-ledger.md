@@ -34,4 +34,5 @@ Lending, ATM withdrawals, card bills, refunds and Cash in hand must never distor
 ## Consequences
 
 - Totals can only disagree if a rule in the engine is wrong, and the rules are tested.
-- Pending decisions (proposal section 19): where SMS-only bank methods appear in Today's split; the default reporting mode; the pairing window.
+- Decided 17 Nov 2026: the SMS-only bank methods (debit_card, net_banking, auto_debit) count as UPI in every total by method, because Loopd shows only UPI, Credit Card and Cash; purchase month is the default reporting mode, with a cash-flow switch.
+- Pending (proposal section 19): the pairing window.

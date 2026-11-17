@@ -121,7 +121,9 @@ dart run drift_dev make-migrations                  # after a schema change
 dart format lib test tool integration_test pigeons
 flutter analyze
 dart run tool/check_architecture.dart
-flutter test
+flutter test --exclude-tags golden                 # what CI runs
+flutter test --tags golden                         # visual tests, on the Mac before handing over
+flutter test --tags golden --update-goldens        # after an intended visual change; look at the pictures
 (cd android && ./gradlew :app:testPersonalDebugUnitTest)
 flutter run --flavor personal                       # Android needs a flavour
 flutter build apk --release --flavor personal       # or --flavor store

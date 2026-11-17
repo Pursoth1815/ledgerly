@@ -6,4 +6,7 @@ abstract final class RoutePaths {
   static const travel = '/travel';
   static const planner = '/planner';
   static const more = '/more';
+
+  /// The component gallery; debug and profile builds only.
+  static const gallery = '/gallery';
 }

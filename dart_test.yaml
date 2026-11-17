@@ -1,0 +1,4 @@
+# Visual tests compare pictures and run on the Mac only (see
+# test/design_system/components/components_golden_test.dart).
+tags:
+  golden: {}

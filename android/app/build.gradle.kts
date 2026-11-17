@@ -68,6 +68,10 @@ dependencies {
     // lab uses it so far; it moves to `implementation` with backup.
     "profileImplementation"("org.bouncycastle:bcprov-jdk18on:1.86")
 
+    // Background jobs (ADR 0013). Pinned after checking Google's Maven on
+    // 2026-11-17: 2.12.0, released 23 Sep 2026.
+    implementation("androidx.work:work-runtime:2.12.0")
+
     testImplementation("junit:junit:4.13.2")
 }
 

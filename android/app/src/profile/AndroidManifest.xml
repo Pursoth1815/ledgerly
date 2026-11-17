@@ -6,6 +6,10 @@
          builds only (ADR 0017).
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Phase 0B: lets the spike lab show Android's own "let app always run
+         in background?" dialog. Whether the real app asks for this is decided
+         from the Phase 0B results. -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
 
     <application>
         <!-- Phase 0B spike lab: a second launcher icon, "Loopd Spikes", in
@@ -22,5 +26,9 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+            <!-- Phase 0B locked-phone test: an alarm that starts expedited work. -->
+        <receiver
+            android:name="com.pursoth.loopd.spikes.SpikeAlarmReceiver"
+            android:exported="false" />
     </application>
 </manifest>

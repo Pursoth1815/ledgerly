@@ -1,11 +1,15 @@
 package com.pursoth.loopd.spikes
 
 import android.app.Activity
+import android.app.ActivityManager
+import android.app.usage.UsageStatsManager
 import android.content.Intent
+import android.net.Uri
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.os.Debug
+import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
 import android.view.View
@@ -15,6 +19,9 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import androidx.work.WorkManager
+import com.pursoth.loopd.background.BackgroundJobWorker
+import com.pursoth.loopd.background.BackgroundRuntime
 import com.pursoth.loopd.security.KeystoreKeyWrapper
 import java.io.File
 import java.text.SimpleDateFormat
@@ -56,6 +63,16 @@ class SpikeLabActivity : Activity() {
         addButton(column, "2 · Tink streaming benchmark (needs ~700 MB free)") { runStreaming() }
         addButton(column, "3 · Argon2id tuning") { runArgon2() }
         addButton(column, "Run 1, 2 and 3") { runKeystore(); runStreaming(); runArgon2() }
+        addButton(column, "4 · Background: short job in 2 min (then lock the phone)") {
+            startBackground(SHORT_JOB, delayMillis = 2 * 60_000L)
+        }
+        addButton(column, "4b · Locked test: alarm starts an urgent job in 2 min (then lock the phone)") {
+            startLockedTest(SHORT_JOB)
+        }
+        addButton(column, "4c · Locked test, quick job (3 s, like saving one SMS)") { startLockedTest(QUICK_JOB) }
+        addButton(column, "7 · Battery: allow Loopd to run in the background") { askUnrestrictedBattery() }
+        addButton(column, "5 · Background: long job (15 min of work)") { startBackground(LONG_JOB, delayMillis = 0) }
+        addButton(column, "6 · Background log and battery check") { showBackgroundLog() }
         addButton(column, "Share results") { shareResults() }
         addButton(column, "Clear results") { clearResults() }
 
@@ -77,6 +94,8 @@ class SpikeLabActivity : Activity() {
             }
         }
         setContentView(scroll)
+        // The long background test needs the screen on for about 15 minutes.
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
     override fun onDestroy() {
@@ -111,6 +130,60 @@ class SpikeLabActivity : Activity() {
     }
 
     private fun runArgon2() = runSpike("Argon2id") { report -> Argon2Tuning().run(report) }
+
+    /** Schedules a Dart self-test job through the real background path (ADR 0013). */
+    private fun startBackground(kind: String, delayMillis: Long) = runSpike("Background $kind") { report ->
+        BackgroundJobWorker.enqueue(applicationContext, kind, delayMillis)
+        val at = SimpleDateFormat("HH:mm:ss", Locale.US).format(Date(System.currentTimeMillis() + delayMillis))
+        report("Scheduled $kind to start at about $at (Android may run it later)")
+        batteryStatus().forEach(report)
+    }
+
+    private fun startLockedTest(kind: String) = runSpike("Locked test $kind") { report ->
+        SpikeAlarmReceiver.schedule(applicationContext, kind, delayMillis = 2 * 60_000L)
+        val at = SimpleDateFormat("HH:mm:ss", Locale.US).format(Date(System.currentTimeMillis() + 2 * 60_000L))
+        report("Alarm set for about $at; it starts $kind as urgent (expedited) work")
+        batteryStatus().forEach(report)
+    }
+
+    /** Android's own dialog; the answer shows in the battery line of button 6. */
+    private fun askUnrestrictedBattery() {
+        val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:$packageName"))
+        startActivity(intent)
+    }
+
+    private fun showBackgroundLog() = runSpike("Background log") { report ->
+        batteryStatus().forEach(report)
+        val work = WorkManager.getInstance(applicationContext)
+        for (kind in listOf(QUICK_JOB, SHORT_JOB, LONG_JOB)) {
+            val states = work.getWorkInfosForUniqueWork(kind).get().map { "${it.state} (attempts ${it.runAttemptCount})" }
+            report("$kind now: ${states.ifEmpty { listOf("never scheduled") }.joinToString()}")
+        }
+        val log = BackgroundRuntime.get(applicationContext).log.read().trim()
+        report("Background run log, newest last:")
+        if (log.isEmpty()) report("  (empty)") else log.lines().takeLast(80).forEach { report("  $it") }
+    }
+
+    /** What Android and HiOS allow this app to do in the background. */
+    private fun batteryStatus(): List<String> {
+        val power = getSystemService(PowerManager::class.java)
+        val activity = getSystemService(ActivityManager::class.java)
+        val usage = getSystemService(UsageStatsManager::class.java)
+        val bucket = when (val value = usage.appStandbyBucket) {
+            UsageStatsManager.STANDBY_BUCKET_ACTIVE -> "active"
+            UsageStatsManager.STANDBY_BUCKET_WORKING_SET -> "working set"
+            UsageStatsManager.STANDBY_BUCKET_FREQUENT -> "frequent"
+            UsageStatsManager.STANDBY_BUCKET_RARE -> "rare"
+            UsageStatsManager.STANDBY_BUCKET_RESTRICTED -> "restricted"
+            else -> "other ($value)"
+        }
+        val unrestricted = power.isIgnoringBatteryOptimizations(packageName)
+        return listOf(
+            "Battery: ${if (unrestricted) "unrestricted (not optimised)" else "optimised (Android's default)"}" +
+                " · background restricted: ${activity.isBackgroundRestricted}" +
+                " · standby bucket: $bucket",
+        )
+    }
 
     /** Queues [spike] on the single worker thread, so spikes never overlap. */
     private fun runSpike(name: String, spike: (Report) -> Unit) {
@@ -150,11 +223,6 @@ class SpikeLabActivity : Activity() {
     private fun setRunning(start: Boolean) {
         running += if (start) 1 else -1
         val busy = running > 0
-        if (busy) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        } else {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        }
         // Run buttons wait while a spike runs; Share stays usable.
         buttons.forEach { if (it.text != "Share results") it.isEnabled = !busy }
     }
@@ -183,5 +251,8 @@ class SpikeLabActivity : Activity() {
 
     private companion object {
         const val TAG = "loopd.spike"
+        const val QUICK_JOB = "self_test.quick"
+        const val SHORT_JOB = "self_test.short"
+        const val LONG_JOB = "self_test.long"
     }
 }

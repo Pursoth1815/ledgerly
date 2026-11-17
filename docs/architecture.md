@@ -33,12 +33,14 @@ Code depends downward only, and there are no cycles. `app/` is the only place th
 | --- | --- | --- | --- |
 | `lib/main.dart` | The entry point; calls `bootstrap()` | Anything else | [0A] |
 | `lib/app/` | Start-up (`bootstrap.dart`), flavour config, router, shell, placeholder pages, the start-up failure screen | Business rules, queries | [0A] |
+| `lib/app/background/` | The headless engine's start-up (`backgroundMain()` in `main.dart` calls it) and the list of every background job | Job logic | [0B] |
 | `lib/core/database/` | `AppDatabase`, encrypted opening, migrations; later `tables/<owner>.dart` | Queries for one feature (those go in that owner's DAO) | [0A] |
 | `lib/core/security/` | Access to Keystore-protected keys; later the crypto calls | Key material stored in Dart | [0A] |
 | `lib/core/platform/` | The Pigeon-generated interface; later small services (permissions, notifications, files, usage, share) | Business rules | [0A] |
 | `lib/core/logging/` | Logger set-up and redaction | Message text, amounts, digits, names | [0A] |
 | `lib/core/errors/` | The sealed `AppException` family | Feature-specific error text | [0A] |
 | `lib/core/routing/` | Route path constants | Screens | [0A] |
+| `lib/core/background/` | The job runner, the `BackgroundJob` interface and job checkpoints (ADR 0013) | Feature rules | [0B] |
 | `lib/core/settings/` | Theme, lock timeout, switches | | Phase 1 |
 | `lib/core/ledger/` | Accounts, cards, Cash in hand, categories, transactions, postings, money rules | Screens | Phase 2 |
 | `lib/core/backup/` | Snapshot, archive, verification, retention, restore | Crypto internals | Phase 2, completed in 7 |
@@ -51,7 +53,8 @@ Code depends downward only, and there are no cycles. `app/` is the only place th
 | `pigeons/` | The Pigeon interface definition | | [0A] |
 | `tool/` | `check_architecture.dart`, `check_apk_permissions.sh` | App code | [0A] |
 | `drift_schemas/` | Committed schema snapshots, one per version | Hand edits | [0A] |
-| `android/app/src/main/kotlin/…/` | `bridge/` (Pigeon host code), `security/` (Keystore); later `background/`, `alarms/`, `notifications/`, `usage/`, `share/` | Business rules | [0A] |
+| `android/app/src/main/kotlin/…/` | `bridge/` (Pigeon host code), `security/` (Keystore), `background/` (WorkManager worker, headless engine, single-writer gate); later `alarms/`, `notifications/`, `usage/`, `share/` | Business rules | [0A], `background/` [0B] |
+| `android/app/src/profile/` | The Phase 0B spike lab ("Loopd Spikes"), in profile builds only | Anything the release app needs | [0B] |
 | `android/app/src/personal/` | Personal-only code and manifest entries (SMS) | | Phase 3 |
 | `android/app/src/test/` | Kotlin JVM tests | | [0A] |
 | `test/` | Tests mirroring `lib/`, plus `tool/`; later `support/` for shared fakes | Production code | [0A] |
@@ -94,7 +97,7 @@ How features talk to each other:
   1. Add or change tables in `core/database/tables/<owner>.dart` and raise `schemaVersion`.
   2. Run `dart run drift_dev make-migrations`. It writes the new snapshot to `drift_schemas/` and generates migration tests in `test/drift/`.
   3. Write the step, run the generated tests, and never edit a released step.
-- Only one copy of the app writes at a time (ADR 0013).
+- Only one engine writes at a time (ADR 0013). The app's engine takes the writer gate before it opens the database; background jobs run inside it while it exists, and otherwise in the headless engine.
 
 ## Native code
 

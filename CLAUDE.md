@@ -23,7 +23,7 @@ The owner reviews and merges everything. Claude never merges its own work.
 1. **One branch per feature or component.** Never commit to `production` or `develop` directly.
 2. **Branch from the latest `develop`**, unless the owner says otherwise.
 3. **Branch names:** `feat/<name>`, `fix/<name>`, `chore/<name>`, `docs/<name>`, `test/<name>`, `refactor/<name>`, `spike/<name>`. Use short kebab-case names, for example `feat/expense-entry` or `spike/sms-receiver`.
-4. **Keep each branch small.** If a phase is large, split it into several branches. Each branch should be reviewable on its own.
+4. **Keep each branch small.** If a phase is large, split it into several branches. Each branch should be reviewable on its own. Exception: Phase 0B goes on one branch, `spike/phase0b`, with one pull request (owner's choice, 17 Nov 2026).
 5. **Commits** follow Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:`).
 6. **Before asking for approval:** `flutter analyze` is clean, `flutter test` passes, and the Android build succeeds. Report failures as failures.
 7. **When the work is ready:** leave it uncommitted on the branch and tell the owner:
@@ -69,7 +69,7 @@ The repository is private, but treat it as if it might become public later.
 - The plan is at revision 3.2. The architecture was agreed on 16 Nov 2026 (proposal section 13, `docs/adr/`), and Phase 0A, the project foundations, was finished on 17 Nov 2026. Phase 0B is next.
 - **Follow `docs/architecture.md`.** Run `dart run tool/check_architecture.dart` before handing anything over; it enforces the import rules and bans unsafe key APIs.
 - Do not build anything that depends on a pending decision (proposal section 19); mark it pending instead.
-- Phase 0B (native spikes) runs on the owner's Tecno Pova Curve 5G and needs its Android version confirmed. The encryption design is not production-ready until the Phase 0B tests and benchmarks pass on that phone.
+- Phase 0B (native spikes) runs on the owner's Tecno Pova Curve 5G, which runs Android 16 with HiOS 16.3. The encryption design is not production-ready until the Phase 0B tests and benchmarks pass on that phone.
 - The mockups in `docs/mockups/` are the design reference. Build screens to match them, and record any change the owner asks for in `docs/mockups/README.md` and the proposal.
 - Screens that share a pattern are one widget with a mode, as in the mockups: the expense form (add or review), the category sheet (expense or Vault), the settings page (backup, task reminders or logs), and the ticket details (train or bus).
 - Every phase ends with the owner's approval before the next one starts.

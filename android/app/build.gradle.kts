@@ -39,6 +39,13 @@ android {
     }
 
     buildTypes {
+        // Phase 0B spike lab (src/profile). Debuggable apps run Kotlin code
+        // slower, which would skew the benchmarks, so the profile build is not
+        // debuggable. Flutter still builds Dart in profile mode: it picks the
+        // mode from the build type's name.
+        getByName("profile") {
+            isDebuggable = false
+        }
         release {
             // TODO(phase 11): a real signing config. Debug keys for now, so
             // release builds can be produced and checked in CI.
@@ -57,6 +64,9 @@ dependencies {
     // Keystore key wrapping now; streaming file encryption from Phase 5 (ADR 0009).
     // Pinned after checking Maven Central on 2026-11-16.
     implementation("com.google.crypto.tink:tink-android:1.24.0")
+    // Argon2id for the backup passphrase (ADR 0009). Only the Phase 0B spike
+    // lab uses it so far; it moves to `implementation` with backup.
+    "profileImplementation"("org.bouncycastle:bcprov-jdk18on:1.86")
 
     testImplementation("junit:junit:4.13.2")
 }

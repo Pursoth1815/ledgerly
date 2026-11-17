@@ -356,7 +356,7 @@ A trip can leave at any hour, so every stage is counted from the departure time.
 | --- | --- | --- |
 | Ticket details | Expanded layout: operator and number, route, departure time, coach and seat, reference | The same details as notification text |
 | Visible on the lock screen | Yes, when your lock-screen setting allows notification content. An app setting can hide the details | Depends on the phone's notification preview setting |
-| Stays until you dismiss it | Posted as an ongoing notification. On Android 14 and later it cannot be swiped away while the phone is locked and survives Clear all; unlocked, you can still swipe it ([docs](https://developer.android.com/about/versions/14/behavior-changes-all?hl=en)) | Stays in Notification Centre until cleared; it cannot be pinned |
+| Stays until you dismiss it | Posted as an ongoing notification. On Android 14 and later it cannot be swiped away while the phone is locked and survives Clear all; unlocked, you can still swipe it ([docs](https://developer.android.com/about/versions/14/behavior-changes-all?hl=en)). It is posted once: a ticket swiped away while unlocked stays gone (your choice, 17 November 2026) | Stays in Notification Centre until cleared; it cannot be pinned |
 | Not cleared at departure time | No timeout is set and the app never removes it by the clock | Same |
 | Show Ticket | Opens the full ticket in the app after unlock. A filled indigo button | Opens the app |
 | Done | Clears the notification without opening the app. An outlined button | An action clears it |

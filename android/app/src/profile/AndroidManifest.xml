@@ -26,7 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-            <!-- Phase 0B locked-phone test: an alarm that starts expedited work. -->
+        <!-- Phase 0B locked-phone test: an alarm that starts expedited work. -->
         <receiver
             android:name="com.pursoth.loopd.spikes.SpikeAlarmReceiver"
             android:exported="false" />

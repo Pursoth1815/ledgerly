@@ -40,6 +40,8 @@ As of 2026-11-17. Stage reached: revision 3.2 of the proposal (architecture agre
 - On-device AI text features (ML Kit GenAI): not built. Listed as removed.
 - Reminder times: travel stages follow the departure time, with no clock times and no travel setting. Only task reminders use times the owner picks: the lead, the snooze, the daily summary of overdue and today's tasks, and quiet hours. Payment cards, travel stages and other alerts follow their own rules; quiet hours apply to tasks only.
 - Time: no limit. The day estimates size the work and are not a schedule.
+- Ticket notification (17 Nov 2026): posted once. It cannot be swiped away on the lock screen and survives Clear all; if it is swiped away while the phone is unlocked, it stays gone. Re-posting it after a swipe was tried in Phase 0B and dropped: HiOS freezes Loopd about 10 s after it leaves the screen, and a frozen app is not told about the swipe.
+- Reminder alarms (17 Nov 2026): task reminders, travel stages and the final ticket use alarm-clock alarms (`setAlarmClock`). In Phase 0B they were the only kind that HiOS let through on time while Loopd was frozen; exact and normal alarms were held back until Loopd woke. Android shows the ⏰ icon and lists Loopd's next reminder as the next alarm.
 - Workflow: once coding starts, Claude does not commit, push or open a pull request until the owner has checked the changes and approved them (see CLAUDE.md).
 
 ## Architecture decisions (2026-11-16)
@@ -53,7 +55,7 @@ Approved by the owner. Details in section 13 of the proposal, `docs/architecture
 - Keys: Android Keystore through Tink's `AndroidKeystore` helper; `AndroidKeysetManager` is not used; Tink streaming encryption for files, with 256 KiB segments; Argon2id (Bouncy Castle) for the backup passphrase, at m = 128 MiB, t = 4, p = 1 (both chosen 17 Nov 2026 from the Phase 0B results). Pinned: tink-android 1.24.0, bcprov-jdk18on 1.86.
 - Kotlin in the app's own Android project, with one Pigeon interface; own Kotlin alarms and notifications; a headless background engine started by WorkManager.
 - Backup: an index file plus encrypted parts, resumable, read back before it counts, never overwriting the last good backup.
-- The encryption design counts as verified only after the Phase 0B tests and benchmarks on the owner's phone. Done on 17 Nov 2026: the Keystore stress test with a restart, the streaming benchmark and the Argon2id tuning all passed (ADR 0009). Still to come: the Keystore test while the phone is locked.
+- The encryption design counts as verified only after the Phase 0B tests and benchmarks on the owner's phone. Done on 17 Nov 2026: the Keystore stress test with a restart, the streaming benchmark and the Argon2id tuning all passed (ADR 0009). The Keystore test while the phone is locked also passed (ADR 0013).
 
 ## Plan in brief
 

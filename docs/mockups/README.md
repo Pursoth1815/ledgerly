@@ -186,3 +186,15 @@ The colours in the mockups are now `lib/design_system/loopd_colors.dart`, read i
 
 A test checks that every text colour has at least 4.5 to 1 contrast on every surface, in both themes.
 
+
+## Component review (Phase 1, 17 Nov 2026)
+
+The owner checked the component gallery on the phone. Changes from the mockups:
+
+| Feedback | Change |
+| --- | --- |
+| The review stack did not read as three cards | Each waiting card now shows a clear 10 px edge below the one in front: up to two edges, each narrower, and the back one slightly faded. Tapping the edges (a 44 px area kept clear of the card's buttons) opens the Review Inbox |
+| Button text a little large | Button labels are 14 px Bold (the mockups had 15 px) |
+| "Back up now" | Has a cloud-upload icon before the label |
+| How a disabled button should look | Three looks were compared on the phone: a soft tint, an outline, and the whole button faded. The owner chose **faded**: a disabled button keeps its own colours at 40% opacity |
+| The sheet showed two handles | One handle (a gallery bug, fixed in the sheet component) |

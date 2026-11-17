@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../core/routing/route_paths.dart';
+import '../../design_system/gallery/component_gallery.dart';
 import '../shell/app_shell.dart';
 import '../shell/app_tab.dart';
 import '../shell/placeholder_page.dart';
@@ -29,6 +31,8 @@ GoRouter appRouter(Ref ref) {
             ),
         ],
       ),
+      // Phase 1: every shared component on one page. Not in release builds.
+      if (!kReleaseMode) GoRoute(path: RoutePaths.gallery, builder: (context, state) => const ComponentGallery()),
     ],
   );
   ref.onDispose(router.dispose);

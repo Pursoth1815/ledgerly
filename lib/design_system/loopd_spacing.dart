@@ -26,11 +26,14 @@ abstract final class LoopdRadius {
   /// Standard cards.
   static const double card = 20;
 
-  /// Large cards on Today.
+  /// Large cards.
   static const double cardLarge = 22;
 
+  /// Today's section cards, the review card and full-width buttons.
+  static const double section = 24;
+
   /// Bottom sheets (top corners).
-  static const double sheet = 28;
+  static const double sheet = 30;
 
   /// Chips, pills and round buttons.
   static const double pill = 999;
@@ -42,4 +45,10 @@ abstract final class LoopdSize {
 
   /// The task checkbox circle (review round 1: 20 px).
   static const double checkCircle = 20;
+
+  /// Full-width buttons, such as Review and Looks Good.
+  static const double button = 48;
+
+  /// Chips with a label, such as a category.
+  static const double chip = 30;
 }

@@ -41,7 +41,9 @@ jobs:
       - run: dart format --output=none --set-exit-if-changed lib test tool integration_test pigeons
       - run: flutter analyze
       - run: dart run tool/check_architecture.dart
-      - run: flutter test
+      # Visual (golden) tests run on the Mac only: text renders slightly
+      # differently on Linux. See dart_test.yaml.
+      - run: flutter test --exclude-tags golden
 
   android:
     name: Android builds and Kotlin tests

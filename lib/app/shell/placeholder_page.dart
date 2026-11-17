@@ -1,6 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../core/routing/route_paths.dart';
+import '../../design_system/components/loopd_button.dart';
 import '../../design_system/loopd_colors.dart';
 import '../../design_system/loopd_spacing.dart';
 import '../../design_system/loopd_typography.dart';
@@ -33,6 +37,14 @@ class PlaceholderPage extends ConsumerWidget {
               if (tab == AppTab.more) ...[
                 const SizedBox(height: LoopdSpace.sm),
                 Text(build, style: LoopdType.small.copyWith(color: colors.textMuted)),
+                if (!kReleaseMode) ...[
+                  const SizedBox(height: LoopdSpace.xxl),
+                  LoopdButton(
+                    label: 'Component gallery',
+                    style: LoopdButtonStyle.outlined,
+                    onTap: () => context.push(RoutePaths.gallery),
+                  ),
+                ],
               ],
             ],
           ),

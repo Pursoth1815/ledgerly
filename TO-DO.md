@@ -33,7 +33,7 @@ Last updated: 2026-11-16
 
 ### 6. Journey chip in the status bar (Android 16 Live Updates)
 - **What:** A live chip and lock-screen card while a journey is under way.
-- **Why it waits:** Needs Android 16. Your Tecno Pova Curve 5G shipped with Android 15; check whether it has been updated. The final ticket notification already meets the requirement.
+- **Why it waits:** Needs Android 16. Your Tecno Pova Curve 5G runs Android 16 (HiOS 16.3, confirmed 17 Nov 2026), so it is possible; it waits until you schedule it. The final ticket notification already meets the requirement.
 
 ### 7. Bank statement CSV import
 - **What:** Import past transactions from a bank's CSV export.

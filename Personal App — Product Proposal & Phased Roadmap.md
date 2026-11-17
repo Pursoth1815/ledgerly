@@ -18,7 +18,7 @@ This is revision 3.2 of the proposal. It keeps revision 2's scope, folds in ever
 - **Plan.** Thirteen phases. The first is an architecture discussion and the folder structure, then native spikes on your phone. Money with SMS capture at day 39, the full core at day 83, Android v1.0 at day 96, widgets and the floating bubble last at day 103. There are no deadlines; the days only size the work.
 - **Postponed.** Multi-device sync and nine other ideas are listed in TO-DO.md and have no time in the roadmap.
 - **Architecture.** Feature-first Flutter with Riverpod and go_router, a double-entry ledger in Drift on SQLCipher, Tink encryption with Keystore-protected keys, Kotlin in the app's own Android project, and a resumable encrypted backup (section 13).
-- **From you.** Open points in section 19: your phone's Android version, the text tools, and the architecture choices still pending.
+- **From you.** Open points in section 19: the text tools and the architecture choices still pending.
 
 ## 1. What changed
 
@@ -356,7 +356,7 @@ A trip can leave at any hour, so every stage is counted from the departure time.
 | --- | --- | --- |
 | Ticket details | Expanded layout: operator and number, route, departure time, coach and seat, reference | The same details as notification text |
 | Visible on the lock screen | Yes, when your lock-screen setting allows notification content. An app setting can hide the details | Depends on the phone's notification preview setting |
-| Stays until you dismiss it | Posted as an ongoing notification. On Android 14 and later it cannot be swiped away while the phone is locked and survives Clear all; unlocked, you can still swipe it ([docs](https://developer.android.com/about/versions/14/behavior-changes-all?hl=en)) | Stays in Notification Centre until cleared; it cannot be pinned |
+| Stays until you dismiss it | Posted as an ongoing notification. On Android 14 and later it cannot be swiped away while the phone is locked and survives Clear all; unlocked, you can still swipe it ([docs](https://developer.android.com/about/versions/14/behavior-changes-all?hl=en)). It is posted once: a ticket swiped away while unlocked stays gone (your choice, 17 November 2026) | Stays in Notification Centre until cleared; it cannot be pinned |
 | Not cleared at departure time | No timeout is set and the app never removes it by the clock | Same |
 | Show Ticket | Opens the full ticket in the app after unlock. A filled indigo button | Opens the app |
 | Done | Clears the notification without opening the app. An outlined button | An action clears it |
@@ -591,7 +591,7 @@ Removed features have no tasks, no time and no place in the architecture. Postpo
 | iOS verification on a real iPhone | No device available. Covers reminders, sharing into the app, the app-switcher cover and widgets |
 | iOS Shortcuts bridge for bank messages | A user-made automation could pass message text to the app, but it cannot be verified without an iPhone |
 | Tracking money you owe | Not requested; lending covers money owed to you |
-| Journey chip in the status bar on Android 16 | Depends on your phone's Android version |
+| Journey chip in the status bar on Android 16 | Your phone runs Android 16, so it is possible; it waits until you schedule it |
 | Bank statement CSV import | Useful for history, not needed for daily use |
 | App timers or a focus mode in Digital Wellbeing | A separate feature with heavier permissions |
 | Images and rich formatting in notes | Keeps Notes simple for now |
@@ -788,9 +788,9 @@ CREATE UNIQUE INDEX transaction_sources_one_role
 
 - **Libraries, pinned.** Checked on Maven Central on 16 November 2026: `com.google.crypto.tink:tink-android` **1.24.0**, and `org.bouncycastle:bcprov-jdk18on` **1.86**, used only for Argon2id. 1.87 is the newest release but only five days old; it is taken once it is two weeks old and its release notes are clean. Each library is added in the phase that first uses it.
 - **Primitives.**
-  - Files and backups: Tink streaming `AES256_GCM_HKDF_1MB`, with associated data binding each file to its identity.
+  - Files and backups: Tink streaming AES-GCM-HKDF (AES-256, 256 KiB segments, chosen from the Phase 0B results on 17 November 2026), with associated data binding each file to its identity.
   - Small secrets: AES-256-GCM in the Keystore.
-  - Passphrase: Argon2id, with settings tuned on your phone.
+  - Passphrase: Argon2id at 128 MiB memory and 4 iterations, tuned on your phone (about 1.1 seconds).
 - **`AndroidKeysetManager` is not used.** In Tink 1.24.0 it quietly stores keysets unencrypted when the Keystore fails, and it tries to read a keyset as unencrypted when decryption fails. Tink's own documentation advises against relying on it. Instead:
   - Keysets are saved only in encrypted form, through Tink's `AndroidKeystore` helper and encrypted keyset serialisation, which have no unencrypted path.
   - One Kotlin class writes key material, and it has a single, encrypted-only write method.
@@ -1011,8 +1011,8 @@ docs/architecture.md, docs/adr/
 | Objective | Prove the riskiest native pieces on your own phone before building on them |
 | Features | SMS receiver and inbox read; a ticket notification that shows on the lock screen, stays until Done and survives a restart; reading app usage; the headless background engine started by WorkManager, with the single-writer handover; Keystore stress test (1,000 wrap-and-unwrap cycles, and after a restart); Tink streaming benchmark (1, 10, 50 and 200 MB; 1 MB and 4 KB segments); Argon2id tuning; writing to and reading back from the folders and cloud providers on your phone; interrupting a long background job and resuming it |
 | Pass marks | A 20 MB PDF decrypted in under 1 second; a 10 MB photo encrypted in under 1 second; no memory failure at 200 MB, with under 10 MB of extra memory; Argon2id between 0.5 and 1.5 seconds; no Keystore failures |
-| Technical dependencies | Phase 0A; your phone, a Tecno Pova Curve 5G, and its Android version |
-| Risks and platform restrictions | A manufacturer's battery policy may delay the receiver or alarms. Tecno's HiOS manages background apps strictly, so the spikes also check its auto-start and battery settings. The restricted-settings step for a sideloaded build has to be walked through on your phone. If the Keystore proves unreliable, a key decision returns to you |
+| Technical dependencies | Phase 0A; your phone, a Tecno Pova Curve 5G on Android 16 (HiOS 16.3) |
+| Risks and platform restrictions | A manufacturer's battery policy may delay the receiver or alarms. Tecno's HiOS manages background apps strictly, so the spikes also check its auto-start and battery settings. Android 16 adds stricter limits on background job run time, which the background-engine spike measures. The restricted-settings step for a sideloaded build has to be walked through on your phone. If the Keystore proves unreliable, a key decision returns to you |
 | Tested on Android | Every spike and benchmark, on your phone, with the results recorded in the ADRs. The encryption design counts as verified only after this |
 | Needs an iPhone | Nothing. The iOS project only has to compile |
 
@@ -1214,7 +1214,7 @@ The largest risks are device behaviour on Android and the size of the scope for 
 
 ### Dependencies
 
-- Your phone: a Tecno Pova Curve 5G. Its current Android version is still to confirm.
+- Your phone: a Tecno Pova Curve 5G on Android 16 (HiOS 16.3), confirmed on 17 November 2026.
 - The banks, cards and ticket services that send you SMS. Received on 15 November.
 - About 200 real messages, with digits scrambled, as parser fixtures. They are exported on your phone by a scrambling tool in the Phase 3 debug build, so raw messages never leave the phone.
 - Approved mockups before Phase 1. Reviewed in six rounds; see docs/mockups.
@@ -1261,6 +1261,7 @@ Your confirmed decisions are applied and are not reopened here. Each open point 
 - [x] **Minimum Android version.** Android 15.
 - [x] **The capture sheet.** (a): it stays on every tab. You will confirm it once the sheet is designed and tested.
 - [x] **Your phone.** Tecno Pova Curve 5G.
+- [x] **Your phone's Android version.** Android 16 with HiOS 16.3 (17 November 2026). Phase 0B tests on Android 16. The minimum stays Android 15.
 - [x] **Cash and other bank debits.** Cash is tracked as a third method with one Cash in hand balance (section 4). ATM withdrawals move money to Cash in hand; debit-card, net-banking and auto-debit messages appear in the Review Inbox under their bank account.
 - [x] **On-device language features.** Not built.
 - [x] **Reminder times.** Travel stages are counted from departure, with no clock times. Only task reminders use times you choose: the lead, the snooze, the daily summary and quiet hours. Payment cards, travel stages and other alerts follow their own rules.
@@ -1269,8 +1270,6 @@ Your confirmed decisions are applied and are not reopened here. Each open point 
 
 ### Still open
 
-- [ ] **Your phone's Android version.** Settings › About phone › Android version. The Pova Curve 5G shipped with Android 15 (HiOS 15); an update to 16 changes what Phase 0B checks and whether the Android 16 journey chip in TO-DO.md becomes possible.
-  Phase 0B needs this. Phase 0A does not.
 - [ ] **Text tools** in section 10 (tidy spacing, sort lines, count words, pull out amounts) have no screen in the mockups. Should they be commands typed in the capture line, or be dropped?
   If you say nothing: commands in the capture line, built in Phase 9.
 

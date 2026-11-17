@@ -38,4 +38,13 @@ Backups go to a folder chosen in the system picker, possibly a cloud provider. A
 
 - Restore round trips are tested before every release. Committed fixture backups must always open.
 - Cloud providers only accept the files; Phase 0B tests the providers on the phone.
+
+## Phase 0B results (17 Nov 2026, owner's phone)
+
+Each test wrote 20 MB through the file picker, read it back, compared SHA-256 and deleted the file.
+
+- **Phone folder** (`com.android.externalstorage.documents`): permanent access kept; written in about 155 ms, read in about 40 ms; matches. PASS. Android does not let the top of Download be picked, so the owner created a `Loopd` folder inside it.
+- **Google Drive folder** (`com.google.android.apps.docs.storage`, through the folder picker): permanent access kept; written in about 200 ms, read in about 360 ms; matches. PASS.
+- **Google Drive single file** (save dialog): written in 330 ms, read in 297 ms; matches. PASS.
+- Loopd needs no internet for any of these: the Drive app does the upload.
 - Pending: a fourth, older backup kept or not; the weekly conditions; restore without the passphrase; resetting a forgotten passphrase; minimum length; an in-app test restore (new scope).

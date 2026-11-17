@@ -1,9 +1,12 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <!--
       No internet permission: the app works fully offline and the CI release
       check fails if any build gains it (ADR 0017). Android's own backup and
       transfer are off (ADR 0011).
     -->
+    <!-- WorkManager asks for this for network constraints, which Loopd never uses. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove" />
     <application
         android:label="Loopd"
         android:name="${applicationName}"

@@ -26,6 +26,133 @@ Object? _extractReplyValueOrThrow(List<Object?>? replyList, String channelName, 
   return replyList.firstOrNull;
 }
 
+List<Object?> wrapResponse({Object? result, PlatformException? error, bool empty = false}) {
+  if (empty) {
+    return <Object?>[];
+  }
+  if (error == null) {
+    return <Object?>[result];
+  }
+  return <Object?>[error.code, error.message, error.details];
+}
+
+bool _deepEquals(Object? a, Object? b) {
+  if (identical(a, b)) {
+    return true;
+  }
+  if (a is double && b is double) {
+    if (a.isNaN && b.isNaN) {
+      return true;
+    }
+    return a == b;
+  }
+  if (a is List && b is List) {
+    return a.length == b.length && a.indexed.every(((int, dynamic) item) => _deepEquals(item.$2, b[item.$1]));
+  }
+  if (a is Map && b is Map) {
+    if (a.length != b.length) {
+      return false;
+    }
+    for (final MapEntry<Object?, Object?> entryA in a.entries) {
+      bool found = false;
+      for (final MapEntry<Object?, Object?> entryB in b.entries) {
+        if (_deepEquals(entryA.key, entryB.key)) {
+          if (_deepEquals(entryA.value, entryB.value)) {
+            found = true;
+            break;
+          } else {
+            return false;
+          }
+        }
+      }
+      if (!found) {
+        return false;
+      }
+    }
+    return true;
+  }
+  return a == b;
+}
+
+int _deepHash(Object? value) {
+  if (value is List) {
+    return Object.hashAll(value.map(_deepHash));
+  }
+  if (value is Map) {
+    int result = 0;
+    for (final MapEntry<Object?, Object?> entry in value.entries) {
+      result += (_deepHash(entry.key) * 31) ^ _deepHash(entry.value);
+    }
+    return result;
+  }
+  if (value is double && value.isNaN) {
+    // Normalize NaN to a consistent hash.
+    return 0x7FF8000000000000.hashCode;
+  }
+  if (value is double && value == 0.0) {
+    // Normalize -0.0 to 0.0 so they have the same hash code.
+    return 0.0.hashCode;
+  }
+  return value.hashCode;
+}
+
+/// How a background job run ended (ADR 0013).
+enum JobOutcome {
+  /// The job finished its work.
+  done,
+
+  /// The job saved its progress and stopped early because it was asked to;
+  /// it continues from that point the next time it runs.
+  stopped,
+
+  /// The job cannot finish, or its kind is unknown. It is not retried.
+  failed,
+}
+
+/// The result of one job run. [detail] holds safe fields only, such as
+/// `step=412/900`, never personal data.
+class JobResult {
+  JobResult({required this.outcome, required this.detail});
+
+  JobOutcome outcome;
+
+  String detail;
+
+  List<Object?> _toList() {
+    return <Object?>[outcome, detail];
+  }
+
+  Object encode() {
+    return _toList();
+  }
+
+  static JobResult decode(Object result) {
+    result as List<Object?>;
+    return JobResult(outcome: result[0]! as JobOutcome, detail: result[1]! as String);
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  bool operator ==(Object other) {
+    if (other is! JobResult || other.runtimeType != runtimeType) {
+      return false;
+    }
+    if (identical(this, other)) {
+      return true;
+    }
+    return _deepEquals(outcome, other.outcome) && _deepEquals(detail, other.detail);
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  int get hashCode => _deepHash(<Object?>[runtimeType, ..._toList()]);
+
+  @override
+  String toString() {
+    return 'JobResult(outcome: $outcome, detail: $detail)';
+  }
+}
+
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
   @override
@@ -33,6 +160,12 @@ class _PigeonCodec extends StandardMessageCodec {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
+    } else if (value is JobOutcome) {
+      buffer.putUint8(129);
+      writeValue(buffer, value.index);
+    } else if (value is JobResult) {
+      buffer.putUint8(130);
+      writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
     }
@@ -41,6 +174,11 @@ class _PigeonCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
+      case 129:
+        final value = readValue(buffer) as int?;
+        return value == null ? null : JobOutcome.values[value];
+      case 130:
+        return JobResult.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -84,5 +222,135 @@ class KeyStoreApi {
       isNullValid: false,
     );
     return pigeonVar_replyValue! as Uint8List;
+  }
+}
+
+/// Called by the Dart side of an engine about background work and the
+/// single database writer (ADR 0013).
+class BackgroundHostApi {
+  /// Constructor for [BackgroundHostApi]. The [binaryMessenger] named argument is
+  /// available for dependency injection. If it is left null, the default
+  /// BinaryMessenger will be used which routes to the host platform.
+  BackgroundHostApi({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
+    : pigeonVar_binaryMessenger = binaryMessenger,
+      pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+
+  final BinaryMessenger? pigeonVar_binaryMessenger;
+  static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
+
+  final String pigeonVar_messageChannelSuffix;
+
+  /// The app's own engine calls this before opening the database. It
+  /// returns once this engine is the only writer. A background job that is
+  /// writing is first asked to stop at its next checkpoint; the job then
+  /// continues in this engine.
+  Future<void> acquireWriter() async {
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.loopd.BackgroundHostApi.acquireWriter$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+    _extractReplyValueOrThrow(pigeonVar_replyList, pigeonVar_channelName, isNullValid: true);
+  }
+
+  /// The database is open and this engine can run jobs.
+  Future<void> engineReady() async {
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.loopd.BackgroundHostApi.engineReady$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+    _extractReplyValueOrThrow(pigeonVar_replyList, pigeonVar_channelName, isNullValid: true);
+  }
+
+  /// The database could not be opened; [code] is the `AppException` code.
+  Future<void> engineFailed(String code) async {
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.loopd.BackgroundHostApi.engineFailed$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[code]);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+    _extractReplyValueOrThrow(pigeonVar_replyList, pigeonVar_channelName, isNullValid: true);
+  }
+}
+
+/// Called by Kotlin to run background jobs in a Dart engine (ADR 0013).
+abstract class BackgroundJobApi {
+  static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
+
+  /// Runs the job [kind]. [runId] names this run, and [attempt] counts the
+  /// earlier runs of the same work.
+  Future<JobResult> runJob(String runId, String kind, int attempt);
+
+  /// Asks the run [runId] to save its progress and stop at its next
+  /// checkpoint. Its `runJob` call then returns [JobOutcome.stopped].
+  void stopJob(String runId);
+
+  static void setUp(BackgroundJobApi? api, {BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''}) {
+    messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+    {
+      final pigeonVar_channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.loopd.BackgroundJobApi.runJob$messageChannelSuffix',
+        pigeonChannelCodec,
+        binaryMessenger: binaryMessenger,
+      );
+      if (api == null) {
+        pigeonVar_channel.setMessageHandler(null);
+      } else {
+        pigeonVar_channel.setMessageHandler((Object? message) async {
+          final List<Object?> args = message! as List<Object?>;
+          final String arg_runId = args[0]! as String;
+          final String arg_kind = args[1]! as String;
+          final int arg_attempt = args[2]! as int;
+          try {
+            final JobResult output = await api.runJob(arg_runId, arg_kind, arg_attempt);
+            return wrapResponse(result: output);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          } catch (e) {
+            return wrapResponse(
+              error: PlatformException(code: 'error', message: e.toString()),
+            );
+          }
+        });
+      }
+    }
+    {
+      final pigeonVar_channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.loopd.BackgroundJobApi.stopJob$messageChannelSuffix',
+        pigeonChannelCodec,
+        binaryMessenger: binaryMessenger,
+      );
+      if (api == null) {
+        pigeonVar_channel.setMessageHandler(null);
+      } else {
+        pigeonVar_channel.setMessageHandler((Object? message) async {
+          final List<Object?> args = message! as List<Object?>;
+          final String arg_runId = args[0]! as String;
+          try {
+            api.stopJob(arg_runId);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          } catch (e) {
+            return wrapResponse(
+              error: PlatformException(code: 'error', message: e.toString()),
+            );
+          }
+        });
+      }
+    }
   }
 }

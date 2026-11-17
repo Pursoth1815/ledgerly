@@ -80,6 +80,8 @@ jobs:
           exit 1
       - name: Kotlin unit tests
         run: flutter build apk --debug --flavor personal && (cd android && ./gradlew :app:testPersonalDebugUnitTest)
+      - name: Spike lab tests (Phase 0B, profile build only)
+        run: flutter build apk --profile --flavor personal && (cd android && ./gradlew :app:testPersonalProfileUnitTest)
       - name: Release builds
         run: |
           flutter build apk --release --flavor personal

@@ -1,6 +1,6 @@
 # Personal App: proposal status
 
-As of 2026-11-17. Stage reached: revision 3.2 of the proposal (architecture agreed). **Phase 0A, the project foundations, is done** (approved and tested on the owner's phone on 17 Nov 2026). Phase 0B is next. No feature code yet.
+As of 2026-11-17. Stage reached: revision 3.2 of the proposal (architecture agreed). **Phase 0A, the project foundations, is done** (approved and tested on the owner's phone on 17 Nov 2026). **Phase 0B, the native spikes, was tested on the owner's phone on 17 Nov 2026** and is waiting for the owner's approval. No feature code yet.
 
 - Full proposal: `Personal App — Product Proposal & Phased Roadmap.md` in this repository, mirrored in the Claude Doc at https://claude.ai/artifact/5E9r7cyk2nPgheaf7iyGmj (the repository file is at revision 3.2; the Claude Doc is still at revision 3.1 and is updated after the owner approves 3.2).
 - Mockups and the review record: `docs/mockups/README.md`; canvas at https://claude.ai/artifact/LGbLMacN52Aq8mq8pi7bNa
@@ -35,11 +35,15 @@ As of 2026-11-17. Stage reached: revision 3.2 of the proposal (architecture agre
 ## Answers from the owner (2026-11-16)
 
 - Capture sheet: stays on every tab (option a). Final once the sheet is designed and tested.
-- Phone: Tecno Pova Curve 5G. Android version still to confirm.
+- Phone: Tecno Pova Curve 5G on Android 16, HiOS 16.3 (confirmed 17 Nov 2026). The minimum stays Android 15.
 - Cash: tracked. A third method, Cash, spends from one Cash in hand balance. ATM withdrawal SMS become Review Inbox cards that move money from the bank account to Cash in hand (a transfer, not spending). "Update count" records the difference as an adjustment outside spending. Debit-card, net-banking and auto-debit messages go to the Review Inbox under their bank account.
 - On-device AI text features (ML Kit GenAI): not built. Listed as removed.
 - Reminder times: travel stages follow the departure time, with no clock times and no travel setting. Only task reminders use times the owner picks: the lead, the snooze, the daily summary of overdue and today's tasks, and quiet hours. Payment cards, travel stages and other alerts follow their own rules; quiet hours apply to tasks only.
 - Time: no limit. The day estimates size the work and are not a schedule.
+- Ticket notification (17 Nov 2026): posted once. It cannot be swiped away on the lock screen and survives Clear all; if it is swiped away while the phone is unlocked, it stays gone. Re-posting it after a swipe was tried in Phase 0B and dropped: HiOS freezes Loopd about 10 s after it leaves the screen, and a frozen app is not told about the swipe.
+- SMS capture (17 Nov 2026): the SMS receiver is the fast path. Each time Loopd runs, it also reads the inbox for any messages it missed, because HiOS hides new-SMS signals from a frozen Loopd (ADR 0007).
+- Screen time (17 Nov 2026): counted from apps' foreground events, which matched Digital Wellbeing to within a few minutes for the top apps. Android's daily `totalTimeVisible` was off by up to 2.5 times, so it is not used. App names need a launcher `<queries>` entry in the manifest (Phase 8). The home screen is left out of the totals.
+- Reminder alarms (17 Nov 2026): task reminders, travel stages and the final ticket use alarm-clock alarms (`setAlarmClock`). In Phase 0B they were the only kind that HiOS let through on time while Loopd was frozen; exact and normal alarms were held back until Loopd woke. Android shows the ⏰ icon and lists Loopd's next reminder as the next alarm.
 - Workflow: once coding starts, Claude does not commit, push or open a pull request until the owner has checked the changes and approved them (see CLAUDE.md).
 
 ## Architecture decisions (2026-11-16)
@@ -50,10 +54,10 @@ Approved by the owner. Details in section 13 of the proposal, `docs/architecture
 - Riverpod 3 with code generation; go_router with a five-tab shell; no interface-plus-implementation pairs.
 - Drift on SQLCipher (the build bundled by the `sqlite3` package); one schema, a DAO per owner; one writer at a time.
 - Double-entry ledger: signed postings in paise, stored payment method, refunds linked to originals (both reporting modes), many-SMS-to-one-transaction sources, opening and verified balances, edit history and undo.
-- Keys: Android Keystore through Tink's `AndroidKeystore` helper; `AndroidKeysetManager` is not used; Tink streaming encryption for files; Argon2id (Bouncy Castle) for the backup passphrase. Pinned: tink-android 1.24.0, bcprov-jdk18on 1.86.
+- Keys: Android Keystore through Tink's `AndroidKeystore` helper; `AndroidKeysetManager` is not used; Tink streaming encryption for files, with 256 KiB segments; Argon2id (Bouncy Castle) for the backup passphrase, at m = 128 MiB, t = 4, p = 1 (both chosen 17 Nov 2026 from the Phase 0B results). Pinned: tink-android 1.24.0, bcprov-jdk18on 1.86.
 - Kotlin in the app's own Android project, with one Pigeon interface; own Kotlin alarms and notifications; a headless background engine started by WorkManager.
 - Backup: an index file plus encrypted parts, resumable, read back before it counts, never overwriting the last good backup.
-- The encryption design counts as verified only after the Phase 0B tests and benchmarks on the owner's phone.
+- The encryption design counts as verified only after the Phase 0B tests and benchmarks on the owner's phone. Done on 17 Nov 2026: the Keystore stress test with a restart, the streaming benchmark and the Argon2id tuning all passed (ADR 0009). The Keystore test while the phone is locked also passed (ADR 0013).
 
 ## Plan in brief
 
@@ -62,10 +66,10 @@ Approved by the owner. Details in section 13 of the proposal, `docs/architecture
 
 ## Open points awaiting the user
 
-1. The phone's Android version (Settings › About phone). Phase 0B needs this; Phase 0A does not.
-2. Text tools in section 10 have no screen: commands in the capture line (default), or drop them.
-3. Architecture choices still pending (listed in section 19 of the proposal): other bank methods in the split; the default refund reporting mode; the pairing window; backup retention beyond three; weekly backup conditions; restore without the passphrase on the same phone; resetting a forgotten passphrase; minimum passphrase length; an in-app test restore (new scope); exact alarms in the personal build; keeping the original SMS text; iOS compile check frequency; a separate store application id; what to do if the Keystore proves unreliable.
+1. Text tools in section 10 have no screen: commands in the capture line (default), or drop them.
+2. Architecture choices still pending (listed in section 19 of the proposal): other bank methods in the split; the default refund reporting mode; the pairing window; backup retention beyond three; weekly backup conditions; restore without the passphrase on the same phone; resetting a forgotten passphrase; minimum passphrase length; an in-app test restore (new scope); exact alarms in the personal build; keeping the original SMS text; iOS compile check frequency; a separate store application id; what to do if the Keystore proves unreliable.
+3. How the personal build is installed (found in Phase 0B, 17 Nov 2026): Google Play Protect blocks installing it from a file (Files app, browser, messaging app) because it asks for SMS permissions. In India this is Google's anti-fraud rule for sideloaded apps. Installing from the Mac over USB (`adb`) works. Options: install and update over USB, or turn Play Protect scanning off while installing.
 
 ## Next steps
 
-Phase 0B on the owner's phone: the native spikes and the encryption tests and benchmarks. It needs the phone's Android version first. Phase 1 starts only after the owner approves Phase 0B.
+Phase 0B was tested on the owner's phone (Android 16, HiOS 16.3) on 17 Nov 2026. The results are in ADRs 0007, 0008, 0009, 0011 and 0013. It goes on one branch, `spike/phase0b`, and one pull request (owner's choice, 17 Nov 2026). Not working yet: the ticket coming back after a restart, which is revisited in Phase 5. Open point 3 (how the personal build is installed) waits on the owner. Phase 1 starts only after the owner approves Phase 0B.

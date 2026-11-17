@@ -707,14 +707,14 @@ Each loan is its own account, so "oldest loan first" is written directly into th
 | cash | cash | The form and the capture line |
 | debit_card, net_banking, auto_debit | bank | SMS only; no new button in the form |
 
-It is required for expenses, refunds, loans and repayments, and empty for the other kinds. Where the three SMS-only methods appear in Today's UPI, Card and Cash split is still your decision.
+It is required for expenses, refunds, loans and repayments, and empty for the other kinds. The three SMS-only methods count as UPI in Today's UPI, Credit Card and Cash split and in every total by method, because Loopd has only those three methods (your decision, 17 November 2026); the stored method still records how the money left.
 
 **Refunds.**
 
 - A refund always points to its original purchase (`refund_of` is required), and the total refunded can never exceed the original. A credit SMS with no known original stays in the Review Inbox as an unclear item.
 - The refund's `payment_method` and funding account describe where the money actually came back: the same card, a bank account, or cash.
 - Spending reports attribute a refund to the **original's** category, method and card. Balances use the **actual** destination. Example: a ₹1,299 card purchase refunded to Savings by UPI gives Savings +129900 and Shopping −129900. Shopping and the card's spending both fall to zero. The card still shows ₹1,299 owed, because that is still true, and the UPI total does not change.
-- Reports offer two modes. In purchase-month mode a refund counts in the month of the original. In cash-flow mode it counts in its own month. Over a range that covers both dates, the totals are the same. Which mode is the default, and where the switch sits, is still your decision.
+- Reports offer two modes. In purchase-month mode a refund counts in the month of the original. In cash-flow mode it counts in its own month. Over a range that covers both dates, the totals are the same. Purchase month is the default, with a switch in the Money tab (your decision, 17 November 2026).
 - A purchase with live refunds cannot be deleted directly. You see its refunds and choose to edit the purchase, or to delete it together with its refunds as an explicit action. Nothing is removed silently.
 
 **Many SMS, one transaction.** The capture inbox links drafts to transactions:
@@ -1267,6 +1267,13 @@ Your confirmed decisions are applied and are not reopened here. Each open point 
 - [x] **Reminder times.** Travel stages are counted from departure, with no clock times. Only task reminders use times you choose: the lead, the snooze, the daily summary and quiet hours. Payment cards, travel stages and other alerts follow their own rules.
 - [x] **Your time.** No limit. The effort table sizes the work and is not a schedule.
 - [x] **Architecture.** Approved on 16 November 2026 as described in section 13, with Kotlin and Tink for encryption. Phase 0A was finished on 17 November 2026.
+- [x] **The capture button.** Stays on every tab, confirmed after trying the sheet in Phase 1 (17 November 2026).
+- [x] **Other bank methods in the split.** Debit-card, net-banking and auto-debit payments count as UPI: Loopd has only UPI, Credit Card and Cash (17 November 2026).
+- [x] **Refund reporting.** Purchase month is the default: a refund reduces the month the purchase was made in. The Money tab can switch to cash-flow (17 November 2026).
+- [x] **Backup retention.** The last three successful backups are kept; no older fourth one (17 November 2026).
+- [x] **Restore without the passphrase.** No: every restore asks for the backup passphrase, on this phone too (17 November 2026).
+- [x] **Resetting a forgotten passphrase.** Yes, on this phone after a fingerprint, face or PIN check. Older backups keep the old passphrase; new backups use the new one (17 November 2026).
+- [x] **Minimum passphrase length.** 12 characters (17 November 2026).
 
 ### Still open
 
@@ -1275,14 +1282,8 @@ Your confirmed decisions are applied and are not reopened here. Each open point 
 
 Architecture choices still pending. Nothing that depends on them is built until you decide:
 
-- [ ] **Other bank methods in the split.** Where debit-card, net-banking and auto-debit payments appear in Today's UPI, Card and Cash split. Needed in Phase 2.
-- [ ] **Refund reporting.** Which mode is the default (purchase month or cash-flow), and where the switch sits. Needed in Phase 2.
 - [ ] **Pairing window.** The time allowed between the two SMS of a card bill or own transfer (proposed ±3 days). Needed in Phase 3.
-- [ ] **Backup retention.** At least the last three successful backups are kept. Should a fourth, at least 28 days old, also be kept? Needed in Phase 2.
 - [ ] **Weekly backup conditions.** Battery not low only, or also while charging. Needed in Phase 7.
-- [ ] **Restore without the passphrase** on the same phone, after a PIN or fingerprint check. Needed in Phase 2.
-- [ ] **Resetting a forgotten passphrase** on the same phone, after a PIN or fingerprint check. Needed in Phase 2.
-- [ ] **Minimum passphrase length** (12 characters suggested). Needed in Phase 2.
 - [ ] **An in-app "Test restore"** that restores into a staging area and discards it. This would be new scope. Needed in Phase 7 if wanted.
 - [ ] **Exact alarms in the personal build:** keep the permission prompt, or use the install-time permission that only sideloaded apps may use. Needed in Phase 5.
 - [ ] **The original SMS text** after a transaction is confirmed: keep it (encrypted) or delete it. Needed in Phase 3.

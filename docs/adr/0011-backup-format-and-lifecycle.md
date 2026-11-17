@@ -19,13 +19,14 @@ Backups go to a folder chosen in the system picker, possibly a cloud provider. A
   4. When Android stops a job, the part being written is discarded and the next execution resumes after the last finished part. If a foreground service is ever used, `onTimeout` saves progress and stops within seconds.
   5. A run that has not finished in 7 days is abandoned and its files removed.
   6. Verification: the index is written last, then everything is read back (hashes and authentication).
-  7. Retention: nothing is overwritten. Old backups are removed only after a new one is verified, and only files the app created. At least the last three successful backups are kept.
+  7. Retention: nothing is overwritten. Old backups are removed only after a new one is verified, and only files the app created. The last three successful backups are kept, and no older ones (owner's decision, 17 Nov 2026).
   8. Restore: staging folder, integrity and ledger health checks, migrations, new device keys, then a swap.
 - **Failures:**
   - folder access lost: stop and ask
   - out of space: stop and notify
   - provider errors: three retries in a day
   - read-back failure: retry once, then notify
+- **Passphrase (owner's decisions, 17 Nov 2026):** at least 12 characters. Every restore asks for it, on the same phone too. A forgotten passphrase can be replaced on the same phone after a fingerprint, face or PIN check: the backup key is re-wrapped with the new passphrase, so new backups use it, while older backup files still need the old one.
 - Android's own backup and phone-to-phone transfer are off (`allowBackup=false`, data-extraction rules exclude everything; done in Phase 0A).
 
 ## Alternatives considered

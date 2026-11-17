@@ -117,10 +117,10 @@ class MorePage extends ConsumerWidget {
               rows: [
                 _LinkRow(
                   label: 'App lock',
-                  value: 'Later',
+                  value: 'Phase 2',
                   dot: c.vault,
                   tint: c.vaultTint,
-                  onTap: () => soon('App lock', 'in a later phase'),
+                  onTap: () => soon('App lock', 'in Phase 2'),
                 ),
                 _LinkRow(
                   label: 'Backup & restore',

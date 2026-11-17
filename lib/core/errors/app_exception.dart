@@ -65,3 +65,60 @@ final class DatabaseOpenException extends AppException {
   @override
   String get code => 'database.${failure.code}';
 }
+
+/// Why the ledger refused a change (ADR 0006). Nothing is written when one
+/// of these is thrown.
+enum LedgerFailure {
+  /// The postings do not sum to zero.
+  unbalanced('unbalanced'),
+
+  /// A transaction needs at least two postings.
+  tooFewPostings('too_few_postings'),
+
+  /// An amount must be a positive number of paise.
+  invalidAmount('invalid_amount'),
+
+  /// The postings do not have this kind's fixed shape.
+  wrongShape('wrong_shape'),
+
+  /// The payment method does not fit the funding account, or is missing or
+  /// not allowed for this kind.
+  methodMismatch('method_mismatch'),
+
+  /// A refund must point to a live expense.
+  refundWithoutOriginal('refund_without_original'),
+
+  /// Refunds can never add up to more than the original.
+  refundExceedsOriginal('refund_exceeds_original'),
+
+  /// A purchase with live refunds is deleted only together with them.
+  hasLiveRefunds('has_live_refunds'),
+
+  /// Undo works only while nothing has changed since.
+  changedSince('changed_since'),
+
+  /// The transaction or account does not exist.
+  notFound('not_found'),
+
+  /// New money cannot be recorded against a removed account.
+  accountRemoved('account_removed'),
+
+  /// Built-in accounts, such as Cash in hand, cannot be removed.
+  systemAccount('system_account'),
+
+  /// Loans, repayments and write-offs arrive with lending (Phase 4).
+  notBuiltYet('not_built_yet');
+
+  const LedgerFailure(this.code);
+
+  final String code;
+}
+
+final class LedgerException extends AppException {
+  const LedgerException(this.failure);
+
+  final LedgerFailure failure;
+
+  @override
+  String get code => 'ledger.${failure.code}';
+}

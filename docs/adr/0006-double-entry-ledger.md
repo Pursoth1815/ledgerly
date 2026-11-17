@@ -1,6 +1,6 @@
 # 0006 Double-entry ledger in paise
 
-Status: Accepted (16 Nov 2026)
+Status: Accepted (16 Nov 2026). Built in Phase 2, part 1 (17 Nov 2026)
 
 ## Context
 
@@ -26,6 +26,14 @@ Lending, ATM withdrawals, card bills, refunds and Cash in hand must never distor
 - **Each loan** is its own account, so oldest-first allocation is visible in the postings.
 - **Health check** (sums, legs, refunds, method matching funding) runs in tests, on debug starts and after restores.
 
+## As built (Phase 2, part 1)
+
+- Tables in `core/database/tables/ledger.dart` (schema version 4), STRICT, with CHECK constraints on kinds, methods and non-zero postings, and `UNIQUE (transaction_id, account_id)`. Loans arrive in Phase 4 and transaction sources in Phase 3.
+- `LedgerEngine` commands: expense, refund, income, transfer (including ATM withdrawals), card payment, Update count (the first count is the opening balance; later differences are adjustments), opening balance, verified balance, edit, delete (with refunds only on request) and undo (only while the revision is unchanged).
+- Every install gets Cash in hand, Adjustments, Opening balances, Income and the twelve default categories at start-up (`ensureDefaults`, safe to repeat).
+- An edit can never take a purchase below what was already refunded.
+- With an opening balance, the tracked balance counts what is dated after it, plus anything at the same moment created after it.
+
 ## Alternatives considered
 
 - Single-entry rows with a kind column: simpler tables, but the rules spread across queries.
@@ -34,4 +42,5 @@ Lending, ATM withdrawals, card bills, refunds and Cash in hand must never distor
 ## Consequences
 
 - Totals can only disagree if a rule in the engine is wrong, and the rules are tested.
-- Pending decisions (proposal section 19): where SMS-only bank methods appear in Today's split; the default reporting mode; the pairing window.
+- Decided 17 Nov 2026: the SMS-only bank methods (debit_card, net_banking, auto_debit) count as UPI in every total by method, because Loopd shows only UPI, Credit Card and Cash; purchase month is the default reporting mode, with a cash-flow switch.
+- Pending (proposal section 19): the pairing window.

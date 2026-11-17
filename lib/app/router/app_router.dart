@@ -4,8 +4,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../core/routing/route_paths.dart';
 import '../../design_system/gallery/component_gallery.dart';
+import '../../features/today/today.dart';
 import '../shell/app_shell.dart';
 import '../shell/app_tab.dart';
+import '../shell/more_page.dart';
 import '../shell/placeholder_page.dart';
 
 part 'app_router.g.dart';
@@ -25,7 +27,11 @@ GoRouter appRouter(Ref ref) {
               routes: [
                 GoRoute(
                   path: tab.path,
-                  builder: (context, state) => PlaceholderPage(tab: tab),
+                  builder: (context, state) => switch (tab) {
+                    AppTab.today => const TodayScreen(),
+                    AppTab.more => const MorePage(),
+                    _ => PlaceholderPage(tab: tab),
+                  },
                 ),
               ],
             ),

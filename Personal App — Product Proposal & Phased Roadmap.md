@@ -145,7 +145,7 @@ Navigation has five tabs and one capture button.
 - **Planner**, with two segments: Notes and Tasks
 - **More**, a flexible last tab. It holds the Document Vault, Digital Wellbeing and Settings, and has room for later additions
 
-The capture button is reachable from every tab and opens one sheet for a new expense, loan, trip, note or task, plus the command line described in section 10. It stays on every tab; you will confirm this once the sheet is designed and tested.
+The capture button is reachable from every tab and opens one sheet for a new expense, loan, trip, note or task, plus the command line described in section 10. It stays on every tab (confirmed by you on 17 November 2026, after trying the sheet in Phase 1).
 
 The Review Inbox opens from the stack on Today. It holds every item that is detected but not yet confirmed. On opening, its cards start stacked and slide down one after another.
 

@@ -34,7 +34,7 @@ As of 2026-11-17. Stage reached: revision 3.2 of the proposal (architecture agre
 
 ## Answers from the owner (2026-11-16)
 
-- Capture sheet: stays on every tab (option a). Final once the sheet is designed and tested.
+- Capture sheet: stays on every tab (option a). Confirmed on 17 Nov 2026 after trying the Phase 1 sheet on the phone.
 - Phone: Tecno Pova Curve 5G on Android 16, HiOS 16.3 (confirmed 17 Nov 2026). The minimum stays Android 15.
 - Cash: tracked. A third method, Cash, spends from one Cash in hand balance. ATM withdrawal SMS become Review Inbox cards that move money from the bank account to Cash in hand (a transfer, not spending). "Update count" records the difference as an adjustment outside spending. Debit-card, net-banking and auto-debit messages go to the Review Inbox under their bank account.
 - On-device AI text features (ML Kit GenAI): not built. Listed as removed.

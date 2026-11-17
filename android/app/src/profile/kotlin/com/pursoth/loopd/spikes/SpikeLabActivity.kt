@@ -73,6 +73,26 @@ class SpikeLabActivity : Activity() {
         addButton(column, "7 · Battery: allow Loopd to run in the background") { askUnrestrictedBattery() }
         addButton(column, "5 · Background: long job (15 min of work)") { startBackground(LONG_JOB, delayMillis = 0) }
         addButton(column, "6 · Background log and battery check") { showBackgroundLog() }
+        // Round 3 (Phase 0B): SMS in personal builds only, then screen time and storage.
+        FlavorSpikes.addButtons(this, column)
+        addButton(column, "14 · Screen time: allow usage access") {
+            startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+        }
+        addButton(column, "15 · Screen time: today's apps") {
+            runSpike("Screen time") { report -> UsageSpike(applicationContext).run(report) }
+        }
+        addButton(column, "16 · Storage: pick a folder, write and read back 20 MB") {
+            @Suppress("DEPRECATION")
+            startActivityForResult(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), REQUEST_FOLDER)
+        }
+        addButton(column, "17 · Storage: save one file (for Google Drive), write and read back 20 MB") {
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                .setType("application/octet-stream")
+                .putExtra(Intent.EXTRA_TITLE, StorageSpike.FILE_NAME)
+            @Suppress("DEPRECATION")
+            startActivityForResult(intent, REQUEST_FILE)
+        }
         addButton(column, "Share results") { shareResults() }
         addButton(column, "Clear results") { clearResults() }
 
@@ -98,12 +118,29 @@ class SpikeLabActivity : Activity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
+    @Deprecated("Plain Activity results are enough for the spike lab")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        @Suppress("DEPRECATION")
+        super.onActivityResult(requestCode, resultCode, data)
+        val uri = data?.data
+        if (resultCode != RESULT_OK || uri == null) {
+            if (requestCode == REQUEST_FOLDER || requestCode == REQUEST_FILE) {
+                runSpike("Storage") { report -> report("Nothing was picked") }
+            }
+            return
+        }
+        when (requestCode) {
+            REQUEST_FOLDER -> runSpike("Storage: folder") { report -> StorageSpike(applicationContext).testFolder(uri, report) }
+            REQUEST_FILE -> runSpike("Storage: one file") { report -> StorageSpike(applicationContext).testFile(uri, report) }
+        }
+    }
+
     override fun onDestroy() {
         worker.shutdownNow()
         super.onDestroy()
     }
 
-    private fun addButton(column: LinearLayout, label: String, action: () -> Unit) {
+    internal fun addButton(column: LinearLayout, label: String, action: () -> Unit) {
         val button = Button(this).apply {
             text = label
             isAllCaps = false
@@ -186,7 +223,7 @@ class SpikeLabActivity : Activity() {
     }
 
     /** Queues [spike] on the single worker thread, so spikes never overlap. */
-    private fun runSpike(name: String, spike: (Report) -> Unit) {
+    internal fun runSpike(name: String, spike: (Report) -> Unit) {
         setRunning(true)
         worker.execute {
             val stamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(Date())
@@ -251,6 +288,8 @@ class SpikeLabActivity : Activity() {
 
     private companion object {
         const val TAG = "loopd.spike"
+        const val REQUEST_FOLDER = 16
+        const val REQUEST_FILE = 17
         const val QUICK_JOB = "self_test.quick"
         const val SHORT_JOB = "self_test.short"
         const val LONG_JOB = "self_test.long"

@@ -34,6 +34,10 @@ The files in this folder are the source of that canvas, kept in git so every rev
 | 9c | Add task sheet | 8 | Due, reminder, repeat and time |
 | 10 | More (last tab) | 3 | Opens the Vault, Screen time and Accounts and cards |
 | 10b | Document Vault (inside More) | 8 | |
+| 10i | Set up backup (sheet) | 11 | Passphrase checks, folder picker, Turn on and back up now |
+| 10j | Restore from a backup (sheet) | 11 | Passphrase, the replace warning, five steps, Restart Loopd; a passphrase starting "wrong" shows the error |
+| 10k | Change passphrase (sheet) | 11 | Current, new and again; Forgot it? |
+| 10l | Forgot passphrase (sheet) | 11 | Fingerprint, face or PIN check, then a new passphrase |
 | 11 | Digital Wellbeing | 9 | |
 | 12 | Capture sheet with the command line | 10 | |
 
@@ -211,6 +215,17 @@ Built from the mockups, with these additions for a phase where no features exist
 - **Capture sheet:** the input, the five shortcuts and the three questions are in place. Shortcuts and questions say which phase builds them. Typed text is not understood until the offline assistant (Phase 9).
 - **Icons:** Material icons stand in for the mockups' line icons, except the tab bar, which is drawn from the mockup paths.
 
+
+## Review round 8: backup sheets (18 Nov 2026)
+
+Designed for Phase 2, part 6 (screens 10i to 10l), around the Backup & restore page (10f, unchanged). All four are one component, `BackupSheet.dc.html`, with a mode: setup, restore, change or forgot. They are ordinary sheets that fit their content (no empty space; the keyboard lifts them), with 8 px between the title and the description, and no close button: swipe down or press back.
+
+- **Set up backup (10i):** passphrase and "Type it again", each with a show button; two live checks that turn green, "At least 12 characters" and "Both match"; **Choose a folder** opens the phone's folder picker and then shows the folder with Change; a note that the passphrase is never stored, can be reset on this phone with fingerprint or PIN, and is needed on a new phone; green **Turn on and back up now**, enabled only when both checks pass and a folder is chosen.
+- **Restore from a backup (10j):** the chosen file (name, date, size, parts) with Change; the backup's passphrase; a red note that restoring replaces everything, and that what is on the phone stays until the restore is checked; red **Replace with this backup**. It then ticks off five steps (unlocked, all parts checked, restored into a safe area, money and data checked, switched over) and ends with **Restart Loopd**. A wrong passphrase shows "That passphrase doesn't open this backup." in the red error box. Restore has no "Forgot" link: a backup always needs the passphrase it was made with.
+- **Change passphrase (10k):** opened from Change on the Passphrase row. Current, new and again, with the same checks; **Forgot it?**; a note that older backups still need the old passphrase; green **Change and back up** makes a fresh backup at once (a new backup key, ADR 0011).
+- **Forgot passphrase (10l):** opened from Forgot it?, on this phone only. "Confirm it's you" with Check (fingerprint, face or PIN), then the new passphrase; a note that older backups still need the old one. The backup key is re-wrapped, so new backups use the new passphrase (ADR 0011).
+- **Back up now reads the backup back before it says "Backed up", and only the last three backups are kept** (owner, 18 Nov 2026; moved from Phase 7 to Phase 2).
+- Built in three pull requests: 6a setup and Back up now, 6b restore, 6c change and forgotten passphrase.
 
 ## Review round 7: the Money tab (18 Nov 2026)
 

@@ -1035,7 +1035,7 @@ docs/architecture.md, docs/adr/
 | Item | Detail |
 | --- | --- |
 | Objective | A manual expense tracker you can use every day, with data that is safe |
-| Features | Bank accounts and cards with nickname, last four digits and default, added from a sheet with a searchable bank list and live preview; the shared expense form with UPI, Credit Card and Cash; Cash in hand with Update cash; categories with the category sheet; totals by period, category, method, account and card, with refunds in the purchase month; editing with history and undo; refunds linked to originals; settlement, transfer and income rules; optional opening balances and verified balances; encrypted backup and restore with its screen; app lock; app-switcher privacy |
+| Features | Bank accounts and cards with nickname, last four digits and default, added from a sheet with a searchable bank list and live preview; the shared expense form with UPI, Credit Card and Cash; Cash in hand with Update cash; categories with the category sheet; totals by period, category, method, account and card, with refunds in the purchase month; editing with history and undo; refunds linked to originals; settlement, transfer and income rules; optional opening balances and verified balances; encrypted backup and restore with its screen, read-back verification and keeping the last three backups; app lock; app-switcher privacy |
 | Technical dependencies | Phase 1 components. The ledger engine (section 13) and the first version of the backup engine are built here; Bouncy Castle is added for Argon2id |
 | Risks and platform restrictions | The backup format must carry a version from its first release |
 | Tested on Android | Everything, including restore onto a clean install |
@@ -1090,7 +1090,7 @@ docs/architecture.md, docs/adr/
 | Item | Detail |
 | --- | --- |
 | Objective | Keep personal documents encrypted, viewable and recoverable |
-| Features | Everything in section 8 for the vault, including category icons and the new category sheet; vault files added to the backup; the optional weekly automatic backup, resumable after interruption; read-back verification and retention; the full backup and restore round-trip test; document expiry reminders |
+| Features | Everything in section 8 for the vault, including category icons and the new category sheet; vault files added to the backup; the optional weekly automatic backup, resumable after interruption; the full backup and restore round-trip test; document expiry reminders (read-back verification and keeping the last three backups moved to Phase 2, owner, 18 November 2026) |
 | Technical dependencies | The encrypted file store from Phase 5; the app lock; the reminder engine |
 | Risks and platform restrictions | Memory use when decrypting large files. A forgotten backup passphrase cannot be recovered |
 | Tested on Android | Encryption round trips and a restore onto a clean install |

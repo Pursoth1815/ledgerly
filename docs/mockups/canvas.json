@@ -561,6 +561,78 @@
       "w": 390,
       "x": 14570,
       "y": 2560
+    },
+    "BackupSheet.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10i · Set up backup",
+      "w": 390,
+      "x": 15040,
+      "y": 0
+    },
+    "BackupSheetLight.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10i · Set up backup (light)",
+      "w": 390,
+      "x": 15040,
+      "y": 2560
+    },
+    "BackupRestore.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10j · Restore from a backup",
+      "w": 390,
+      "x": 15510,
+      "y": 0
+    },
+    "BackupRestoreLight.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10j · Restore from a backup (light)",
+      "w": 390,
+      "x": 15510,
+      "y": 2560
+    },
+    "BackupChange.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10k · Change passphrase",
+      "w": 390,
+      "x": 15980,
+      "y": 0
+    },
+    "BackupChangeLight.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10k · Change passphrase (light)",
+      "w": 390,
+      "x": 15980,
+      "y": 2560
+    },
+    "BackupForgot.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10l · Forgot passphrase",
+      "w": 390,
+      "x": 16450,
+      "y": 0
+    },
+    "BackupForgotLight.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10l · Forgot passphrase (light)",
+      "w": 390,
+      "x": 16450,
+      "y": 2560
     }
   },
   "createdOnFiles": {
@@ -622,6 +694,10 @@
     "Money.dc.html",
     "MoneyAll.dc.html",
     "MoneyAllExpenses.dc.html",
+    "BackupSheet.dc.html",
+    "BackupRestore.dc.html",
+    "BackupChange.dc.html",
+    "BackupForgot.dc.html",
     "TodayLight.dc.html",
     "ReviewLight.dc.html",
     "ReviewDetailLight.dc.html",
@@ -653,7 +729,11 @@
     "CaptureLight.dc.html",
     "MoneyLight.dc.html",
     "MoneyAllLight.dc.html",
-    "MoneyAllExpensesLight.dc.html"
+    "MoneyAllExpensesLight.dc.html",
+    "BackupSheetLight.dc.html",
+    "BackupRestoreLight.dc.html",
+    "BackupChangeLight.dc.html",
+    "BackupForgotLight.dc.html"
   ],
   "pages": [],
   "title": "Loopd Mockups"

@@ -123,3 +123,82 @@ final class CategorySpendingFamily extends $Family with $FunctionalFamilyOverrid
   @override
   String toString() => r'categorySpendingProvider';
 }
+
+/// Spending from the local day [from] up to [to] (end excluded), for the
+/// Money tab: purchases net of their refunds, and the refunds that came back.
+
+@ProviderFor(spending)
+final spendingProvider = SpendingFamily._();
+
+/// Spending from the local day [from] up to [to] (end excluded), for the
+/// Money tab: purchases net of their refunds, and the refunds that came back.
+
+final class SpendingProvider
+    extends $FunctionalProvider<AsyncValue<SpendingReport>, SpendingReport, Stream<SpendingReport>>
+    with $FutureModifier<SpendingReport>, $StreamProvider<SpendingReport> {
+  /// Spending from the local day [from] up to [to] (end excluded), for the
+  /// Money tab: purchases net of their refunds, and the refunds that came back.
+  SpendingProvider._({required SpendingFamily super.from, required (DateTime, DateTime) super.argument})
+    : super(
+        retry: null,
+        name: r'spendingProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$spendingHash();
+
+  @override
+  String toString() {
+    return r'spendingProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<SpendingReport> $createElement($ProviderPointer pointer) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<SpendingReport> create(Ref ref) {
+    final argument = this.argument as (DateTime, DateTime);
+    return spending(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SpendingProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$spendingHash() => r'4ee0fa90c2887a1b3cb76bb0c2db7d6399a58b9c';
+
+/// Spending from the local day [from] up to [to] (end excluded), for the
+/// Money tab: purchases net of their refunds, and the refunds that came back.
+
+final class SpendingFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<SpendingReport>, (DateTime, DateTime)> {
+  SpendingFamily._()
+    : super(
+        retry: null,
+        name: r'spendingProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Spending from the local day [from] up to [to] (end excluded), for the
+  /// Money tab: purchases net of their refunds, and the refunds that came back.
+
+  SpendingProvider call(DateTime from, DateTime to) => SpendingProvider._(argument: (from, to), from: this);
+
+  @override
+  String toString() => r'spendingProvider';
+}

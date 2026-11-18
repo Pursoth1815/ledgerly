@@ -394,6 +394,101 @@ void main() {
     });
   });
 
+  group('spending report (Money tab)', () {
+    final from = DateTime(2026, 11);
+    final to = DateTime(2026, 12);
+    Future<SpendingReport> report() => ledger.watchSpending(from, to).first;
+    Future<String> buy(
+      int paise, {
+      required String from,
+      required PaymentMethod method,
+      String category = food,
+      DateTime? at,
+      String? channel,
+      String? merchant,
+    }) => ledger.recordExpense(
+      amountPaise: paise,
+      method: method,
+      fundingAccountId: from,
+      categoryId: category,
+      occurredAt: at ?? nov,
+      channel: channel,
+      merchant: merchant,
+    );
+
+    test('purchases in the period count net of their refunds, whenever they came', () async {
+      final shoes = await buy(
+        250000,
+        from: kiwi,
+        method: PaymentMethod.creditCard,
+        category: shopping,
+        merchant: 'Shoes',
+      );
+      await buy(32000, from: primary, method: PaymentMethod.upi);
+      await ledger.recordRefund(
+        originalId: shoes,
+        amountPaise: 50000,
+        method: PaymentMethod.creditCard,
+        destinationAccountId: kiwi,
+        occurredAt: DateTime.utc(2026, 12, 3, 6), // in December
+      );
+      final r = await report();
+      expect(r.totalPaise, 232000, reason: '2,500 − 500 refunded + 320');
+      expect(r.entries, hasLength(2), reason: "December's refund is listed in December");
+      expect(r.entries.firstWhere((e) => e.id == shoes).refundedPaise, 50000);
+    });
+
+    test('a refund of an October purchase is listed in November but counts in October', () async {
+      final october = await buy(
+        249900,
+        from: kiwi,
+        method: PaymentMethod.creditCard,
+        category: shopping,
+        at: DateTime.utc(2026, 10, 28, 6),
+      );
+      await ledger.recordRefund(
+        originalId: october,
+        amountPaise: 249900,
+        method: PaymentMethod.creditCard,
+        destinationAccountId: kiwi,
+        occurredAt: DateTime.utc(2026, 11, 14, 6),
+      );
+      final r = await report();
+      final refund = r.entries.single;
+      expect(
+        (refund.isRefund, refund.amountPaise, refund.originalDate, refund.accountId),
+        (true, 249900, '2026-10-28', kiwi),
+      );
+      expect(r.totalPaise, 0);
+      expect(r.byCategory, isEmpty);
+      final oct = await ledger.watchSpending(DateTime(2026, 10), from).first;
+      expect(oct.totalPaise, 0, reason: 'the purchase and its refund cancel in October');
+    });
+
+    test('totals by method, account and category; a method with nothing is left out', () async {
+      await buy(32000, from: primary, method: PaymentMethod.upi);
+      await buy(118000, from: kiwi, method: PaymentMethod.creditCard, channel: 'upi_qr');
+      await buy(250000, from: kiwi, method: PaymentMethod.creditCard, category: shopping);
+      final gone = await buy(9900, from: savings, method: PaymentMethod.upi);
+      await ledger.delete(gone);
+      final r = await report();
+      expect(r.byMethod, [(PaymentMethod.upi, 32000), (PaymentMethod.creditCard, 368000)], reason: 'no Cash');
+      expect(r.byAccount, {primary: 32000, kiwi: 368000});
+      expect(r.byCategory, [(shopping, 250000), (food, 150000)]);
+      expect(r.entries.map((e) => e.channel), contains('upi_qr'));
+      final onlyKiwi = r.only(kiwi);
+      expect((onlyKiwi.totalPaise, onlyKiwi.entries.length), (368000, 2));
+      expect(r.entries.first.accountName, isNotEmpty);
+    });
+
+    test('a removed account keeps its name in the report', () async {
+      await buy(20000, from: savings, method: PaymentMethod.upi);
+      await ledger.removeAccount(savings);
+      final r = await report();
+      expect((r.entries.single.accountName, r.totalPaise), ('Savings', 20000));
+    });
+  });
+
   group('categories', () {
     test('a new category goes last, with its colour and icon', () async {
       final id = await ledger.addCategory(name: '  Coffee   beans ', colour: 11, icon: 'phone');

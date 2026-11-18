@@ -37,11 +37,24 @@ void main() {
 
   testWidgets('tabs not built yet say which phase builds them', (tester) async {
     await pumpLoopdApp(tester);
-    for (final (tab, phase) in [('Money', 2), ('Travel', 5), ('Planner', 6)]) {
+    for (final (tab, phase) in [('Travel', 5), ('Planner', 6)]) {
       await tester.tap(tabButton(tab));
       await tester.pumpAndSettle();
       expect(find.text('Built in Phase $phase'), findsOneWidget);
     }
+  });
+
+  testWidgets('the Money tab shows spending (Phase 2)', (tester) async {
+    await pumpLoopdApp(tester);
+    await tester.tap(tabButton('Money'));
+    await tester.pumpAndSettle();
+    expect(find.byType(MoneyScreen), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Nothing spent in this period.'),
+      200,
+      scrollable: find.descendant(of: find.byType(MoneyScreen), matching: find.byType(Scrollable)).first,
+    );
+    expect(find.text('Nothing spent in this period.'), findsOneWidget);
   });
 
   testWidgets('the capture button is on every tab and opens the capture sheet', (tester) async {

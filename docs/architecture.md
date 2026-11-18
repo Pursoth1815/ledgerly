@@ -49,7 +49,7 @@ Code depends downward only, and there are no cycles. `app/` is the only place th
 | `lib/core/file_store/` | Encrypted vault and ticket files | | Phase 5 |
 | `lib/design_system/` | Tokens (`loopd_colors`, `loopd_typography`, `loopd_spacing`, `loopd_motion`), the theme, and generic components | Domain types, providers, data access | [1] |
 | `assets/fonts/` | Bundled Plus Jakarta Sans 2.7.1 and JetBrains Mono 2.304, with their OFL licences | Fonts fetched at run time | [1] |
-| `lib/features/<name>/` | One module: `<name>.dart` (public API) plus `domain/`, `data/`, `presentation/` only where needed. So far `today`, `capture` (the sheet's shell; `app/` passes in what each shortcut opens), `accounts` (accounts, cards and Cash in hand) and `expenses` (the expense form, to add or edit, and the expense categories sheet) | Another feature's internals; writes to another owner's tables | [1] |
+| `lib/features/<name>/` | One module: `<name>.dart` (public API) plus `domain/`, `data/`, `presentation/` only where needed. So far `today`, `capture` (the sheet's shell; `app/` passes in what each shortcut opens), `accounts` (accounts, cards and Cash in hand) and `expenses` (the Money tab's Expenses segment with its Show all sheet, the expense form, to add or edit, and the expense categories sheet; `app/` passes in what opens Accounts and cards) | Another feature's internals; writes to another owner's tables | [1] |
 | `packages/sms_parser/`, `packages/command_parser/` | Pure Dart parsers with fixture tests | Flutter, the database, app imports | Phases 3 and 9 |
 | `pigeons/` | The Pigeon interface definition | | [0A] |
 | `tool/` | `check_architecture.dart`, `check_apk_permissions.sh` | App code | [0A] |

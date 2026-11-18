@@ -669,6 +669,13 @@ class LedgerEngine {
     return _dao.watchLedgerChanges().asyncMap((_) => _dao.spendingByFunding(from, to));
   }
 
+  /// Spending from the local day [from] up to [to] (end excluded), as it
+  /// changes: purchases dated in it net of their refunds, and the refunds
+  /// that came back in it, for the Money tab.
+  Stream<SpendingReport> watchSpending(DateTime from, DateTime to) => _dao.watchLedgerChanges().asyncMap(
+    (_) async => SpendingReport(await _dao.spendingEntries(_localDate(from), _localDate(to))),
+  );
+
   /// The first local day of [month] and of the month after, as YYYY-MM-DD.
   static (String, String) _monthRange(DateTime month) {
     String day(int year, int m) => '${year + (m - 1) ~/ 12}-${((m - 1) % 12 + 1).toString().padLeft(2, '0')}-01';

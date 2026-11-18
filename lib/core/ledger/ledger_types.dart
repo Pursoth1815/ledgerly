@@ -208,3 +208,110 @@ class LedgerEntry {
     refundOf: refundOf,
   );
 }
+
+/// One expense, or one refund, in a spending report (the Money tab).
+class SpendingEntry {
+  const SpendingEntry({
+    required this.id,
+    required this.isRefund,
+    required this.occurredAt,
+    required this.localDate,
+    required this.amountPaise,
+    required this.method,
+    required this.accountId,
+    required this.accountName,
+    required this.categoryId,
+    this.channel,
+    this.merchant,
+    this.note,
+    this.refundedPaise = 0,
+    this.originalId,
+    this.originalDate,
+  });
+
+  final String id;
+
+  /// A refund is listed on the day it came back, but its amount counts in
+  /// its purchase's period ([SpendingReport] totals leave it out).
+  final bool isRefund;
+  final DateTime occurredAt;
+
+  /// The local day, YYYY-MM-DD.
+  final String localDate;
+
+  /// The purchase, or the money that came back; always positive.
+  final int amountPaise;
+
+  /// As shown: the bank-only methods count as UPI.
+  final PaymentMethod method;
+
+  /// The bank account, card or Cash in hand it was paid from, or that a
+  /// refund came back to, and its name (kept for removed accounts).
+  final String accountId;
+  final String accountName;
+  final String categoryId;
+  final String? channel;
+  final String? merchant;
+  final String? note;
+
+  /// For a purchase: its live refunds so far, whenever they came.
+  final int refundedPaise;
+
+  /// For a refund: the purchase it belongs to, and that purchase's local day.
+  final String? originalId;
+  final String? originalDate;
+
+  /// What a purchase counts for in totals after its refunds; 0 for a refund.
+  int get countedPaise => isRefund ? 0 : amountPaise - refundedPaise;
+}
+
+/// Spending over a period: purchases dated in it, net of their refunds
+/// (refunds always count in the purchase's period, owner, 18 Nov 2026),
+/// plus the refunds that came back in it, for the list.
+class SpendingReport {
+  const SpendingReport(this.entries);
+
+  /// Newest first.
+  final List<SpendingEntry> entries;
+
+  /// The same report for one bank account, card or Cash in hand.
+  SpendingReport only(String accountId) => SpendingReport([
+    for (final e in entries)
+      if (e.accountId == accountId) e,
+  ]);
+
+  int get totalPaise => entries.fold(0, (sum, e) => sum + e.countedPaise);
+
+  /// UPI, Credit Card and Cash, in that order, each with its total; a method
+  /// with nothing is left out.
+  List<(PaymentMethod, int)> get byMethod {
+    final totals = <PaymentMethod, int>{};
+    for (final e in entries) {
+      totals[e.method] = (totals[e.method] ?? 0) + e.countedPaise;
+    }
+    return [
+      for (final method in const [PaymentMethod.upi, PaymentMethod.creditCard, PaymentMethod.cash])
+        if ((totals[method] ?? 0) > 0) (method, totals[method]!),
+    ];
+  }
+
+  /// Account id → paise, for accounts with something counted.
+  Map<String, int> get byAccount => _sum((e) => e.accountId);
+
+  /// Category id → paise, largest first; categories with nothing are left
+  /// out.
+  List<(String, int)> get byCategory {
+    final totals = _sum((e) => e.categoryId).entries.where((e) => e.value > 0).toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    return [for (final e in totals) (e.key, e.value)];
+  }
+
+  Map<String, int> _sum(String Function(SpendingEntry e) key) {
+    final totals = <String, int>{};
+    for (final e in entries) {
+      if (e.isRefund) continue;
+      totals[key(e)] = (totals[key(e)] ?? 0) + e.countedPaise;
+    }
+    return totals;
+  }
+}

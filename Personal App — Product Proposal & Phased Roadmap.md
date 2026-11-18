@@ -65,7 +65,7 @@ Each row comes from the owner's review of the mockups between 14 and 16 November
 | SMS sender | Bank from the header | Matched on the six-letter bank code (for example YESBNK). The two-letter prefix is ignored |
 | Add expense and transaction details | Two screens | **One shared form** with an add mode and a review mode, and one green "Save ₹amount" button. It opens as a tall sheet, not a page (owner, 18 Nov 2026) |
 | Accounts | Active or archived | No archived state. Added from a **sheet** with a searchable bank list and a live card preview |
-| Categories | Default set, editable | Managed from More in a sheet: name, eight colours and an icon |
+| Categories | Default set, editable | Managed from More in a sheet: name, twenty-five colours and twenty-five icons, none shared between categories; ones you added can be deleted, their expenses moving to Misc or another category |
 | Lending | Due and overdue repayments | **No due dates** by default. Today shows what is still out and what came back |
 | Travel | A ticket screen | A **trip list** with All, Train and Bus tabs, and separate train and bus ticket details |
 | Notes | Folders, plain cards | **No folders**. Colour cards in two columns; tap shows Pin, Edit and Delete |
@@ -201,7 +201,7 @@ So the flow is: Cash in hand starts at ₹0. Update cash sets it. An ATM withdra
 
 - Totals by day, week and month, by category, by method, and separately for each bank account and each card.
 - Any saved expense can be edited: method, account or card, category, amount, date and merchant. This is the manual correction for a wrong automatic guess.
-- Categories come with a default set of twelve, each with a colour, an icon and this month's spend. From More, a sheet lets you add one with a name, one of eight colours and one of twelve icons, or rename and recolour an existing one.
+- Categories come with a default set of thirteen (the twelve plus Misc), each with a colour, an icon and this month's spend. From More, a sheet lets you add one with a name, one of twenty-five colours and one of twenty-five icons, or rename and recolour an existing one. No two categories share a colour or an icon, so there are at most twenty-five. Categories you added can be deleted, several at once; their expenses move to Misc unless you choose another. The defaults always stay (owner, 18 Nov 2026).
 
 ### Rules that keep the totals right
 

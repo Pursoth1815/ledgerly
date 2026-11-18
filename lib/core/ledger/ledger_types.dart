@@ -122,12 +122,22 @@ class LedgerAccount {
 /// An expense category as screens show it: its name, a colour index into
 /// the category palette (0 to 7) and an icon key, such as food or bus.
 class LedgerCategory {
-  const LedgerCategory({required this.id, required this.name, required this.colour, required this.icon});
+  const LedgerCategory({
+    required this.id,
+    required this.name,
+    required this.colour,
+    required this.icon,
+    this.builtIn = false,
+  });
 
   final String id;
   final String name;
   final int colour;
   final String icon;
+
+  /// One of the default set, which cannot be deleted; only categories the
+  /// owner added can.
+  final bool builtIn;
 }
 
 /// A saved expense, as the expense form loads it for editing.
@@ -184,4 +194,17 @@ class LedgerEntry {
   final String? note;
   final String? refundOf;
   final Map<String, int> postings;
+
+  /// The same entry with other postings, such as when a deleted category's
+  /// expenses move to another.
+  LedgerEntry withPostings(Map<String, int> postings) => LedgerEntry(
+    kind: kind,
+    occurredAt: occurredAt,
+    postings: postings,
+    method: method,
+    channel: channel,
+    merchant: merchant,
+    note: note,
+    refundOf: refundOf,
+  );
 }

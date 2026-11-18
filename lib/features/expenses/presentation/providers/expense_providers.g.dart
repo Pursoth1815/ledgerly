@@ -45,3 +45,81 @@ final class ExpenseCategoriesProvider
 }
 
 String _$expenseCategoriesHash() => r'665e7b972d86d780293bce9d6e1d83ac44ccebf2';
+
+/// What each category spent in [month]'s calendar month, net of refunds:
+/// category id → paise.
+
+@ProviderFor(categorySpending)
+final categorySpendingProvider = CategorySpendingFamily._();
+
+/// What each category spent in [month]'s calendar month, net of refunds:
+/// category id → paise.
+
+final class CategorySpendingProvider
+    extends $FunctionalProvider<AsyncValue<Map<String, int>>, Map<String, int>, Stream<Map<String, int>>>
+    with $FutureModifier<Map<String, int>>, $StreamProvider<Map<String, int>> {
+  /// What each category spent in [month]'s calendar month, net of refunds:
+  /// category id → paise.
+  CategorySpendingProvider._({required CategorySpendingFamily super.from, required DateTime super.argument})
+    : super(
+        retry: null,
+        name: r'categorySpendingProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$categorySpendingHash();
+
+  @override
+  String toString() {
+    return r'categorySpendingProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<Map<String, int>> $createElement($ProviderPointer pointer) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<Map<String, int>> create(Ref ref) {
+    final argument = this.argument as DateTime;
+    return categorySpending(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CategorySpendingProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$categorySpendingHash() => r'0aa775fd62e6e4a68567b2fd773ec5f927f2dac1';
+
+/// What each category spent in [month]'s calendar month, net of refunds:
+/// category id → paise.
+
+final class CategorySpendingFamily extends $Family with $FunctionalFamilyOverride<Stream<Map<String, int>>, DateTime> {
+  CategorySpendingFamily._()
+    : super(
+        retry: null,
+        name: r'categorySpendingProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// What each category spent in [month]'s calendar month, net of refunds:
+  /// category id → paise.
+
+  CategorySpendingProvider call(DateTime month) => CategorySpendingProvider._(argument: month, from: this);
+
+  @override
+  String toString() => r'categorySpendingProvider';
+}

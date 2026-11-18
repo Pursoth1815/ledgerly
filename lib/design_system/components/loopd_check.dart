@@ -8,7 +8,14 @@ import '../loopd_spacing.dart';
 /// that fills green and draws its tick when done, with a small spring.
 /// The ring is red while the task is [overdue].
 class LoopdCheck extends StatefulWidget {
-  const LoopdCheck({required this.done, required this.onChanged, required this.label, this.overdue = false, super.key});
+  const LoopdCheck({
+    required this.done,
+    required this.onChanged,
+    required this.label,
+    this.overdue = false,
+    this.color,
+    super.key,
+  });
 
   final bool done;
   final ValueChanged<bool>? onChanged;
@@ -16,6 +23,10 @@ class LoopdCheck extends StatefulWidget {
   /// Read by screen readers, such as the task's title.
   final String label;
   final bool overdue;
+
+  /// The fill when ticked; green (done) unless given, such as red when
+  /// choosing what to delete.
+  final Color? color;
 
   @override
   State<LoopdCheck> createState() => _LoopdCheckState();
@@ -57,7 +68,8 @@ class _LoopdCheckState extends State<LoopdCheck> with SingleTickerProviderStateM
     final colors = context.colors;
     final motion = LoopdMotion.of(context);
     final done = widget.done;
-    final ring = done ? colors.money : (widget.overdue ? colors.danger : colors.textMuted);
+    final fill = widget.color ?? colors.money;
+    final ring = done ? fill : (widget.overdue ? colors.danger : colors.textMuted);
     final delayShare =
         motion.tickDelay.inMicroseconds / (motion.tickDelay + motion.tick).inMicroseconds.clamp(1, 1 << 62);
     return Semantics(
@@ -81,7 +93,7 @@ class _LoopdCheckState extends State<LoopdCheck> with SingleTickerProviderStateM
                 height: LoopdSize.checkCircle,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: done ? colors.money : const Color(0x00000000),
+                  color: done ? fill : const Color(0x00000000),
                   border: Border.all(color: ring, width: 1.5),
                 ),
                 child: AnimatedBuilder(

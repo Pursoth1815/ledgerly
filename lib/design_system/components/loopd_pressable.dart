@@ -14,11 +14,15 @@ class LoopdPressable extends StatefulWidget {
     this.label,
     this.selected,
     this.pressedScale = 0.97,
+    this.onLongPress,
     super.key,
   });
 
   final Widget child;
   final VoidCallback? onTap;
+
+  /// Such as starting to choose categories to delete.
+  final VoidCallback? onLongPress;
   final String? label;
 
   /// For choices such as chips: reported to screen readers when not null.
@@ -48,9 +52,11 @@ class _LoopdPressableState extends State<LoopdPressable> {
       // tap is offered here.
       excludeSemantics: widget.label != null,
       onTap: widget.label != null ? widget.onTap : null,
+      onLongPress: widget.label != null ? widget.onLongPress : null,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: widget.onTap,
+        onLongPress: widget.onLongPress,
         // No handlers at all when disabled, so screen readers do not offer a tap.
         onTapDown: widget.onTap == null ? null : (_) => _set(true),
         onTapUp: widget.onTap == null ? null : (_) => _set(false),

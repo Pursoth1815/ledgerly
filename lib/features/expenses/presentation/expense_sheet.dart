@@ -20,6 +20,7 @@ import '../../../design_system/loopd_spacing.dart';
 import '../../../design_system/loopd_typography.dart';
 import '../../accounts/accounts.dart';
 import 'amount_input.dart';
+import 'category_sheet.dart';
 import 'providers/expense_providers.dart';
 import 'when_text.dart';
 
@@ -161,8 +162,14 @@ class _ExpenseSheetState extends ConsumerState<ExpenseSheet> {
     });
   }
 
+  /// Holds the focus while no field should have it, such as on the way to
+  /// and back from New category, so returning does not reopen the number
+  /// pad on the amount.
+  final _restingFocus = FocusNode(debugLabel: 'expense-resting', skipTraversal: true);
+
   @override
   void dispose() {
+    _restingFocus.dispose();
     _amount.dispose();
     _merchant.dispose();
     _note.dispose();
@@ -185,6 +192,25 @@ class _ExpenseSheetState extends ConsumerState<ExpenseSheet> {
     final defaults = choices.where((a) => a.isDefault);
     if (defaults.isNotEmpty) return defaults.first.id;
     return choices.length == 1 ? choices.single.id : null;
+  }
+
+  /// Adds a category from the form and chooses it.
+  Future<void> _newCategory() async {
+    // Close the number pad and wait until it is down, so the name field
+    // opens the letter keyboard afresh; switching in one go leaves some
+    // keyboards (Gboard on the owner's phone) on numbers.
+    _restingFocus.requestFocus();
+    final view = View.of(context);
+    for (var i = 0; i < 20 && view.viewInsets.bottom > 0; i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 25));
+    }
+    if (!mounted) return;
+    final id = await showNewCategorySheet(context);
+    if (id == null || !mounted) return;
+    setState(() {
+      _categoryId = id;
+      _error = null;
+    });
   }
 
   Future<void> _pickWhen() async {
@@ -393,6 +419,9 @@ class _ExpenseSheetState extends ConsumerState<ExpenseSheet> {
               _categoryId = id;
               _error = null;
             }),
+            onNew: categories.length >= LedgerEngine.categoryMax
+                ? () => showLoopdToast(context, CategorySheet.fullMessage)
+                : _newCategory,
           ),
           if (message != null) ...[const SizedBox(height: LoopdSpace.lg), LoopdErrorNote(message)],
         ],
@@ -401,51 +430,54 @@ class _ExpenseSheetState extends ConsumerState<ExpenseSheet> {
 
     final canSave = ready && validAmount && fundingId != null && _categoryId != null && !future && !_saving;
     final title = _editing ? 'Edit expense' : 'Add expense';
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Semantics(
-                header: true,
-                child: Text(title, style: LoopdType.title.copyWith(color: c.textPrimary)),
+    return Focus(
+      focusNode: _restingFocus,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Semantics(
+                  header: true,
+                  child: Text(title, style: LoopdType.title.copyWith(color: c.textPrimary)),
+                ),
               ),
-            ),
-            if (_editing && _original != null) ...[
+              if (_editing && _original != null) ...[
+                LoopdRoundButton(
+                  icon: Icons.delete_outline_rounded,
+                  label: 'Delete expense',
+                  size: 40,
+                  background: c.dangerTint,
+                  foreground: c.danger,
+                  onTap: _saving ? null : _delete,
+                ),
+                const SizedBox(width: LoopdSpace.sm),
+              ],
               LoopdRoundButton(
-                icon: Icons.delete_outline_rounded,
-                label: 'Delete expense',
+                icon: Icons.close_rounded,
+                label: 'Close',
                 size: 40,
-                background: c.dangerTint,
-                foreground: c.danger,
-                onTap: _saving ? null : _delete,
+                background: c.surfaceRaised,
+                foreground: c.textPrimary,
+                onTap: () => Navigator.of(context).pop(),
               ),
-              const SizedBox(width: LoopdSpace.sm),
             ],
-            LoopdRoundButton(
-              icon: Icons.close_rounded,
-              label: 'Close',
-              size: 40,
-              background: c.surfaceRaised,
-              foreground: c.textPrimary,
-              onTap: () => Navigator.of(context).pop(),
-            ),
-          ],
-        ),
-        const SizedBox(height: LoopdSpace.md),
-        Expanded(
-          child: AnimatedSwitcher(duration: LoopdMotion.of(context).quick, child: body),
-        ),
-        Divider(height: 1, thickness: 1, color: c.line),
-        const SizedBox(height: 14),
-        LoopdButton(
-          label: validAmount ? 'Save ${formatRupees(amountPaise)}' : 'Save',
-          onTap: canSave
-              ? () => _save(amountPaise: amountPaise, fundingId: fundingId!, categoryName: categoryName)
-              : null,
-        ),
-      ],
+          ),
+          const SizedBox(height: LoopdSpace.md),
+          Expanded(
+            child: AnimatedSwitcher(duration: LoopdMotion.of(context).quick, child: body),
+          ),
+          Divider(height: 1, thickness: 1, color: c.line),
+          const SizedBox(height: 14),
+          LoopdButton(
+            label: validAmount ? 'Save ${formatRupees(amountPaise)}' : 'Save',
+            onTap: canSave
+                ? () => _save(amountPaise: amountPaise, fundingId: fundingId!, categoryName: categoryName)
+                : null,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -836,13 +868,15 @@ class _CashChoice extends StatelessWidget {
   }
 }
 
-/// The categories as a three-column grid of chips, one chosen.
+/// The categories as a three-column grid of chips, one chosen, and a dashed
+/// New category chip at the end.
 class _CategoryGrid extends StatelessWidget {
-  const _CategoryGrid({required this.categories, required this.chosenId, required this.onPick});
+  const _CategoryGrid({required this.categories, required this.chosenId, required this.onPick, required this.onNew});
 
   final List<LedgerCategory> categories;
   final String? chosenId;
   final ValueChanged<String> onPick;
+  final VoidCallback onNew;
 
   @override
   Widget build(BuildContext context) {
@@ -865,6 +899,16 @@ class _CategoryGrid extends StatelessWidget {
                   colors: c,
                 ),
               ),
+            SizedBox(
+              width: width,
+              child: LoopdDashedButton(
+                label: 'New',
+                color: c.textSecondary,
+                height: 46,
+                radius: LoopdRadius.inner,
+                onTap: onNew,
+              ),
+            ),
           ],
         );
       },

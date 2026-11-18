@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Money, show all</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 1100px; position: relative; overflow: hidden; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+
+<div aria-hidden="true" style="padding: 28px 20px; display: flex; flex-direction: column; gap: 14px">
+<span style="font-size: 34px; font-weight: 800">Money</span>
+<span style="height: 48px; border-radius: 16px; background: {{c.s2}}"></span>
+<span style="height: 220px; border-radius: 26px; background: {{c.s1}}"></span>
+</div>
+<div aria-hidden="true" style="position: absolute; inset: 0; background: {{c.scrim}}"></div>
+
+<section aria-label="{{title}}" style="position: absolute; left: 0; right: 0; bottom: 0; top: 72px; background: {{c.s1}}; border-radius: 30px 30px 0 0; padding: 10px 20px 28px; display: flex; flex-direction: column; gap: 16px">
+<span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: {{c.line}}"></span>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<h1 style="margin: 0; font-size: 22px; font-weight: 800">{{title}}</h1>
+<span style="font-size: 13px; color: {{c.t2}}">{{subtitle}}</span>
+</div>
+
+<div aria-label="{{card.a11y}}" style="flex-shrink: 0; height: 104px; box-sizing: border-box; padding: 14px 18px; border-radius: 20px; background: {{card.bg}}; color: {{card.fg}}; display: flex; flex-direction: column; justify-content: space-between">
+<div style="display: flex; align-items: center; justify-content: space-between">
+<span style="font-size: 15px; font-weight: 800">{{card.nick}}</span>
+<span style="font-size: 11px; font-weight: 700; opacity: 0.85">{{card.kind}}</span>
+</div>
+<span style="font-size: 26px; font-weight: 800; letter-spacing: -0.5px">{{card.spent}}</span>
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; opacity: 0.85">{{card.tail}}</span>
+<span style="font-size: 11px; font-weight: 600; opacity: 0.85">{{card.when}}</span>
+</div>
+</div>
+
+<sc-if value="{{isCategories}}" hint-placeholder-val="{{ true }}">
+<div style="flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; border: 1px solid {{c.line}}; border-radius: 22px">
+<sc-for list="{{cats}}" as="k" hint-placeholder-count="6">
+<div aria-label="{{k.a11y}}" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; border-bottom: {{k.divider}}">
+<span aria-hidden="true" style="width: 36px; height: 36px; flex-shrink: 0; border-radius: 11px; background: {{k.color}}; color: #0D0F14; display: flex; align-items: center; justify-content: center">
+<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{k.icon}}"></path></svg>
+</span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 15px; font-weight: 700">{{k.name}}</span><span style="font-size: 15px; font-weight: 800">{{k.spent}}</span></span>
+<span style="display: flex; align-items: center; gap: 8px"><span style="flex: 1; height: 6px; border-radius: 3px; background: {{c.s2}}; display: flex"><span style="width: {{k.bar}}; border-radius: 3px; background: {{k.color}}"></span></span><span style="width: 34px; text-align: right; font-size: 11px; font-weight: 700; color: {{c.t3}}">{{k.pct}}</span></span>
+</span>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{isExpenses}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; border: 1px solid {{c.line}}; border-radius: 22px">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+<sc-if value="{{r.isDay}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; justify-content: space-between; align-items: baseline; padding: 12px 16px 6px; border-top: {{r.top}}">
+<span style="font-size: 12px; font-weight: 700; color: {{c.t3}}">{{r.day}}</span>
+<span style="font-size: 12px; font-weight: 700; color: {{c.t3}}">{{r.dayTotal}}</span>
+</div>
+</sc-if>
+<sc-if value="{{r.isRow}}" hint-placeholder-val="{{ true }}">
+<a href="AddExpense.dc.html" aria-label="{{r.a11y}}" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 6px 16px; text-decoration: none; color: {{c.t1}}">
+<span aria-hidden="true" style="width: 36px; height: 36px; flex-shrink: 0; border-radius: 11px; background: {{r.tileBg}}; color: {{r.tileFg}}; display: flex; align-items: center; justify-content: center">
+<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{r.icon}}"></path></svg>
+</span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+<span style="font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.title}}</span>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: {{c.t3}}"><span style="width: 7px; height: 7px; flex-shrink: 0; border-radius: 4px; background: {{r.methodColor}}"></span><span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.sub}}</span></span>
+</span>
+<span style="display: flex; flex-direction: column; align-items: flex-end; gap: 3px">
+<span style="font-size: 15px; font-weight: 800; color: {{r.amountColor}}">{{r.amount}}</span>
+<sc-if value="{{r.tag}}" hint-placeholder-val="{{ false }}"><span style="padding: 1px 8px; border-radius: 999px; background: {{c.s2}}; color: {{c.t2}}; font-size: 11px; font-weight: 700">{{r.tag}}</span></sc-if>
+</span>
+</a>
+</sc-if>
+</sc-for>
+</div>
+</sc-if>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"view":{"editor":"enum","options":["categories","expenses"],"default":"categories"},"source":{"editor":"enum","options":["all","primary","savings","kiwi","amazon","swiggy","rbl","sbi","cash"],"default":"kiwi"},"$preview":{"width":390,"height":1100}}'>
+class Component extends DCLogic {
+  pal(t) {
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cash:'#0369A1',cashT:'#E0F2FE',onAccent:'#FFFFFF',scrim:'rgba(17,20,27,0.45)'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',card:'#C4A5FF',cash:'#38BDF8',cashT:'rgba(56,189,248,0.14)',onAccent:'#0D0F14',scrim:'rgba(0,0,0,0.6)'};
+  }
+  rupees(n) {
+    return '₹' + (n < 0 ? '−' : '') + Math.abs(n).toLocaleString('en-IN');
+  }
+  renderVals() {
+    const c = this.pal(this.props.theme);
+    const view = this.props.view === 'expenses' ? 'expenses' : 'categories';
+    const source = this.props.source ?? 'kiwi';
+    // The same made-up November as the Money tab (screen 5a).
+    const K = {
+      food: { name: 'Food', color: '#FF8A4C', icon: 'M7 3v8a2 2 0 0 0 2 2v8M7 3v4M10 3v4M7 7h3M17 3c-2 0-3 2-3 5s1 4 3 4v9' },
+      snacks: { name: 'Snacks', color: '#F472B6', icon: 'M5 8h12v5a5 5 0 0 1-5 5h-2a5 5 0 0 1-5-5zM17 10h1.5a2.5 2.5 0 0 1 0 5H17M8 3v2M12 3v2' },
+      groceries: { name: 'Groceries', color: '#EAB308', icon: 'M4 10h16l-1.5 9a2 2 0 0 1-2 1.7h-9a2 2 0 0 1-2-1.7zM8 10l3-6M16 10l-3-6M9 14v3M15 14v3' },
+      travel: { name: 'Travel', color: '#60A5FA', icon: 'M7 3h10a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3zM4 11h16M8 18v3M16 18v3' },
+      shopping: { name: 'Shopping', color: '#A78BFA', icon: 'M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2' },
+      bills: { name: 'Bills', color: '#22D3EE', icon: 'M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6M9 16h3' },
+      fuel: { name: 'Fuel', color: '#F97316', icon: 'M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M4 21h12M8 8h4M15 9l3 2v6a1.5 1.5 0 0 0 3 0V9l-3-3' },
+      subs: { name: 'Subscriptions', color: '#A3E635', icon: 'M17 2l3 3-3 3M4 11V9a4 4 0 0 1 4-4h12M7 22l-3-3 3-3M20 13v2a4 4 0 0 1-4 4H4' }
+    };
+    const refundIcon = 'M9 14L4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3';
+    const S = {
+      primary: { nick: 'Primary', kind: 'Federal Bank · UPI', method: 'upi', tail: '••2210', color: '#A16207' },
+      savings: { nick: 'Savings', kind: 'HDFC Bank · UPI', method: 'upi', tail: '••8124', color: '#1E3A8A' },
+      kiwi: { nick: 'Kiwi', kind: 'YES BANK', method: 'card', tail: '•••• 4417', color: '#1D4ED8' },
+      amazon: { nick: 'Amazon Pay', kind: 'ICICI Bank', method: 'card', tail: '•••• 7781', color: '#9A3412' },
+      swiggy: { nick: 'Swiggy', kind: 'HDFC Bank', method: 'card', tail: '•••• 2290', color: '#1E3A8A' },
+      rbl: { nick: 'RBL card', kind: 'RBL Bank', method: 'card', tail: '•••• 5512', color: '#7C2D12' },
+      sbi: { nick: 'SBI card', kind: 'SBI Card', method: 'card', tail: '•••• 3306', color: '#155E75' },
+      cash: { nick: 'Cash', kind: 'IN HAND', method: 'cash', tail: 'Cash in hand', color: null }
+    };
+    const E = [
+      [15, 'Saravana Bhavan', 'food', 'primary', 320, ''],
+      [15, 'Uber', 'travel', 'kiwi', 350, 'UPI QR'],
+      [15, 'Tea and bun', 'snacks', 'cash', 97, ''],
+      [14, 'Chai Kings', 'snacks', 'primary', 210, ''],
+      [13, 'Zomato', 'food', 'kiwi', 1180, ''],
+      [13, 'Metro card top-up', 'travel', 'primary', 498, ''],
+      [12, 'Decathlon', 'shopping', 'kiwi', 2250, ''],
+      [12, 'Juice and snacks', 'snacks', 'cash', 210, ''],
+      [11, 'Swiggy', 'food', 'swiggy', 1250, ''],
+      [10, 'Big Basket', 'groceries', 'kiwi', 1160, ''],
+      [10, 'Stationery', 'shopping', 'savings', 318, ''],
+      [9, 'Indian Oil', 'fuel', 'kiwi', 1800, 'UPI QR'],
+      [8, 'Anjappar', 'food', 'primary', 490, ''],
+      [8, 'Sweets', 'snacks', 'cash', 343, ''],
+      [7, 'Amazon', 'shopping', 'amazon', 1299, ''],
+      [6, 'Bus tickets', 'travel', 'savings', 1042, ''],
+      [5, 'Electricity bill', 'bills', 'kiwi', 3120, ''],
+      [5, 'Netflix', 'subs', 'rbl', 649, ''],
+      [4, 'More supermarket', 'groceries', 'savings', 990, ''],
+      [4, 'YouTube Premium', 'subs', 'sbi', 299, ''],
+      [3, 'Myntra', 'shopping', 'rbl', 883, ''],
+      [2, 'Google One', 'subs', 'primary', 193, ''],
+      [1, 'Spotify', 'subs', 'primary', 119, '']
+    ].map(([day, title, cat, src, amt, via]) => ({ day, title, cat, src, amt, via, refund: false }));
+    const R = [{ day: 14, title: 'Refund · Ajio', cat: 'shopping', src: 'kiwi', amt: 2499, refund: true, bought: '28 Oct' }];
+
+    const mine = (x) => source === 'all' || x.src === source;
+    const spends = E.filter(mine);
+    const total = spends.reduce((a, x) => a + x.amt, 0);
+    const src = S[source];
+    const card = source === 'all'
+      ? { nick: 'All accounts and cards', kind: '', spent: this.rupees(total), tail: '', when: 'spent in November', bg: c.s2, fg: c.t1 }
+      : { nick: src.nick, kind: src.kind, spent: this.rupees(total), tail: src.tail, when: 'spent in November', bg: src.color || c.cashT, fg: src.color ? '#FFFFFF' : c.t1 };
+    card.a11y = card.nick + ', ' + card.spent + ' spent in November';
+
+    const totals = {};
+    spends.forEach((x) => { totals[x.cat] = (totals[x.cat] || 0) + x.amt; });
+    const keys = Object.keys(totals).sort((a, b) => totals[b] - totals[a]);
+    const top = keys.length ? totals[keys[0]] : 1;
+    const cats = keys.map((k, i) => {
+      const pct = Math.round((totals[k] / total) * 100) + '%';
+      return {
+        name: K[k].name, color: K[k].color, icon: K[k].icon, spent: this.rupees(totals[k]), pct,
+        bar: Math.max(2, Math.round((totals[k] / top) * 100)) + '%',
+        a11y: K[k].name + ', ' + this.rupees(totals[k]) + ', ' + pct,
+        divider: i < keys.length - 1 ? '1px solid ' + c.line : '0'
+      };
+    });
+
+    // Every entry, newest first; a refund sits on the day it came back.
+    const listed = [...spends, ...R.filter(mine)];
+    const dayName = (d) => (d === 15 ? 'Today · ' : d === 14 ? 'Yesterday · ' : '') + ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][(d + 6) % 7] + ' ' + d + ' Nov';
+    const rows = [];
+    const days = [...new Set(listed.map((x) => x.day))].sort((a, b) => b - a);
+    for (const d of days) {
+      const items = listed.filter((x) => x.day === d).sort((a, b) => (a.refund ? 1 : 0) - (b.refund ? 1 : 0));
+      const dayTotal = items.filter((x) => !x.refund).reduce((a, x) => a + x.amt, 0);
+      rows.push({ isDay: true, isRow: false, day: dayName(d), dayTotal: this.rupees(dayTotal), top: rows.length ? '1px solid ' + c.line : '0' });
+      for (const x of items) {
+        const s = S[x.src];
+        const how = s.method === 'cash' ? 'Cash' : s.method === 'upi' ? 'UPI · ' + s.nick : s.nick + (x.via ? ' · ' + x.via : '');
+        rows.push({
+          isDay: false, isRow: true, title: x.title,
+          sub: x.refund ? 'Shopping · back to ' + s.nick + ' · bought ' + x.bought : K[x.cat].name + ' · ' + how,
+          icon: x.refund ? refundIcon : K[x.cat].icon,
+          tileBg: x.refund ? c.moneyT : K[x.cat].color,
+          tileFg: x.refund ? c.money : '#0D0F14',
+          methodColor: { upi: c.money, card: c.card, cash: c.cash }[s.method],
+          amount: x.refund ? '+' + this.rupees(x.amt) : this.rupees(x.amt),
+          amountColor: x.refund ? c.money : c.t1,
+          tag: x.refund ? 'Counts in Oct' : '',
+          a11y: x.refund ? 'Refund, Ajio, ' + this.rupees(x.amt) : x.title + ', ' + this.rupees(x.amt) + ', ' + K[x.cat].name + ', ' + how + '. Edit'
+        });
+      }
+    }
+    const n = listed.length;
+    const title = view === 'categories' ? 'Categories' : 'Expenses';
+    const subtitle = 'November 2026 · ' + (view === 'categories' ? keys.length + (keys.length === 1 ? ' category' : ' categories') : n + (n === 1 ? ' entry' : ' entries'));
+    return { c, title, subtitle, card, isCategories: view === 'categories', isExpenses: view === 'expenses', cats, rows };
+  }
+}
+</script>
+</body>
+</html>

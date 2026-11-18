@@ -20,6 +20,9 @@ The files in this folder are the source of that canvas, kept in git so every rev
 | 4b | Add bank account (sheet, searching "hd") | 4 | Type to search banks, pick one, nickname, last four digits, default; live preview |
 | 4c | Add credit card (sheet, bank chosen) | 4 | Same sheet for a card |
 | 5 | Lending: person page | 6 | |
+| 5a | Money tab: Expenses | 3, 4 | Day / Week / Month, filter by account or card, show all |
+| 5b | Show all categories (sheet) | 4 | View and account or card set in Tweaks |
+| 5c | Show all expenses (sheet) | 4 | The same sheet in its expenses view |
 | 6 | Travel list | 7 | All / Train / Bus filter |
 | 6b | Ticket details, train | 7 | |
 | 6c | Ticket details, bus | 7 | |
@@ -208,6 +211,20 @@ Built from the mockups, with these additions for a phase where no features exist
 - **Capture sheet:** the input, the five shortcuts and the three questions are in place. Shortcuts and questions say which phase builds them. Typed text is not understood until the offline assistant (Phase 9).
 - **Icons:** Material icons stand in for the mockups' line icons, except the tab bar, which is drawn from the mockup paths.
 
+
+## Review round 7: the Money tab (18 Nov 2026)
+
+Designed for Phase 2, part 5 (screens 5a, 5b and 5c) and reviewed in two rounds. The numbers are the made-up November from Today (₹19,070 so far).
+
+- **Header:** the title "Money", a round wallet button that opens the Accounts and cards sheet, and the Expenses | Lending segments. The chosen segment fills with its module colour: Expenses in Money green, Lending in amber. Lending is designed and built in Phase 4; until then its segment says "Lending is built in Phase 4".
+- **Period:** Day | Week | Month pills (the chosen one in Money green) and ‹ › to step through earlier periods; › is faded on the current one.
+- **Total card:** "Spent in November", the total, then the UPI / Credit Card / Cash bar with each amount. A method with ₹0 is left out of both the bar and the amounts.
+- **Refunds always count in the purchase month** (owner, 18 Nov 2026, replacing the switch chosen on 17 Nov): a refund lowers the month its purchase was in, so totals never move between months. A failed payment reversed later by the bank is the same: once confirmed, the reversal cancels the original. In the list, a refund sits on the day it came back, in green ("+₹2,499"), tagged "Counts in Oct" when its purchase was in an earlier month.
+- **Spent from:** a row of mini cards in each bank's colour, one per account and card plus Cash, each with the period's total. Tapping one filters everything below it ("Spent in November from Kiwi", "Categories · Kiwi", "Expenses · Kiwi"); tapping it again or Show all clears it.
+- **Categories:** the top five with tile, amount, a bar and the share of the total; **Show all N** opens screen 5b.
+- **Expenses:** newest first, grouped by day with each day's total; each row has the category tile, the shop, a dot in the method colour with how it was paid ("UPI · Primary", "Kiwi · UPI QR", "Cash"), and the amount. Tapping one opens the expense sheet as **Edit expense**. The app loads more as you scroll; **Show all N** opens screen 5c.
+- **Show all (5b, 5c):** one tall sheet with two views, Categories and Expenses. The title, then "November 2026 · 6 categories", then the chosen account or card as a card (or "All accounts and cards"), then the full list. No close button, as on the category sheet: swipe it down or press back.
+- No hint texts ("tap one to filter", "tap one to edit") on the screen.
 
 ## Phase 2, part 2: Accounts and cards (18 Nov 2026)
 

@@ -145,7 +145,7 @@ Navigation has five tabs and one capture button.
 - **Planner**, with two segments: Notes and Tasks
 - **More**, a flexible last tab. It holds the Document Vault, Digital Wellbeing and Settings, and has room for later additions
 
-The capture button is reachable from every tab and opens one sheet for a new expense, loan, trip, note or task, plus the command line described in section 10. It stays on every tab (confirmed by you on 17 November 2026, after trying the sheet in Phase 1).
+The capture button is reachable from every tab and opens one sheet for a new expense, loan, trip, note or task, plus the command line described in section 10. It stays on every tab (confirmed by you on 17 November 2026, after trying the sheet in Phase 1). It steps aside while any sheet or dialog is open, and on any full page listed as hiding it; none is listed yet (your decision, 18 November 2026).
 
 The Review Inbox opens from the stack on Today. It holds every item that is detected but not yet confirmed. On opening, its cards start stacked and slide down one after another.
 
@@ -157,7 +157,7 @@ Adding an expense by hand:
 
 1. Enter the amount.
 2. Choose UPI, Credit Card or Cash.
-3. Choose the bank account (for UPI) or the card (for Credit Card). Your default is already selected. Cash needs no choice: it is paid from Cash in hand, and the form shows what is left after this expense.
+3. Choose the bank account (for UPI) or the card (for Credit Card). Your default, if you chose one, is already selected. Cash needs no choice: it is paid from Cash in hand, and the form shows what is left after this expense.
 4. Choose a category.
 5. Save with one green "Save ₹amount" button. Merchant, note and date are optional; the date defaults to today.
 
@@ -167,14 +167,14 @@ Adding an expense and reviewing a detected one use **one form**. In review mode 
 
 ### Accounts and cards
 
-You can add any number of each from the first build.
+You can add any number of each from the first build. Accounts and cards is a tall sheet, not a page (owner, 18 Nov 2026): More opens it, and Today's Cash in hand row and the Money tab will open the same sheet.
 
 | Field | Bank account, used for UPI | Credit card |
 | --- | --- | --- |
 | Bank | Chosen from a searchable list (typing "hd" suggests HDFC Bank); a bank not in the list can be added by name | The same list |
 | Nickname | For example "Primary", "Salary" or "Investments" | For example "Kiwi" or "Amazon Pay" |
 | Last four digits | Of the account number | Of the card number |
-| Default | One default bank account | One default card |
+| Default | At most one default bank account, only if you choose one | At most one default card, only if you choose one |
 
 An account or card is added from a sheet with a live card preview. The sheet shows which SMS sender code it will be linked to, for example FEDBNK.
 
@@ -191,9 +191,11 @@ Cash is one balance, Cash in hand, shown at the top of Accounts and cards and as
 | ATM withdrawal SMS | A card in the Review Inbox: "ATM withdrawal ₹2,000 · HDFC Savings · Moves to Cash in hand". Looks Good records a **transfer** from the bank account to Cash in hand. It is not spending |
 | Cash expense | Added by hand with Cash as the method, or from the capture line ("spent 40 on tea cash"). It counts as spending and lowers Cash in hand |
 | Cash from someone | A loan repayment or other cash you receive can be recorded into Cash in hand |
-| Update count | You type what is really in your wallet. The difference is saved as a visible adjustment, outside spending, so the totals only hold what you entered |
+| Update count | You type what is really in your wallet, and that becomes Cash in hand. A new count replaces the last one. The difference is not spending, so the totals only hold what you entered |
 
 The app cannot detect cash spending, because no SMS is sent for it. Cash in hand is therefore only as accurate as what you enter, and Update count is the correction.
+
+So the flow is: Cash in hand starts at ₹0. Update count sets it. An ATM withdrawal moves money from the bank account to Cash in hand, and a cash expense lowers it. Anything dated before your latest count is already in that count, so an ATM SMS that Loopd reads after you counted does not add the money twice (your decision, 18 November 2026).
 
 ### Tracking and correction
 
@@ -550,7 +552,7 @@ When each permission is asked:
 
 ### Shared engines
 
-- **Ledger.** Every money movement goes through it: expense, income, transfer (including ATM withdrawals into Cash in hand), cash adjustment, card settlement, loan and repayment. Modules never write money rows themselves, so the totals cannot disagree.
+- **Ledger.** Every money movement goes through it: expense, income, transfer (including ATM withdrawals into Cash in hand), Update count of Cash in hand, card settlement, loan and repayment. Modules never write money rows themselves, so the totals cannot disagree.
 - **Capture inbox.** Drafts from SMS, sharing and commands use one confirm-or-review flow.
 - **Reminders.** Trips, tasks, the daily task summary, document expiry and backup nudges use one scheduler. Quiet hours apply to task reminders only. It rebuilds its schedule after a restart and whenever the app opens.
 - **Backup.** Takes the snapshot, writes and verifies the backup, keeps the retention, and runs the restore checks.
@@ -663,7 +665,7 @@ The ledger owns accounts, cards, Cash in hand and categories. Their screens live
 Every money event is one row in `ledger_transactions` with two or more rows in `postings`.
 
 ```text
-accounts               id, kind, name, bank_code, last4, is_default, created_at, removed_at
+accounts               id, kind, name, bank_name, bank_code, last4, is_default, created_at, removed_at
                        kind: bank | credit_card | cash | category | income | loan
                              | adjustment | write_off | opening
 categories             account_id → accounts, colour, icon, sort_order
@@ -753,7 +755,7 @@ CREATE UNIQUE INDEX transaction_sources_one_role
   - "Tracked balance" with an opening balance
   - "Verified … · date" when the latest check matches
   - "Tracked … · Bank says … · ₹… unexplained" when it does not
-- The first Update count of Cash in hand becomes its opening balance; later counts are adjustments.
+- An Update count of Cash in hand is its balance from that moment: the latest count plus what is dated after it. It is kept as a checkpoint, not a money row, so it is never spending and ₹0 is a valid count. Before the first count, Cash in hand starts at ₹0.
 
 **Edits, undo and reconciliation.**
 
@@ -762,7 +764,7 @@ CREATE UNIQUE INDEX transaction_sources_one_role
 - A delete is a soft delete.
 - Undo applies the previous snapshot as a new revision, and only while nothing has changed since; otherwise it says it cannot undo.
 - Reconciliation never creates anything by itself:
-  - Cash in hand differences become an adjustment, outside spending.
+  - Cash in hand has no bank to compare with, so Update count simply sets it; nothing is recorded as an adjustment.
   - A bank or card difference is shown. You add the missing transaction, record a labelled adjustment outside spending, or leave it.
   - Editing anything dated before a checkpoint marks that checkpoint for a recheck.
 - Unmatched card-bill halves stay in the Review Inbox. They pair on the same amount within a time window still to be confirmed (proposed ±3 days).
@@ -1208,7 +1210,7 @@ The largest risks are device behaviour on Android and the size of the scope for 
 | No iPhone | iOS problems go unnoticed | The build compiles on every change, and nothing on iOS is described as verified |
 | Lost phone or forgotten backup passphrase | Permanent loss of data | Backup nudges, optional weekly backup, and a clear warning when the passphrase is set |
 | Nine modules for one developer | Slipping dates | Fixed "not included" lists per module, one droppable optional phase, and approval after every phase |
-| Cash in hand drifts from your real wallet | Cash totals are off, because cash spending sends no SMS | Update count records the difference as a visible adjustment |
+| Cash in hand drifts from your real wallet | Cash totals are off, because cash spending sends no SMS | Update count sets Cash in hand to what you counted |
 | Usage figures vary between manufacturers | Wellbeing totals differ from the system's | Compared over a week in Phase 8 and stated in the screen |
 | The bubble's service is stopped by the system | The bubble disappears | Opt-in, restarted when the app opens, built last |
 

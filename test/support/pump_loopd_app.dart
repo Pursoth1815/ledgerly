@@ -16,7 +16,9 @@ Future<AppDatabase> pumpLoopdApp(
   ThemeMode theme = ThemeMode.dark,
 }) async {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
-  final database = AppDatabase(NativeDatabase.memory());
+  // Drift otherwise closes streams on a timer, which a widget test reports
+  // as still pending.
+  final database = AppDatabase(DatabaseConnection(NativeDatabase.memory(), closeStreamsSynchronously: true));
   addTearDown(database.close);
   await tester.pumpWidget(
     ProviderScope(

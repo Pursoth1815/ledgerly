@@ -28,7 +28,15 @@ class Accounts extends Table {
       'opening',
     ]),
   )();
+
+  /// The nickname, such as Primary or Kiwi; the plain name for built-in
+  /// accounts and categories.
   TextColumn get name => text()();
+
+  /// The bank as chosen from the list or typed, such as Federal Bank (banks
+  /// and cards). Kept as text because two list entries can share one sender
+  /// code, and a bank typed by hand has none.
+  TextColumn get bankName => text().nullable()();
 
   /// The six-letter SMS sender code, such as FEDBNK (banks and cards).
   TextColumn get bankCode => text().nullable()();

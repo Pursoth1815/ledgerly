@@ -5,6 +5,7 @@ import 'package:loopd/app/shell/loopd_tab_bar.dart';
 import 'package:loopd/app/shell/more_page.dart';
 import 'package:loopd/core/settings/theme_setting.dart';
 import 'package:loopd/design_system/components/loopd_switch.dart';
+import 'package:loopd/features/accounts/accounts.dart';
 
 import '../../support/pump_loopd_app.dart';
 
@@ -68,8 +69,33 @@ void main() {
   testWidgets('a row not built yet says which phase builds it', (tester) async {
     await pumpLoopdApp(tester);
     await openMore(tester);
-    await tester.tap(find.text('Accounts and cards'));
+    await tester.tap(find.text('Expense categories'));
     await tester.pump();
-    expect(find.text('Accounts and cards is built in Phase 2'), findsOneWidget);
+    expect(find.text('Expense categories is built in Phase 2'), findsOneWidget);
+  });
+
+  testWidgets('Accounts and cards opens as a sheet over the tab bar', (tester) async {
+    await pumpLoopdApp(tester);
+    await openMore(tester);
+    expect(find.text('0 · 0'), findsNothing, reason: 'no count on the row (owner, 18 Nov 2026)');
+    await tester.tap(find.text('Accounts and cards'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AccountsSheet), findsOneWidget);
+    expect(find.byKey(AccountsSheet.listKey), findsOneWidget, reason: 'loaded by the time it is up');
+    expect(
+      find.descendant(of: find.byType(LoopdTabBar), matching: find.text('Money')).hitTestable(),
+      findsNothing,
+      reason: 'the tab bar sits behind the sheet',
+    );
+
+    await tester.tap(find.bySemanticsLabel('Close').last);
+    await tester.pumpAndSettle();
+    expect(find.byType(AccountsSheet), findsNothing);
+    await tester.tap(find.descendant(of: find.byType(LoopdTabBar), matching: find.text('Money')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.descendant(of: find.byType(LoopdTabBar), matching: find.text('More')));
+    await tester.pumpAndSettle();
+    expect(find.byType(MorePage), findsOneWidget, reason: 'More comes back as More');
+    expect(find.byType(AccountsSheet), findsNothing);
   });
 }

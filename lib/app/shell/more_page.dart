@@ -12,11 +12,12 @@ import '../../design_system/components/loopd_toast.dart';
 import '../../design_system/loopd_colors.dart';
 import '../../design_system/loopd_spacing.dart';
 import '../../design_system/loopd_typography.dart';
+import '../../features/accounts/accounts.dart';
 import '../config/app_config.dart';
 
 /// The More tab (proposal section 3, mockup `More.dc.html`): the Vault and
 /// Screen time tiles, then settings in four groups. Rows show which phase
-/// builds them; only the Dark theme switch works in Phase 1.
+/// builds them; Accounts and cards and the Dark theme switch work so far.
 class MorePage extends ConsumerWidget {
   const MorePage({super.key});
 
@@ -71,11 +72,11 @@ class MorePage extends ConsumerWidget {
               name: 'Money',
               rows: [
                 _LinkRow(
+                  // No count on the right (owner's choice, 18 Nov 2026).
                   label: 'Accounts and cards',
-                  value: 'Phase 2',
                   dot: c.money,
                   tint: c.moneyTint,
-                  onTap: () => soon('Accounts and cards', 'in Phase 2'),
+                  onTap: () => showAccountsSheet(context),
                 ),
                 _LinkRow(
                   label: 'Expense categories',
@@ -336,15 +337,17 @@ class _RowStart extends StatelessWidget {
 class _LinkRow extends StatelessWidget {
   const _LinkRow({
     required this.label,
-    required this.value,
     required this.dot,
     required this.tint,
     required this.onTap,
+    this.value,
     this.hint,
   });
 
   final String label;
-  final String value;
+
+  /// Muted text before the chevron, such as the phase that builds the row.
+  final String? value;
   final String? hint;
   final Color dot;
   final Color tint;
@@ -355,17 +358,18 @@ class _LinkRow extends StatelessWidget {
     final c = context.colors;
     return LoopdPressable(
       onTap: onTap,
-      label: '$label, $value',
+      label: value == null ? label : '$label, $value',
       pressedScale: 0.99,
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: 58),
         child: Row(
           children: [
             _RowStart(label: label, hint: hint, dot: dot, tint: tint),
-            Text(
-              value,
-              style: LoopdType.small.copyWith(color: c.textMuted, fontWeight: FontWeight.w500),
-            ),
+            if (value != null)
+              Text(
+                value!,
+                style: LoopdType.small.copyWith(color: c.textMuted, fontWeight: FontWeight.w500),
+              ),
             const SizedBox(width: 6),
             Icon(Icons.chevron_right_rounded, size: 18, color: c.textMuted),
           ],

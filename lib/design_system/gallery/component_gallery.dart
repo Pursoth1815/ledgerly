@@ -5,6 +5,7 @@ import '../components/loopd_card.dart';
 import '../components/loopd_card_stack.dart';
 import '../components/loopd_check.dart';
 import '../components/loopd_chip.dart';
+import '../components/loopd_error_note.dart';
 import '../components/loopd_sheet.dart';
 import '../components/loopd_source_strip.dart';
 import '../components/loopd_switch.dart';
@@ -279,6 +280,9 @@ class _ComponentGalleryState extends State<ComponentGallery> {
                 ],
               ),
             ),
+
+            heading('Error note'),
+            const LoopdErrorNote('Primary already ends ••2210. Each bank account needs its own last four digits.'),
 
             heading('Buttons'),
             LoopdButton(label: 'Save', onTap: () => _toast(context, 'Save')),

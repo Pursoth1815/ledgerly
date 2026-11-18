@@ -31,7 +31,7 @@ final _log = Logger('app.bootstrap');
 /// continues in this engine.
 Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
-  configureLogging(debugOutput: kDebugMode);
+  configureLogging();
   final config = AppConfig.fromFlavor(appFlavor);
   registerFontLicenses();
   // iOS has no background engine yet (Not Yet Verified).

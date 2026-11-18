@@ -5,6 +5,7 @@ import 'package:loopd/design_system/components/loopd_card.dart';
 import 'package:loopd/design_system/components/loopd_card_stack.dart';
 import 'package:loopd/design_system/components/loopd_check.dart';
 import 'package:loopd/design_system/components/loopd_chip.dart';
+import 'package:loopd/design_system/components/loopd_error_note.dart';
 import 'package:loopd/design_system/components/loopd_pressable.dart';
 import 'package:loopd/design_system/components/loopd_sheet.dart';
 import 'package:loopd/design_system/components/loopd_switch.dart';
@@ -201,5 +202,24 @@ void main() {
     expect(reviewed, isTrue);
     expect(opened, isFalse);
     expect(tester.getSize(find.byType(LoopdPressable).last).height, greaterThanOrEqualTo(LoopdSize.minTouch));
+  });
+
+  testWidgets('an error note shows its message with an icon, in a bordered red box, and is announced', (tester) async {
+    final semantics = tester.ensureSemantics();
+    await tester.pumpWidget(loopdTestApp(const LoopdErrorNote('Primary already ends ••2210.')));
+    expect(find.text('Primary already ends ••2210.'), findsOneWidget);
+    expect(find.byIcon(Icons.error_outline_rounded), findsOneWidget);
+    final box = tester.widget<Container>(
+      find.ancestor(of: find.byIcon(Icons.error_outline_rounded), matching: find.byType(Container)).first,
+    );
+    final decoration = box.decoration! as BoxDecoration;
+    final c = tester.element(find.byType(LoopdErrorNote)).colors;
+    expect(decoration.color, c.dangerTint);
+    expect(decoration.border, isNotNull);
+    expect(
+      tester.getSemantics(find.text('Primary already ends ••2210.')),
+      matchesSemantics(label: 'Primary already ends ••2210.', isLiveRegion: true),
+    );
+    semantics.dispose();
   });
 }

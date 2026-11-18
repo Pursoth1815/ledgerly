@@ -29,10 +29,18 @@ Lending, ATM withdrawals, card bills, refunds and Cash in hand must never distor
 ## As built (Phase 2, part 1)
 
 - Tables in `core/database/tables/ledger.dart` (schema version 4), STRICT, with CHECK constraints on kinds, methods and non-zero postings, and `UNIQUE (transaction_id, account_id)`. Loans arrive in Phase 4 and transaction sources in Phase 3.
-- `LedgerEngine` commands: expense, refund, income, transfer (including ATM withdrawals), card payment, Update count (the first count is the opening balance; later differences are adjustments), opening balance, verified balance, edit, delete (with refunds only on request) and undo (only while the revision is unchanged).
+- `LedgerEngine` commands: expense, refund, income, transfer (including ATM withdrawals), card payment, Update count (changed in part 2, below), opening balance, verified balance, edit, delete (with refunds only on request) and undo (only while the revision is unchanged).
 - Every install gets Cash in hand, Adjustments, Opening balances, Income and the twelve default categories at start-up (`ensureDefaults`, safe to repeat).
 - An edit can never take a purchase below what was already refunded.
 - With an opening balance, the tracked balance counts what is dated after it, plus anything at the same moment created after it.
+
+## As built (Phase 2, part 2: accounts and cards)
+
+- Schema version 5 adds `accounts.bank_name`: the bank as picked from the list or typed. It is separate from the sender code because two list entries can share one code (a bank and its card division), and a bank typed by hand has no code.
+- `addAccount` needs a nickname and, when given, exactly four digits. The same last four digits cannot be saved twice among bank accounts, or twice among cards, whatever the bank (owner, 18 Nov 2026); a bank account and a card may share them, and a removed account frees its digits. The Add sheet checks this as you type, and the engine checks again on save (`duplicateAccount`), so no other path can add a second one.
+- Nothing becomes a default by itself: not the first account, and not another one when the default is removed. There is at most one default per kind, and only if the owner chose it (18 Nov 2026). The expense form preselects it when there is one.
+- **Update count** is a reset, not an adjustment (owner, 18 Nov 2026). Each count is a `balance_checkpoints` row with source `count`; Cash in hand is the latest count plus what is dated after it (the same rule as an opening balance, whichever is later). No money row is written, so a count is never spending, ₹0 is a valid count, and Cash in hand starts at ₹0 before the first one. Something dated before the latest count is already in it, so a late ATM SMS (read after a count, ADR 0007) does not add the money twice. Manual checkpoints on banks and cards are still only compared, never applied. The Adjustments account stays for the bank and card reconciliation in section 13.
+- Live reads for the screens: `watchAccounts`, `watchMonthSpending` (per funding account, net of refunds, in the purchase month) and `watchCashInHand` (balance, last count, last money moved in).
 
 ## Alternatives considered
 

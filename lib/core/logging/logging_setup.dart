@@ -8,12 +8,12 @@ import 'log_redaction.dart';
 /// Code logs events with safe fields only, for example
 /// `Logger('core.database').info('opened schema=1')`. Errors are written as
 /// their type, never their message, because messages can carry data.
-/// Lines go to the debug console only when [debugOutput] is true; the
+/// Lines go to the debug console only in debug builds ([kDebugMode]); the
 /// on-phone log file and its export arrive with the Export logs screen.
-void configureLogging({required bool debugOutput}) {
+void configureLogging() {
   Logger.root.level = Level.INFO;
   Logger.root.onRecord.listen((record) {
-    if (debugOutput) debugPrint(formatLogRecord(record));
+    if (kDebugMode) debugPrint(formatLogRecord(record));
   });
 }
 

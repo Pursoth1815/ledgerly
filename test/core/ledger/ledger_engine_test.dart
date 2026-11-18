@@ -3,8 +3,11 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:loopd/core/database/app_database.dart';
 import 'package:loopd/core/errors/app_exception.dart';
+import 'package:loopd/core/ledger/ledger_defaults.dart';
 import 'package:loopd/core/ledger/ledger_engine.dart';
 import 'package:loopd/core/ledger/ledger_types.dart';
+
+import '../../support/fill_categories.dart';
 
 /// The money rules from proposal section 4 and ADR 0006, one test each.
 /// Amounts are in paise: ₹62 is 6200.
@@ -51,10 +54,10 @@ void main() {
   );
 
   group('set-up', () {
-    test('every install has Cash in hand and the twelve default categories, once', () async {
+    test('every install has Cash in hand and the thirteen default categories, once', () async {
       await ledger.ensureDefaults();
       final categories = await db.select(db.categories).get();
-      expect(categories, hasLength(12));
+      expect(categories, hasLength(13));
       final names = await (db.select(db.accounts)..where((a) => a.kind.equals('category'))).map((a) => a.name).get();
       expect(
         names,
@@ -71,6 +74,7 @@ void main() {
           'Rent',
           'Subscriptions',
           'Gifts',
+          'Misc',
         ]),
       );
       expect((await (db.select(db.accounts)..where((a) => a.id.equals(cash))).getSingle()).name, 'Cash in hand');
@@ -339,9 +343,9 @@ void main() {
     test('categories come in their sheet order, and follow changes', () async {
       final first = await ledger.watchCategories().first;
       expect(first.map((k) => k.name).take(3), ['Food', 'Snacks', 'Groceries']);
-      expect(first, hasLength(12));
+      expect(first, hasLength(13));
       expect(first.first.colour, 0);
-      final mine = await ledger.addCategory(name: 'Pets', colour: 6, icon: 'star');
+      final mine = await ledger.addCategory(name: 'Pets', colour: 11, icon: 'paw');
       final later = await ledger.watchCategories().first;
       expect(later.last.id, mine, reason: 'a new category goes last');
     });
@@ -387,6 +391,156 @@ void main() {
       final account = (await ledger.getAccount(savings))!;
       expect(account.nickname, 'Savings');
       expect(account.kind, AccountKind.bank);
+    });
+  });
+
+  group('categories', () {
+    test('a new category goes last, with its colour and icon', () async {
+      final id = await ledger.addCategory(name: '  Coffee   beans ', colour: 11, icon: 'phone');
+      final all = await ledger.watchCategories().first;
+      expect(all.last.id, id);
+      expect((all.last.name, all.last.colour, all.last.icon), ('Coffee beans', 11, 'phone'));
+    });
+
+    test('names are needed, short and unique, ignoring case', () async {
+      await expectLater(ledger.addCategory(name: ' ', colour: 11, icon: 'paw'), fails(LedgerFailure.invalidCategory));
+      await expectLater(
+        ledger.addCategory(name: 'A' * (LedgerEngine.categoryNameMax + 1), colour: 11, icon: 'paw'),
+        fails(LedgerFailure.invalidCategory),
+      );
+      await expectLater(
+        ledger.addCategory(name: 'Pets', colour: LedgerEngine.categoryColours, icon: 'paw'),
+        fails(LedgerFailure.invalidCategory),
+      );
+      await expectLater(
+        ledger.addCategory(name: 'food', colour: 11, icon: 'paw'),
+        fails(LedgerFailure.duplicateCategory),
+      );
+    });
+
+    test('no two categories share a colour or an icon', () async {
+      final defaults = await ledger.watchCategories().first;
+      expect(defaults.map((k) => k.colour).toSet(), hasLength(13), reason: 'the defaults all differ');
+      expect(defaults.map((k) => k.icon).toSet(), hasLength(13));
+      await expectLater(
+        ledger.addCategory(name: 'Pets', colour: 0, icon: 'paw'),
+        fails(LedgerFailure.categoryLookTaken),
+        reason: "Food's colour",
+      );
+      await expectLater(
+        ledger.addCategory(name: 'Pets', colour: 11, icon: 'food'),
+        fails(LedgerFailure.categoryLookTaken),
+        reason: "Food's icon",
+      );
+      await expectLater(ledger.updateCategory(food, colour: 1), fails(LedgerFailure.categoryLookTaken));
+      await ledger.updateCategory(food, colour: 0, icon: 'food'); // its own
+    });
+
+    test('the table refuses a shared colour even past the engine', () async {
+      final pets = await ledger.addCategory(name: 'Pets', colour: 11, icon: 'paw');
+      await expectLater(
+        (db.update(
+          db.categories,
+        )..where((c) => c.accountId.equals(pets))).write(const CategoriesCompanion(colour: Value(0))),
+        throwsA(isA<SqliteException>()),
+      );
+    });
+
+    test('there can be twenty-five, one for each colour and icon', () async {
+      await fillCategories(ledger);
+      expect(await ledger.watchCategories().first, hasLength(LedgerEngine.categoryMax));
+      await expectLater(
+        ledger.addCategory(name: 'One more', colour: 11, icon: 'book'),
+        fails(LedgerFailure.categoryLimit),
+      );
+    });
+
+    test('Misc joins an install from before it, after the categories already there', () async {
+      final pets = await ledger.addCategory(name: 'Pets', colour: 11, icon: 'paw');
+      // As a version 6 install was: no Misc yet.
+      await (db.delete(db.categories)..where((c) => c.accountId.equals(miscCategoryId))).go();
+      await (db.delete(db.accounts)..where((a) => a.id.equals(miscCategoryId))).go();
+      await ledger.ensureDefaults();
+      final all = await ledger.watchCategories().first;
+      expect(all.map((k) => k.id).skip(12), [pets, miscCategoryId]);
+      expect(all.last.builtIn, isTrue);
+      expect(all.firstWhere((k) => k.id == pets).builtIn, isFalse);
+    });
+
+    test('deleting moves its expenses and refunds to Misc, and frees its name, colour and icon', () async {
+      final coffee = await ledger.addCategory(name: 'Coffee', colour: 11, icon: 'phone');
+      final latte = await spend(18000, category: coffee);
+      await spend(9000, category: coffee);
+      await ledger.recordRefund(
+        originalId: latte,
+        amountPaise: 3000,
+        method: PaymentMethod.upi,
+        destinationAccountId: primary,
+        occurredAt: nov.add(const Duration(hours: 2)),
+      );
+      final gone = await spend(500, category: coffee);
+      await ledger.delete(gone);
+      expect(await ledger.countCategoryExpenses([coffee]), 2, reason: 'live expenses only');
+
+      await ledger.deleteCategories([coffee]);
+      expect((await ledger.watchCategories().first).map((k) => k.id), isNot(contains(coffee)));
+      expect((await ledger.watchCategorySpending(nov).first)[miscCategoryId], 24000, reason: 'refund moved too');
+      expect((await ledger.getExpense(latte))!.categoryId, miscCategoryId);
+      final revisions = await (db.select(db.transactionRevisions)..where((r) => r.transactionId.equals(latte))).get();
+      expect(revisions.last.action, 'edit', reason: 'each move is an edit');
+      await ledger.addCategory(name: 'Coffee', colour: 11, icon: 'phone'); // free again
+    });
+
+    test('deleting several moves them to the one you choose', () async {
+      final tea = await ledger.addCategory(name: 'Tea', colour: 11, icon: 'phone');
+      final juice = await ledger.addCategory(name: 'Juice', colour: 13, icon: 'car');
+      await spend(2000, category: tea);
+      await spend(3000, category: juice);
+      expect(await ledger.countCategoryExpenses([tea, juice]), 2);
+      await ledger.deleteCategories([tea, juice], moveTo: food);
+      expect((await ledger.watchCategorySpending(nov).first)[food], 5000);
+      expect(await ledger.watchCategories().first, hasLength(13));
+    });
+
+    test('default categories cannot be deleted, nor can expenses move into one being deleted', () async {
+      final tea = await ledger.addCategory(name: 'Tea', colour: 11, icon: 'phone');
+      await expectLater(ledger.deleteCategories([food]), fails(LedgerFailure.builtInCategory));
+      await expectLater(ledger.deleteCategories([miscCategoryId]), fails(LedgerFailure.builtInCategory));
+      await expectLater(ledger.deleteCategories([tea], moveTo: tea), fails(LedgerFailure.builtInCategory));
+      await expectLater(ledger.deleteCategories([tea], moveTo: primary), fails(LedgerFailure.notFound));
+    });
+
+    test('renaming keeps its expenses, and may keep its own name', () async {
+      await spend(6200);
+      await ledger.updateCategory(food, name: 'Meals', colour: 11);
+      await ledger.updateCategory(food, name: 'MEALS', icon: 'phone');
+      final meals = (await ledger.watchCategories().first).firstWhere((k) => k.id == food);
+      expect((meals.name, meals.colour, meals.icon), ('MEALS', 11, 'phone'));
+      expect((await ledger.watchCategorySpending(nov).first)[food], 6200);
+      await expectLater(ledger.updateCategory(food, name: 'Snacks'), fails(LedgerFailure.duplicateCategory));
+    });
+
+    test("each category's spending this month counts refunds and leaves deleted ones out", () async {
+      final shoes = await spend(250000, category: shopping);
+      await spend(6200);
+      final gone = await spend(1000);
+      await ledger.delete(gone);
+      await ledger.recordRefund(
+        originalId: shoes,
+        amountPaise: 50000,
+        method: PaymentMethod.upi,
+        destinationAccountId: primary,
+        occurredAt: nov.add(const Duration(days: 30)),
+      );
+      await ledger.recordExpense(
+        amountPaise: 9900,
+        method: PaymentMethod.upi,
+        fundingAccountId: primary,
+        categoryId: travel,
+        occurredAt: DateTime.utc(2026, 10, 30, 6),
+      );
+      final spent = await ledger.watchCategorySpending(nov).first;
+      expect(spent, {shopping: 200000, food: 6200}, reason: 'October is left out; the refund counts in November');
     });
   });
 

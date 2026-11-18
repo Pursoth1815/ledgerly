@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'app_database.steps.dart';
+import 'migrations/unique_category_looks.dart';
 import 'tables/background.dart';
 import 'tables/ledger.dart';
 import 'tables/settings.dart';
@@ -31,7 +32,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.executor);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -57,6 +58,35 @@ class AppDatabase extends _$AppDatabase {
       // Phase 2, part 2: the bank name of each account and card.
       from4To5: (migrator, schema) async {
         await migrator.addColumn(schema.accounts, schema.accounts.bankName);
+      },
+      // Phase 2, part 4: sixteen colours, and no two categories share a
+      // colour or an icon. Tidy the rows first, then rebuild the table with
+      // the new limits.
+      from5To6: (migrator, schema) async {
+        final rows = await customSelect('SELECT account_id, colour, icon FROM categories ORDER BY sort_order').get();
+        final looks = uniqueCategoryLooks([
+          for (final row in rows) (row.read<String>('account_id'), row.read<int>('colour'), row.read<String>('icon')),
+        ]);
+        // The old table still checks colours 0 to 7 and has no unique keys,
+        // so its check is paused for the new colours; the rebuilt table
+        // checks them all again as the rows are copied in.
+        await customStatement('PRAGMA ignore_check_constraints = ON');
+        try {
+          for (final (id, colour, icon) in looks) {
+            await customUpdate(
+              'UPDATE categories SET colour = ?, icon = ? WHERE account_id = ?',
+              variables: [Variable.withInt(colour), Variable.withString(icon), Variable.withString(id)],
+            );
+          }
+        } finally {
+          await customStatement('PRAGMA ignore_check_constraints = OFF');
+        }
+        await migrator.alterTable(TableMigration(schema.categories));
+      },
+      // Phase 2, part 4, review: twenty-five colours, as many as the icons.
+      // Misc, the new default, is added by the ledger's defaults on start.
+      from6To7: (migrator, schema) async {
+        await migrator.alterTable(TableMigration(schema.categories));
       },
     ),
     beforeOpen: (details) async {

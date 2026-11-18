@@ -114,6 +114,25 @@ enum LedgerFailure {
   /// again on save, so no other path can add a second one.
   duplicateAccount('duplicate_account'),
 
+  /// A category needs a name of at most [LedgerEngine.categoryNameMax]
+  /// letters, a colour from 0 to 24 and an icon.
+  invalidCategory('invalid_category'),
+
+  /// Another category already has this name (ignoring case and spaces).
+  duplicateCategory('duplicate_category'),
+
+  /// Another category already has this colour or this icon; no two share
+  /// either (owner, 18 Nov 2026).
+  categoryLookTaken('category_look_taken'),
+
+  /// There are already [LedgerEngine.categoryMax] categories, one for each
+  /// colour and icon.
+  categoryLimit('category_limit'),
+
+  /// The default categories cannot be deleted, and a deleted category's
+  /// expenses must move to one that stays.
+  builtInCategory('built_in_category'),
+
   /// Loans, repayments and write-offs arrive with lending (Phase 4).
   notBuiltYet('not_built_yet');
 

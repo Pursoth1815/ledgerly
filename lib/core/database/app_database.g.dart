@@ -1003,7 +1003,7 @@ class $CategoriesTable extends Categories with TableInfo<$CategoriesTable, Categ
     'colour',
     aliasedName,
     false,
-    check: () => ComparableExpr(colour).isBetweenValues(0, 7),
+    check: () => ComparableExpr(colour).isBetweenValues(0, 24),
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
@@ -1062,6 +1062,11 @@ class $CategoriesTable extends Categories with TableInfo<$CategoriesTable, Categ
   @override
   Set<GeneratedColumn> get $primaryKey => {accountId};
   @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {colour},
+    {icon},
+  ];
+  @override
   Category map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Category(
@@ -1084,7 +1089,7 @@ class $CategoriesTable extends Categories with TableInfo<$CategoriesTable, Categ
 class Category extends DataClass implements Insertable<Category> {
   final String accountId;
 
-  /// Index into the category palette (0 to 7).
+  /// Index into the category palette (0 to 24).
   final int colour;
 
   /// Icon key, such as food or bus.

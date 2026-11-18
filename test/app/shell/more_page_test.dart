@@ -6,6 +6,7 @@ import 'package:loopd/app/shell/more_page.dart';
 import 'package:loopd/core/settings/theme_setting.dart';
 import 'package:loopd/design_system/components/loopd_switch.dart';
 import 'package:loopd/features/accounts/accounts.dart';
+import 'package:loopd/features/expenses/expenses.dart';
 
 import '../../support/pump_loopd_app.dart';
 
@@ -69,9 +70,18 @@ void main() {
   testWidgets('a row not built yet says which phase builds it', (tester) async {
     await pumpLoopdApp(tester);
     await openMore(tester);
-    await tester.tap(find.text('Expense categories'));
+    await tester.tap(find.descendant(of: find.byType(MorePage), matching: find.text('Vault')));
     await tester.pump();
-    expect(find.text('Expense categories is built in Phase 2'), findsOneWidget);
+    expect(find.text('The Vault is built in Phase 7'), findsOneWidget);
+  });
+
+  testWidgets('Expense categories opens its sheet', (tester) async {
+    await pumpLoopdApp(tester);
+    await openMore(tester);
+    await tester.tap(find.text('Expense categories'));
+    await tester.pumpAndSettle();
+    expect(find.byType(CategorySheet), findsOneWidget);
+    expect(find.byKey(CategorySheet.listKey), findsOneWidget, reason: 'loaded by the time it is up');
   });
 
   testWidgets('Accounts and cards opens as a sheet over the tab bar', (tester) async {

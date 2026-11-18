@@ -13,6 +13,7 @@ import '../../design_system/loopd_colors.dart';
 import '../../design_system/loopd_spacing.dart';
 import '../../design_system/loopd_typography.dart';
 import '../../features/accounts/accounts.dart';
+import '../../features/expenses/expenses.dart';
 import '../config/app_config.dart';
 
 /// The More tab (proposal section 3, mockup `More.dc.html`): the Vault and
@@ -81,10 +82,9 @@ class MorePage extends ConsumerWidget {
                 _LinkRow(
                   label: 'Expense categories',
                   hint: 'Food, Travel, Shopping and your own',
-                  value: 'Phase 2',
                   dot: c.money,
                   tint: c.moneyTint,
-                  onTap: () => soon('Expense categories', 'in Phase 2'),
+                  onTap: () => showCategorySheet(context),
                 ),
                 // The store build never reads SMS (ADR 0017).
                 if (personal)

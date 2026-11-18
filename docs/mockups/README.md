@@ -226,6 +226,24 @@ Built from screens 4, 4b and 4c, with these additions the mockups do not show:
 - **Capture button:** steps aside while any sheet or dialog is open, on every tab (owner, 18 Nov 2026).
 - **Toasts** ("Added Savings", "Cash in hand is now ₹2,350") slide down at the top of the screen, under the status bar, over pages and sheets alike (owner, 18 Nov 2026). The Review mockup's toast with Undo sits at the bottom; when the Review Inbox is built (Phase 3) it moves to the top too.
 
+## Phase 2, part 4: expense categories (18 Nov 2026)
+
+Built from screens 10c and 10d (`CategorySheet.dc.html`, expense mode), with these additions:
+
+- **One tall sheet** opened from the Expense categories row in More (the row no longer says "Phase 2"). The list, New category and Edit category are views of the same sheet, with a back arrow to the list, as in the mockup. The phone's back button also returns from the form to the list. **There is no close (X) button** (owner, 18 Nov 2026): swipe the sheet down, or press back on the list. Tapping a row opens it as **Edit category** (rename, recolour or change the icon), with "Save changes", faded until something changes.
+- **The icons are drawn from the mockup's own paths**, so they match it exactly.
+- **No two categories share a colour or an icon** (owner, 18 Nov 2026), and the categories table enforces it. The icons grow from twelve to **twenty-five** (phone, car, plane, film, book, graduation cap, paw, dumbbell, scissors, Wi-Fi, lightning, shirt and Misc's dots, drawn in the mockup's style), and the palette from eight to **twenty-five colours**, one for each icon. New category shows only the colours and icons no category has; Edit category also shows its own. So there are **at most twenty-five categories**; the limit is the number of icons. Four defaults that shared a colour moved to new ones: Fun, Rent, Subscriptions and Gifts.
+- **Misc** is a thirteenth default category (grey, three dots), last in the list on an existing install. It is where a deleted category's expenses go unless the owner picks another.
+- **Deleting categories** (owner, 18 Nov 2026): only categories the owner added can be deleted; the thirteen defaults always stay.
+  - Below the list, beside New category, a red round delete button starts choosing; so does a long press on a category you added, and Edit category of one you added has a red delete button in its header.
+  - While choosing, the title is "Delete categories". The categories you added shake (tick circle and tile, about four degrees each way with a small hop; still when the phone asks for less motion) and show a red tick circle; the defaults are faded with "Default". The bottom button reads "Delete 2 categories".
+  - A short sheet then asks "Delete 2 categories?" with one line, "3 expenses will move to Misc.", which follows the chip chosen under "Move to" (every remaining category; Misc first chosen), and "Keep" or "Delete". Without expenses the line is "No expenses to move."
+  - Each moved expense and refund is saved as an edit, as if recategorised by hand. The toast says "Deleted Tea · expenses moved to Misc". The deleted category's name, colour and icon are free again.
+  - At the limit, the note "You have 25 categories, the most there can be. Delete one you added to make room." shows at the bottom, and the button reads **Delete categories** instead of New category. The expense form's "+ New" says the same in a toast.
+- **Names** are required, at most 20 letters, and unique ignoring case and spaces: typing one already used shows "You already have a category called Food." in the red error box, and the button stays faded. A new category starts on the first free colour and the first free icon, and goes last in the list.
+- **A renamed category keeps its past expenses.**
+- **The expense form** ends its category grid with a dashed "+ New" chip. It opens New category on its own (no list, no back arrow); adding it returns to the form with the new category chosen. The number pad closes first; once New category is fully up, the name field opens the letter keyboard; back on the form no keyboard is open, and the amount is kept (owner, 18 Nov 2026).
+
 ## Phase 2, part 3: the expense form (18 Nov 2026)
 
 Built from screens 3, 3b and 3c (`AddExpense.dc.html`, add mode), with these changes:

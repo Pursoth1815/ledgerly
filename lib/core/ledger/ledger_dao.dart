@@ -166,6 +166,52 @@ class LedgerDao extends DatabaseAccessor<AppDatabase> with _$LedgerDaoMixin {
     return {for (final row in rows) row.read<String>('account_id'): row.read<int>('spent') - row.read<int>('refunded')};
   }
 
+  /// What each category spent on expenses dated from [fromDate] up to
+  /// [toDate] (local days, YYYY-MM-DD, end excluded), less the live refunds
+  /// of those expenses: category id → paise. Like [spendingByFunding],
+  /// refunds count in the purchase's month.
+  Future<Map<String, int>> categorySpending(String fromDate, String toDate) async {
+    final rows = await customSelect(
+      '''
+      SELECT c.account_id AS account_id,
+             SUM(c.amount_paise) AS spent,
+             SUM(COALESCE((
+               SELECT SUM(-rp.amount_paise)
+               FROM ledger_transactions r
+               JOIN postings rp ON rp.transaction_id = r.id
+               WHERE r.refund_of = t.id AND r.kind = 'refund' AND r.deleted_at IS NULL
+                 AND rp.account_id = c.account_id
+             ), 0)) AS refunded
+      FROM ledger_transactions t
+      JOIN postings c ON c.transaction_id = t.id
+      JOIN accounts a ON a.id = c.account_id
+      WHERE t.kind = 'expense' AND t.deleted_at IS NULL AND a.kind = 'category'
+        AND t.local_date >= ? AND t.local_date < ?
+      GROUP BY c.account_id
+      ''',
+      variables: [Variable.withString(fromDate), Variable.withString(toDate)],
+      readsFrom: {ledgerTransactions, postings, accounts},
+    ).get();
+    return {for (final row in rows) row.read<String>('account_id'): row.read<int>('spent') - row.read<int>('refunded')};
+  }
+
+  /// The highest sort order among categories, or -1 when there are none.
+  /// Live transactions (expenses and refunds) with a posting on any of
+  /// [accountIds], oldest first.
+  Future<List<LedgerTransaction>> liveTransactionsOn(Iterable<String> accountIds) {
+    final query =
+        select(ledgerTransactions).join([innerJoin(postings, postings.transactionId.equalsExp(ledgerTransactions.id))])
+          ..where(postings.accountId.isIn(accountIds) & ledgerTransactions.deletedAt.isNull())
+          ..orderBy([OrderingTerm.asc(ledgerTransactions.occurredAt)]);
+    return query.map((row) => row.readTable(ledgerTransactions)).get();
+  }
+
+  Future<int> lastCategoryOrder() async {
+    final max = categories.sortOrder.max();
+    final row = await (selectOnly(categories)..addColumns([max])).getSingle();
+    return row.read(max) ?? -1;
+  }
+
   /// The latest live transfer into [accountId], such as an ATM withdrawal
   /// into Cash in hand: (paise, UTC milliseconds).
   Future<(int, int)?> lastTransferInto(String accountId) async {

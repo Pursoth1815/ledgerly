@@ -56,12 +56,13 @@ class Accounts extends Table {
   bool get isStrict => true;
 }
 
-/// The look of a category account: one of eight colours and an icon.
+/// The look of a category account: a colour and an icon. No two categories
+/// share either (owner, 18 Nov 2026), so there are at most twenty-five.
 class Categories extends Table {
   TextColumn get accountId => text().references(Accounts, #id)();
 
-  /// Index into the category palette (0 to 7).
-  IntColumn get colour => integer().check(colour.isBetweenValues(0, 7))();
+  /// Index into the category palette (0 to 24).
+  IntColumn get colour => integer().check(colour.isBetweenValues(0, 24))();
 
   /// Icon key, such as food or bus.
   TextColumn get icon => text()();
@@ -69,6 +70,12 @@ class Categories extends Table {
 
   @override
   Set<Column<Object>> get primaryKey => {accountId};
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {colour},
+    {icon},
+  ];
 
   @override
   bool get isStrict => true;

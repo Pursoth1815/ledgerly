@@ -225,7 +225,9 @@ class LoopdColors extends ThemeExtension<LoopdColors> {
 /// stores an index (0 to 7) into one of these. They are the same in both
 /// themes; a chip shows them as a dot or a ring, never as text.
 abstract final class LoopdCategoryColours {
-  /// Expense categories: bright, so they read on dark and light.
+  /// Expense categories: bright, so they read on dark and light. Twenty-five,
+  /// one per category (LedgerEngine.categoryMax) and as many as the icons;
+  /// no two categories share one.
   static const expense = <Color>[
     Color(0xFFFF8A4C),
     Color(0xFFF472B6),
@@ -235,6 +237,25 @@ abstract final class LoopdCategoryColours {
     Color(0xFF22D3EE),
     Color(0xFF2DD4BF),
     Color(0xFFF97316),
+    // Added 18 Nov 2026, so every category has a colour of its own.
+    Color(0xFFA3E635),
+    Color(0xFFFB7185),
+    Color(0xFF818CF8),
+    Color(0xFF4ADE80),
+    Color(0xFFE879F9),
+    Color(0xFFD6B98C),
+    Color(0xFF94A3B8),
+    Color(0xFF38BDF8),
+    // Added in version 7, so there is a colour for every icon.
+    Color(0xFFFDBA74),
+    Color(0xFF6EE7B7),
+    Color(0xFFC4B5FD),
+    Color(0xFFFDE047),
+    Color(0xFFF9A8D4),
+    Color(0xFF93C5FD),
+    Color(0xFFBEF264),
+    Color(0xFFF0ABFC),
+    Color(0xFFA8A29E), // Misc
   ];
 
   /// The colour for a stored [index]; an index out of range falls back to

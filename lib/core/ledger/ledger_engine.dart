@@ -84,14 +84,15 @@ class LedgerEngine {
     await system(SystemAccounts.adjustment, AccountKind.adjustment, 'Adjustments');
     await system(SystemAccounts.opening, AccountKind.opening, 'Opening balances');
     await system(SystemAccounts.income, AccountKind.income, 'Income');
-    for (final (index, (id, name, colour, icon)) in defaultCategories.indexed) {
+    // A default added in a later version (Misc) joins an existing install
+    // after the categories already there.
+    for (final (id, name, colour, icon) in defaultCategories) {
+      if (await _dao.getAccount(id) != null) continue;
       await system(id, AccountKind.category, name);
+      final order = await _dao.lastCategoryOrder() + 1;
       await _db
           .into(_db.categories)
-          .insert(
-            CategoriesCompanion.insert(accountId: id, colour: colour, icon: icon, sortOrder: index),
-            mode: InsertMode.insertOrIgnore,
-          );
+          .insert(CategoriesCompanion.insert(accountId: id, colour: colour, icon: icon, sortOrder: order));
     }
   });
 
@@ -173,27 +174,49 @@ class LedgerEngine {
     });
   }
 
-  /// Adds a category with a name, one of eight colours and an icon.
+  /// The longest category name, so it fits a chip in the expense form.
+  static const categoryNameMax = 20;
+
+  /// The colours in the category palette, 0 to 24: one for each icon.
+  static const categoryColours = 25;
+
+  /// The most categories there can be: each needs a colour and an icon of
+  /// its own, and there are twenty-five of each (owner, 18 Nov 2026).
+  static const categoryMax = categoryColours;
+
+  /// Adds a category with a name, a colour (0 to 24) and an icon. It goes
+  /// last in the list. Names are unique, ignoring case and spaces, and no
+  /// two categories share a colour or an icon (owner, 18 Nov 2026), so there
+  /// are at most [categoryMax].
   Future<String> addCategory({required String name, required int colour, required String icon}) =>
       _db.transaction(() async {
+        final count = (await _dao.activeAccounts(AccountKind.category)).length;
+        if (count >= categoryMax) throw const LedgerException(LedgerFailure.categoryLimit);
+        final clean = await _checkCategory(name, colour, icon);
         final id = _newId();
-        final count = await _db.categories.count().getSingle();
+        final last = await _dao.lastCategoryOrder();
         await _db
             .into(_db.accounts)
-            .insert(AccountsCompanion.insert(id: id, kind: AccountKind.category.db, name: name, createdAt: _now));
+            .insert(AccountsCompanion.insert(id: id, kind: AccountKind.category.db, name: clean, createdAt: _now));
         await _db
             .into(_db.categories)
-            .insert(CategoriesCompanion.insert(accountId: id, colour: colour, icon: icon, sortOrder: count));
+            .insert(CategoriesCompanion.insert(accountId: id, colour: colour, icon: icon, sortOrder: last + 1));
         return id;
       });
 
-  /// Renames or recolours a category.
+  /// Renames, recolours or changes the icon of a category. Its past
+  /// expenses move with it, because they point at the category, not its name.
   Future<void> updateCategory(String accountId, {String? name, int? colour, String? icon}) => _db.transaction(() async {
-    if (name != null) {
-      await (_db.update(
-        _db.accounts,
-      )..where((a) => a.id.equals(accountId))).write(AccountsCompanion(name: Value(name)));
-    }
+    final row = await _dao.getAccount(accountId);
+    if (row == null || row.kind != AccountKind.category.db) throw const LedgerException(LedgerFailure.notFound);
+    final current = await (_db.select(_db.categories)..where((c) => c.accountId.equals(accountId))).getSingle();
+    final clean = await _checkCategory(
+      name ?? row.name,
+      colour ?? current.colour,
+      icon ?? current.icon,
+      except: accountId,
+    );
+    await (_db.update(_db.accounts)..where((a) => a.id.equals(accountId))).write(AccountsCompanion(name: Value(clean)));
     await (_db.update(_db.categories)..where((c) => c.accountId.equals(accountId))).write(
       CategoriesCompanion(
         colour: colour == null ? const Value.absent() : Value(colour),
@@ -201,6 +224,70 @@ class LedgerEngine {
       ),
     );
   });
+
+  /// How many live expenses use any of [categoryIds], all time.
+  Future<int> countCategoryExpenses(Iterable<String> categoryIds) async =>
+      (await _dao.liveTransactionsOn(categoryIds)).where((t) => t.kind == TransactionKind.expense.db).length;
+
+  /// Deletes categories the owner added, after moving their expenses and
+  /// refunds to [moveTo] (Misc unless they choose another). Each moved one
+  /// gets an edit revision, as if recategorised by hand. The category is
+  /// removed like an account, so deleted transactions keep pointing at it;
+  /// its colour and icon are free again. Default categories cannot be
+  /// deleted.
+  Future<void> deleteCategories(Iterable<String> categoryIds, {String moveTo = miscCategoryId}) =>
+      _db.transaction(() async {
+        final ids = categoryIds.toSet();
+        if (ids.isEmpty) return;
+        if (ids.any(defaultCategoryIds.contains) || ids.contains(moveTo)) {
+          throw const LedgerException(LedgerFailure.builtInCategory);
+        }
+        for (final id in {...ids, moveTo}) {
+          final row = await _dao.getAccount(id);
+          if (row == null || row.kind != AccountKind.category.db || row.removedAt != null) {
+            throw const LedgerException(LedgerFailure.notFound);
+          }
+        }
+        // Purchases first: a refund must follow its purchase's category.
+        final moving = await _dao.liveTransactionsOn(ids);
+        moving.sort(
+          (a, b) => (a.kind == TransactionKind.refund.db ? 1 : 0) - (b.kind == TransactionKind.refund.db ? 1 : 0),
+        );
+        for (final row in {for (final t in moving) t.id: t}.values) {
+          final postings = await _dao.getPostings(row.id);
+          final moved = <String, int>{};
+          for (final MapEntry(key: account, value: paise) in postings.entries) {
+            final to = ids.contains(account) ? moveTo : account;
+            moved[to] = (moved[to] ?? 0) + paise;
+          }
+          await _write(row.id, _entryOf(row, postings).withPostings(moved), action: 'edit', existing: row);
+        }
+        await (_db.delete(_db.categories)..where((c) => c.accountId.isIn(ids))).go();
+        await (_db.update(_db.accounts)..where((a) => a.id.isIn(ids))).write(AccountsCompanion(removedAt: Value(_now)));
+      });
+
+  /// Checks a category's name, colour and icon against the others, and
+  /// returns the name with spaces tidied. The table's unique keys back this
+  /// up.
+  Future<String> _checkCategory(String name, int colour, String icon, {String? except}) async {
+    final clean = name.trim().replaceAll(RegExp(r'\s+'), ' ');
+    if (clean.isEmpty ||
+        clean.length > categoryNameMax ||
+        colour < 0 ||
+        colour >= categoryColours ||
+        icon.trim().isEmpty) {
+      throw const LedgerException(LedgerFailure.invalidCategory);
+    }
+    final others = await _dao.activeAccounts(AccountKind.category);
+    if (others.any((a) => a.id != except && a.name.toLowerCase() == clean.toLowerCase())) {
+      throw const LedgerException(LedgerFailure.duplicateCategory);
+    }
+    final looks = await _db.select(_db.categories).get();
+    if (looks.any((k) => k.accountId != except && (k.colour == colour || k.icon == icon))) {
+      throw const LedgerException(LedgerFailure.categoryLookTaken);
+    }
+    return clean;
+  }
 
   // --- Money ---------------------------------------------------------------
 
@@ -514,7 +601,13 @@ class LedgerEngine {
   Stream<List<LedgerCategory>> watchCategories() => _dao.watchActiveCategories().map(
     (rows) => [
       for (final (account, category) in rows)
-        LedgerCategory(id: account.id, name: account.name, colour: category.colour, icon: category.icon),
+        LedgerCategory(
+          id: account.id,
+          name: account.name,
+          colour: category.colour,
+          icon: category.icon,
+          builtIn: defaultCategoryIds.contains(account.id),
+        ),
     ],
   );
 
@@ -560,14 +653,26 @@ class LedgerEngine {
     );
   }
 
+  /// What was spent in each category in the calendar month of [month]
+  /// (local time), net of refunds of those purchases: category id → paise.
+  /// Categories with nothing spent are left out.
+  Stream<Map<String, int>> watchCategorySpending(DateTime month) {
+    final (from, to) = _monthRange(month);
+    return _dao.watchLedgerChanges().asyncMap((_) => _dao.categorySpending(from, to));
+  }
+
   /// What each bank account, card and Cash in hand spent in the calendar
   /// month of [month] (local time), net of refunds of those purchases:
   /// account id → paise. Accounts with no spending are left out.
   Stream<Map<String, int>> watchMonthSpending(DateTime month) {
-    String day(int year, int m) => '${year + (m - 1) ~/ 12}-${((m - 1) % 12 + 1).toString().padLeft(2, '0')}-01';
-    final from = day(month.year, month.month);
-    final to = day(month.year, month.month + 1);
+    final (from, to) = _monthRange(month);
     return _dao.watchLedgerChanges().asyncMap((_) => _dao.spendingByFunding(from, to));
+  }
+
+  /// The first local day of [month] and of the month after, as YYYY-MM-DD.
+  static (String, String) _monthRange(DateTime month) {
+    String day(int year, int m) => '${year + (m - 1) ~/ 12}-${((m - 1) % 12 + 1).toString().padLeft(2, '0')}-01';
+    return (day(month.year, month.month), day(month.year, month.month + 1));
   }
 
   /// Cash in hand for the top of Accounts and cards, as it changes.

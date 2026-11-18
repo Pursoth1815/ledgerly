@@ -4,6 +4,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../core/routing/route_paths.dart';
 import '../../design_system/gallery/component_gallery.dart';
+import '../../features/accounts/accounts.dart';
+import '../../features/expenses/expenses.dart';
 import '../../features/today/today.dart';
 import '../shell/app_shell.dart';
 import '../shell/app_tab.dart';
@@ -35,6 +37,12 @@ GoRouter appRouter(Ref ref) {
                   path: tab.path,
                   builder: (context, state) => switch (tab) {
                     AppTab.today => const TodayScreen(),
+                    // The Accounts and Add account sheets write, so they
+                    // are passed in here (architecture rule 3).
+                    AppTab.money => MoneyScreen(
+                      onOpenAccounts: showAccountsSheet,
+                      onAddAccount: (context, kind) => showAddAccountSheet(context, kind: kind),
+                    ),
                     AppTab.more => const MorePage(),
                     _ => PlaceholderPage(tab: tab),
                   },

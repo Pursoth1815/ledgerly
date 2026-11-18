@@ -195,7 +195,64 @@ class LedgerDao extends DatabaseAccessor<AppDatabase> with _$LedgerDaoMixin {
     return {for (final row in rows) row.read<String>('account_id'): row.read<int>('spent') - row.read<int>('refunded')};
   }
 
-  /// The highest sort order among categories, or -1 when there are none.
+  /// The rows behind a spending report: live expenses dated from
+  /// [fromDate] up to [toDate] (local days, YYYY-MM-DD, end excluded) with
+  /// their live refunds so far, and live refunds that came back in those
+  /// days with their purchase's day. Newest first.
+  Future<List<SpendingEntry>> spendingEntries(String fromDate, String toDate) async {
+    // The account a purchase was paid from, or a refund came back to: its
+    // posting on a bank account, card or Cash in hand.
+    const money = "a.kind IN ('bank', 'credit_card', 'cash')";
+    final rows = await customSelect(
+      '''
+      SELECT t.id, t.kind, t.occurred_at, t.local_date, t.payment_method, t.channel, t.merchant, t.note,
+             t.refund_of, o.local_date AS original_date,
+             (SELECT p.account_id FROM postings p JOIN accounts a ON a.id = p.account_id
+               WHERE p.transaction_id = t.id AND a.kind = 'category') AS category_id,
+             (SELECT p.account_id FROM postings p JOIN accounts a ON a.id = p.account_id
+               WHERE p.transaction_id = t.id AND $money) AS account_id,
+             (SELECT a.name FROM postings p JOIN accounts a ON a.id = p.account_id
+               WHERE p.transaction_id = t.id AND $money) AS account_name,
+             (SELECT ABS(p.amount_paise) FROM postings p JOIN accounts a ON a.id = p.account_id
+               WHERE p.transaction_id = t.id AND $money) AS amount,
+             CASE WHEN t.kind = 'expense' THEN COALESCE((
+               SELECT SUM(rp.amount_paise)
+               FROM ledger_transactions r
+               JOIN postings rp ON rp.transaction_id = r.id
+               JOIN accounts a ON a.id = rp.account_id
+               WHERE r.refund_of = t.id AND r.kind = 'refund' AND r.deleted_at IS NULL AND $money
+             ), 0) ELSE 0 END AS refunded
+      FROM ledger_transactions t
+      LEFT JOIN ledger_transactions o ON o.id = t.refund_of
+      WHERE t.kind IN ('expense', 'refund') AND t.deleted_at IS NULL
+        AND t.local_date >= ? AND t.local_date < ?
+      ORDER BY t.occurred_at DESC, t.created_at DESC
+      ''',
+      variables: [Variable.withString(fromDate), Variable.withString(toDate)],
+      readsFrom: {ledgerTransactions, postings, accounts},
+    ).get();
+    return [
+      for (final row in rows)
+        SpendingEntry(
+          id: row.read<String>('id'),
+          isRefund: row.read<String>('kind') == TransactionKind.refund.db,
+          occurredAt: DateTime.fromMillisecondsSinceEpoch(row.read<int>('occurred_at'), isUtc: true),
+          localDate: row.read<String>('local_date'),
+          amountPaise: row.read<int>('amount'),
+          method: PaymentMethod.fromDb(row.read<String>('payment_method')).shownAs,
+          accountId: row.read<String>('account_id'),
+          accountName: row.read<String>('account_name'),
+          categoryId: row.read<String>('category_id'),
+          channel: row.readNullable<String>('channel'),
+          merchant: row.readNullable<String>('merchant'),
+          note: row.readNullable<String>('note'),
+          refundedPaise: row.read<int>('refunded'),
+          originalId: row.readNullable<String>('refund_of'),
+          originalDate: row.readNullable<String>('original_date'),
+        ),
+    ];
+  }
+
   /// Live transactions (expenses and refunds) with a posting on any of
   /// [accountIds], oldest first.
   Future<List<LedgerTransaction>> liveTransactionsOn(Iterable<String> accountIds) {
@@ -206,6 +263,7 @@ class LedgerDao extends DatabaseAccessor<AppDatabase> with _$LedgerDaoMixin {
     return query.map((row) => row.readTable(ledgerTransactions)).get();
   }
 
+  /// The highest sort order among categories, or -1 when there are none.
   Future<int> lastCategoryOrder() async {
     final max = categories.sortOrder.max();
     final row = await (selectOnly(categories)..addColumns([max])).getSingle();

@@ -41,7 +41,7 @@ This is revision 3.2 of the proposal. It keeps revision 2's scope, folds in ever
 
 | Area | Revision 3 | Revision 3.1 |
 | --- | --- | --- |
-| Cash | Not recorded | A third method, **Cash**, spending from one **Cash in hand** balance. An ATM withdrawal moves money from a bank account to Cash in hand after you confirm it. "Update count" corrects the balance |
+| Cash | Not recorded | A third method, **Cash**, spending from one **Cash in hand** balance. An ATM withdrawal moves money from a bank account to Cash in hand after you confirm it. "Update cash" corrects the balance |
 | Travel reminder times | Stages 1 and 2 at 19:00 the evening before and 07:00 | All four stages are counted from departure: 24 hours, 12 hours, 3 hours and 15 minutes before. No travel time setting |
 | Task reminders | Morning summary at 08:00 | A daily summary of overdue and today's tasks at a time you choose. Quiet hours apply to tasks only |
 | Capture sheet | Open point | Stays on every tab, to be confirmed once the sheet is designed and tested |
@@ -63,7 +63,7 @@ Each row comes from the owner's review of the mockups between 14 and 16 November
 | Deleting a detected item | Only "Not a transaction" inside Review | A red **delete** icon on every card, with Undo |
 | Credit card paid by UPI QR | Would read as UPI | **Credit Card**, shown as "paid by UPI QR". The SMS rule checks for a card before UPI markers |
 | SMS sender | Bank from the header | Matched on the six-letter bank code (for example YESBNK). The two-letter prefix is ignored |
-| Add expense and transaction details | Two screens | **One shared form** with an add mode and a review mode, and one green "Save ₹amount" button |
+| Add expense and transaction details | Two screens | **One shared form** with an add mode and a review mode, and one green "Save ₹amount" button. It opens as a tall sheet, not a page (owner, 18 Nov 2026) |
 | Accounts | Active or archived | No archived state. Added from a **sheet** with a searchable bank list and a live card preview |
 | Categories | Default set, editable | Managed from More in a sheet: name, eight colours and an icon |
 | Lending | Due and overdue repayments | **No due dates** by default. Today shows what is still out and what came back |
@@ -191,11 +191,11 @@ Cash is one balance, Cash in hand, shown at the top of Accounts and cards and as
 | ATM withdrawal SMS | A card in the Review Inbox: "ATM withdrawal ₹2,000 · HDFC Savings · Moves to Cash in hand". Looks Good records a **transfer** from the bank account to Cash in hand. It is not spending |
 | Cash expense | Added by hand with Cash as the method, or from the capture line ("spent 40 on tea cash"). It counts as spending and lowers Cash in hand |
 | Cash from someone | A loan repayment or other cash you receive can be recorded into Cash in hand |
-| Update count | You type what is really in your wallet, and that becomes Cash in hand. A new count replaces the last one. The difference is not spending, so the totals only hold what you entered |
+| Update cash | You type what is really in your wallet (the button was named Update count until 18 Nov 2026), and that becomes Cash in hand. A new count replaces the last one. The difference is not spending, so the totals only hold what you entered |
 
-The app cannot detect cash spending, because no SMS is sent for it. Cash in hand is therefore only as accurate as what you enter, and Update count is the correction.
+The app cannot detect cash spending, because no SMS is sent for it. Cash in hand is therefore only as accurate as what you enter, and Update cash is the correction.
 
-So the flow is: Cash in hand starts at ₹0. Update count sets it. An ATM withdrawal moves money from the bank account to Cash in hand, and a cash expense lowers it. Anything dated before your latest count is already in that count, so an ATM SMS that Loopd reads after you counted does not add the money twice (your decision, 18 November 2026).
+So the flow is: Cash in hand starts at ₹0. Update cash sets it. An ATM withdrawal moves money from the bank account to Cash in hand, and a cash expense lowers it. Anything dated before your latest count is already in that count, so an ATM SMS that Loopd reads after you counted does not add the money twice (your decision, 18 November 2026).
 
 ### Tracking and correction
 
@@ -552,7 +552,7 @@ When each permission is asked:
 
 ### Shared engines
 
-- **Ledger.** Every money movement goes through it: expense, income, transfer (including ATM withdrawals into Cash in hand), Update count of Cash in hand, card settlement, loan and repayment. Modules never write money rows themselves, so the totals cannot disagree.
+- **Ledger.** Every money movement goes through it: expense, income, transfer (including ATM withdrawals into Cash in hand), Update cash (setting Cash in hand), card settlement, loan and repayment. Modules never write money rows themselves, so the totals cannot disagree.
 - **Capture inbox.** Drafts from SMS, sharing and commands use one confirm-or-review flow.
 - **Reminders.** Trips, tasks, the daily task summary, document expiry and backup nudges use one scheduler. Quiet hours apply to task reminders only. It rebuilds its schedule after a restart and whenever the app opens.
 - **Backup.** Takes the snapshot, writes and verifies the backup, keeps the retention, and runs the restore checks.
@@ -755,7 +755,7 @@ CREATE UNIQUE INDEX transaction_sources_one_role
   - "Tracked balance" with an opening balance
   - "Verified … · date" when the latest check matches
   - "Tracked … · Bank says … · ₹… unexplained" when it does not
-- An Update count of Cash in hand is its balance from that moment: the latest count plus what is dated after it. It is kept as a checkpoint, not a money row, so it is never spending and ₹0 is a valid count. Before the first count, Cash in hand starts at ₹0.
+- Each Update cash sets Cash in hand's balance from that moment: the latest count plus what is dated after it. It is kept as a checkpoint, not a money row, so it is never spending and ₹0 is a valid count. Before the first count, Cash in hand starts at ₹0.
 
 **Edits, undo and reconciliation.**
 
@@ -764,7 +764,7 @@ CREATE UNIQUE INDEX transaction_sources_one_role
 - A delete is a soft delete.
 - Undo applies the previous snapshot as a new revision, and only while nothing has changed since; otherwise it says it cannot undo.
 - Reconciliation never creates anything by itself:
-  - Cash in hand has no bank to compare with, so Update count simply sets it; nothing is recorded as an adjustment.
+  - Cash in hand has no bank to compare with, so Update cash simply sets it; nothing is recorded as an adjustment.
   - A bank or card difference is shown. You add the missing transaction, record a labelled adjustment outside spending, or leave it.
   - Editing anything dated before a checkpoint marks that checkpoint for a recheck.
 - Unmatched card-bill halves stay in the Review Inbox. They pair on the same amount within a time window still to be confirmed (proposed ±3 days).
@@ -1034,7 +1034,7 @@ docs/architecture.md, docs/adr/
 | Item | Detail |
 | --- | --- |
 | Objective | A manual expense tracker you can use every day, with data that is safe |
-| Features | Bank accounts and cards with nickname, last four digits and default, added from a sheet with a searchable bank list and live preview; the shared expense form with UPI, Credit Card and Cash; Cash in hand with Update count; categories with the category sheet; totals by period, category, method, account and card, in purchase-month and cash-flow modes; editing with history and undo; refunds linked to originals; settlement, transfer and income rules; optional opening balances and verified balances; encrypted backup and restore with its screen; app lock; app-switcher privacy |
+| Features | Bank accounts and cards with nickname, last four digits and default, added from a sheet with a searchable bank list and live preview; the shared expense form with UPI, Credit Card and Cash; Cash in hand with Update cash; categories with the category sheet; totals by period, category, method, account and card, in purchase-month and cash-flow modes; editing with history and undo; refunds linked to originals; settlement, transfer and income rules; optional opening balances and verified balances; encrypted backup and restore with its screen; app lock; app-switcher privacy |
 | Technical dependencies | Phase 1 components. The ledger engine (section 13) and the first version of the backup engine are built here; Bouncy Castle is added for Argon2id |
 | Risks and platform restrictions | The backup format must carry a version from its first release |
 | Tested on Android | Everything, including restore onto a clean install |
@@ -1210,7 +1210,7 @@ The largest risks are device behaviour on Android and the size of the scope for 
 | No iPhone | iOS problems go unnoticed | The build compiles on every change, and nothing on iOS is described as verified |
 | Lost phone or forgotten backup passphrase | Permanent loss of data | Backup nudges, optional weekly backup, and a clear warning when the passphrase is set |
 | Nine modules for one developer | Slipping dates | Fixed "not included" lists per module, one droppable optional phase, and approval after every phase |
-| Cash in hand drifts from your real wallet | Cash totals are off, because cash spending sends no SMS | Update count sets Cash in hand to what you counted |
+| Cash in hand drifts from your real wallet | Cash totals are off, because cash spending sends no SMS | Update cash sets Cash in hand to what you counted |
 | Usage figures vary between manufacturers | Wellbeing totals differ from the system's | Compared over a week in Phase 8 and stated in the screen |
 | The bubble's service is stopped by the system | The bubble disappears | Opt-in, restarted when the app opens, built last |
 

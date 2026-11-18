@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../design_system/components/loopd_pressable.dart';
 import '../../design_system/loopd_colors.dart';
 import '../../design_system/loopd_motion.dart';
+import '../../features/accounts/accounts.dart';
 import '../../features/capture/capture.dart';
+import '../../features/expenses/expenses.dart';
 import 'capture_button_visibility.dart';
 import 'loopd_tab_bar.dart';
 
@@ -75,7 +77,13 @@ class CaptureButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.colors;
     return LoopdPressable(
-      onTap: () => showCaptureSheet(context),
+      onTap: () => showCaptureSheet(
+        context,
+        shortcuts: {
+          CaptureShortcut.expense: () =>
+              showExpenseSheet(context, onAddAccount: (context, kind) => showAddAccountSheet(context, kind: kind)),
+        },
+      ),
       label: 'Add anything',
       pressedScale: 0.92,
       child: Container(

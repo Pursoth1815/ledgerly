@@ -509,6 +509,57 @@ class LedgerEngine {
         ],
       );
 
+  /// The expense categories that are not removed, in their sheet order, as
+  /// they change.
+  Stream<List<LedgerCategory>> watchCategories() => _dao.watchActiveCategories().map(
+    (rows) => [
+      for (final (account, category) in rows)
+        LedgerCategory(id: account.id, name: account.name, colour: category.colour, icon: category.icon),
+    ],
+  );
+
+  /// An expense to edit, or null when it is missing, deleted or not an
+  /// expense.
+  Future<ExpenseRecord?> getExpense(String id) async {
+    final row = await _dao.getTransaction(id);
+    if (row == null || row.deletedAt != null || row.kind != TransactionKind.expense.db) return null;
+    final postings = await _dao.getPostings(id);
+    final kinds = await _dao.accountKinds(postings.keys);
+    String? accountWhere(bool Function(AccountKind kind) test) =>
+        postings.keys.where((account) => test(kinds[account]!)).firstOrNull;
+    final category = accountWhere((kind) => kind == AccountKind.category);
+    final funding = accountWhere((kind) => kind.holdsMoney);
+    if (category == null || funding == null) return null;
+    return ExpenseRecord(
+      id: id,
+      revision: row.revision,
+      amountPaise: postings[category]!,
+      method: PaymentMethod.fromDb(row.paymentMethod!),
+      fundingAccountId: funding,
+      categoryId: category,
+      occurredAt: DateTime.fromMillisecondsSinceEpoch(row.occurredAt, isUtc: true).toLocal(),
+      channel: row.channel,
+      merchant: row.merchant,
+      note: row.note,
+    );
+  }
+
+  /// One bank account or card, removed or not, as screens show it. An
+  /// expense can still point at a removed one.
+  Future<LedgerAccount?> getAccount(String id) async {
+    final row = await _dao.getAccount(id);
+    if (row == null) return null;
+    return LedgerAccount(
+      id: row.id,
+      kind: AccountKind.fromDb(row.kind),
+      nickname: row.name,
+      bankName: row.bankName,
+      bankCode: row.bankCode,
+      last4: row.last4,
+      isDefault: row.isDefault,
+    );
+  }
+
   /// What each bank account, card and Cash in hand spent in the calendar
   /// month of [month] (local time), net of refunds of those purchases:
   /// account id → paise. Accounts with no spending are left out.

@@ -196,10 +196,10 @@ void main() {
 
   testWidgets('a toast shows at the top of the screen', (tester) async {
     await pumpAccounts(tester);
-    await tapText(tester, 'Update count');
+    await tapText(tester, 'Update cash');
     await tester.enterText(find.byKey(UpdateCountSheet.amountFieldKey), '500');
     await tester.pumpAndSettle();
-    await tapText(tester, 'Save count');
+    await tapText(tester, 'Save');
     final toast = find.text('Cash in hand is now ₹500');
     expect(toast, findsOneWidget);
     expect(tester.getTopLeft(toast).dy, lessThan(120), reason: 'under the status bar, not by the tab bar');
@@ -208,24 +208,24 @@ void main() {
     expect(toast, findsNothing, reason: 'it leaves by itself');
   });
 
-  testWidgets('Update count sets Cash in hand, and a new count replaces it', (tester) async {
+  testWidgets('Update cash sets Cash in hand, and a new count replaces it', (tester) async {
     await pumpAccounts(tester);
-    await tapText(tester, 'Update count');
+    await tapText(tester, 'Update cash');
     expect(find.text('Loopd has ₹0 now. Your count replaces it.'), findsOneWidget);
     await tester.enterText(find.byKey(UpdateCountSheet.amountFieldKey), '2,350');
     await tester.pumpAndSettle();
-    await tapText(tester, 'Save count');
+    await tapText(tester, 'Save');
     expect(find.text('Cash in hand is now ₹2,350'), findsOneWidget);
     expect(find.text('₹2,350'), findsOneWidget);
 
-    await tapText(tester, 'Update count');
+    await tapText(tester, 'Update cash');
     await tester.enterText(find.byKey(UpdateCountSheet.amountFieldKey), '2200');
     await tester.pumpAndSettle();
     expect(
       find.text('₹150 less than Loopd has. Your count replaces it; the difference is not spending.'),
       findsOneWidget,
     );
-    await tapText(tester, 'Save count');
+    await tapText(tester, 'Save');
     expect(find.text('₹2,200'), findsOneWidget);
     expect(find.text('₹0 in Nov'), findsOneWidget, reason: 'a count is not spending');
   });

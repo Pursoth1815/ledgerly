@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../core/ledger/ledger_engine.dart';
-import '../../../core/ledger/ledger_types.dart';
+import '../../../../core/ledger/ledger_engine.dart';
+import '../../../../core/ledger/ledger_types.dart';
 
 part 'accounts_providers.g.dart';
 

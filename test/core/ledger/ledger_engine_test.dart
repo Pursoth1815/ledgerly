@@ -335,6 +335,61 @@ void main() {
     });
   });
 
+  group('reads for the expense form', () {
+    test('categories come in their sheet order, and follow changes', () async {
+      final first = await ledger.watchCategories().first;
+      expect(first.map((k) => k.name).take(3), ['Food', 'Snacks', 'Groceries']);
+      expect(first, hasLength(12));
+      expect(first.first.colour, 0);
+      final mine = await ledger.addCategory(name: 'Pets', colour: 6, icon: 'star');
+      final later = await ledger.watchCategories().first;
+      expect(later.last.id, mine, reason: 'a new category goes last');
+    });
+
+    test('an expense loads back as it was saved, with its revision', () async {
+      final id = await ledger.recordExpense(
+        amountPaise: 25000,
+        method: PaymentMethod.creditCard,
+        fundingAccountId: kiwi,
+        categoryId: shopping,
+        occurredAt: nov,
+        merchant: 'Amazon',
+        note: 'Charger',
+        channel: 'upi_qr',
+      );
+      final expense = (await ledger.getExpense(id))!;
+      expect(expense.amountPaise, 25000);
+      expect(expense.method, PaymentMethod.creditCard);
+      expect(expense.channel, 'upi_qr');
+      expect(expense.fundingAccountId, kiwi);
+      expect(expense.categoryId, shopping);
+      expect(expense.occurredAt, nov.toLocal());
+      expect((expense.merchant, expense.note), ('Amazon', 'Charger'));
+      expect(expense.revision, 1);
+    });
+
+    test('a deleted expense, or anything that is not an expense, does not load', () async {
+      final id = await spend(6200);
+      await ledger.delete(id);
+      expect(await ledger.getExpense(id), isNull);
+      final atm = await ledger.recordTransfer(
+        amountPaise: 100000,
+        fromAccountId: primary,
+        toAccountId: cash,
+        occurredAt: nov,
+      );
+      expect(await ledger.getExpense(atm), isNull);
+      expect(await ledger.getExpense('missing'), isNull);
+    });
+
+    test('a removed account still loads, for an expense that used it', () async {
+      await ledger.removeAccount(savings);
+      final account = (await ledger.getAccount(savings))!;
+      expect(account.nickname, 'Savings');
+      expect(account.kind, AccountKind.bank);
+    });
+  });
+
   group('Cash in hand and balances', () {
     test('each Update count sets Cash in hand; a new count replaces the last', () async {
       expect(await balance(cash), 0, reason: 'Cash in hand starts at ₹0');

@@ -121,6 +121,15 @@ class LedgerDao extends DatabaseAccessor<AppDatabase> with _$LedgerDaoMixin {
   /// change.
   Stream<List<Account>> watchActiveAccounts(AccountKind kind) => _activeAccounts(kind).watch();
 
+  /// Categories that are not removed, in their sheet order, with their
+  /// colour and icon.
+  Stream<List<(Account, Category)>> watchActiveCategories() {
+    final query = select(accounts).join([innerJoin(categories, categories.accountId.equalsExp(accounts.id))])
+      ..where(accounts.removedAt.isNull())
+      ..orderBy([OrderingTerm.asc(categories.sortOrder)]);
+    return query.watch().map((rows) => [for (final row in rows) (row.readTable(accounts), row.readTable(categories))]);
+  }
+
   /// Emits once now and again after every change to the ledger, so a reader
   /// built from several queries stays current.
   Stream<void> watchLedgerChanges() => customSelect(

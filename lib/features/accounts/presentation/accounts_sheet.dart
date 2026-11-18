@@ -17,8 +17,8 @@ import '../../../design_system/loopd_spacing.dart';
 import '../../../design_system/loopd_typography.dart';
 import 'account_look.dart';
 import 'account_options_sheet.dart';
-import 'accounts_providers.dart';
 import 'add_account_sheet.dart';
+import 'providers/accounts_providers.dart';
 import 'short_dates.dart';
 import 'update_count_sheet.dart';
 
@@ -28,11 +28,12 @@ import 'update_count_sheet.dart';
 Future<void> showAccountsSheet(BuildContext context, {DateTime Function() clock = DateTime.now}) =>
     showLoopdSheet<void>(
       context: context,
+      tall: true,
       builder: (_) => AccountsSheet(clock: clock),
     );
 
 /// Accounts and cards (mockup `Accounts.dc.html`, proposal section 4): Cash
-/// in hand with Update count, the bank accounts used for UPI, and the credit
+/// in hand with Update cash, the bank accounts used for UPI, and the credit
 /// cards, each with what it spent this month. Tapping one offers Make default
 /// and Remove.
 ///
@@ -79,48 +80,44 @@ class AccountsSheet extends ConsumerWidget {
       );
     }
 
-    return SizedBox(
-      // One height from the first frame; a short screen gets what fits.
-      height: MediaQuery.sizeOf(context).height * 0.86,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Semantics(
-                      header: true,
-                      child: Text('Accounts and cards', style: LoopdType.title.copyWith(color: c.textPrimary)),
-                    ),
-                    const SizedBox(height: LoopdSpace.xs),
-                    Text(
-                      'The last four digits link each SMS to the right one.',
-                      style: LoopdType.caption.copyWith(color: c.textSecondary, fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Semantics(
+                    header: true,
+                    child: Text('Accounts and cards', style: LoopdType.title.copyWith(color: c.textPrimary)),
+                  ),
+                  const SizedBox(height: LoopdSpace.xs),
+                  Text(
+                    'The last four digits link each SMS to the right one.',
+                    style: LoopdType.caption.copyWith(color: c.textSecondary, fontWeight: FontWeight.w500),
+                  ),
+                ],
               ),
-              const SizedBox(width: LoopdSpace.md),
-              LoopdRoundButton(
-                icon: Icons.close_rounded,
-                label: 'Close',
-                size: 40,
-                background: c.surfaceRaised,
-                foreground: c.textPrimary,
-                onTap: () => Navigator.of(context).pop(),
-              ),
-            ],
-          ),
-          const SizedBox(height: LoopdSpace.lg),
-          Expanded(
-            child: AnimatedSwitcher(duration: LoopdMotion.of(context).quick, child: body),
-          ),
-        ],
-      ),
+            ),
+            const SizedBox(width: LoopdSpace.md),
+            LoopdRoundButton(
+              icon: Icons.close_rounded,
+              label: 'Close',
+              size: 40,
+              background: c.surfaceRaised,
+              foreground: c.textPrimary,
+              onTap: () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
+        const SizedBox(height: LoopdSpace.lg),
+        Expanded(
+          child: AnimatedSwitcher(duration: LoopdMotion.of(context).quick, child: body),
+        ),
+      ],
     );
   }
 }
@@ -157,7 +154,9 @@ class _AccountsList extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: LoopdSpace.sm),
       children: [
         _SectionHeader(
-          title: 'Cash in hand',
+          // "Cash", not "Cash in hand": the amount on the right is cash
+          // spending, not the balance (owner, 18 Nov 2026).
+          title: 'Cash',
           total: '${formatRupees(spending[SystemAccounts.cash] ?? 0)} in $monthName',
           color: c.cash,
         ),
@@ -299,7 +298,7 @@ class _CashCard extends StatelessWidget {
             const SizedBox(width: LoopdSpace.md),
             LoopdPressable(
               onTap: onUpdate,
-              label: 'Update count',
+              label: 'Update cash',
               child: Container(
                 height: LoopdSize.minTouch,
                 padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -308,7 +307,7 @@ class _CashCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(LoopdRadius.pill),
                   border: Border.all(color: c.cash, width: 1.5),
                 ),
-                child: Text('Update count', style: LoopdType.small.copyWith(color: c.cash)),
+                child: Text('Update cash', style: LoopdType.small.copyWith(color: c.cash)),
               ),
             ),
           ],
@@ -384,7 +383,10 @@ class _BankRow extends StatelessWidget {
                             style: LoopdType.bodyStrong.copyWith(color: c.textPrimary),
                           ),
                         ),
-                        if (bank.isDefault) ...[const SizedBox(width: LoopdSpace.sm), const _DefaultPill()],
+                        if (bank.isDefault) ...[
+                          const SizedBox(width: LoopdSpace.sm),
+                          AccountTag.defaultFor(AccountKind.bank, c),
+                        ],
                       ],
                     ),
                     const SizedBox(height: LoopdSpace.xxs),
@@ -416,29 +418,6 @@ class _BankRow extends StatelessWidget {
 
 /// The Default pill next to a nickname: green on a bank row; on a card
 /// face, solid white with the card's colour, so it stands out on any bank.
-class _DefaultPill extends StatelessWidget {
-  const _DefaultPill({this.onCard});
-
-  /// The card's colour, when the pill sits on a credit card.
-  final Color? onCard;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.colors;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: LoopdSpace.sm, vertical: LoopdSpace.xxs),
-      decoration: BoxDecoration(
-        color: onCard == null ? c.moneyTint : const Color(0xFFFFFFFF),
-        borderRadius: BorderRadius.circular(LoopdRadius.pill),
-      ),
-      child: Text(
-        'Default',
-        style: LoopdType.micro.copyWith(color: onCard ?? c.money, fontWeight: FontWeight.w800),
-      ),
-    );
-  }
-}
-
 /// A credit card drawn as a card in its bank's colour.
 class _CreditCard extends StatelessWidget {
   const _CreditCard({required this.card, required this.spent});
@@ -485,7 +464,7 @@ class _CreditCard extends StatelessWidget {
                           style: LoopdType.heading.copyWith(color: _white, fontSize: 18),
                         ),
                       ),
-                      if (card.isDefault) ...[const SizedBox(width: LoopdSpace.sm), _DefaultPill(onCard: colour)],
+                      if (card.isDefault) ...[const SizedBox(width: LoopdSpace.sm), AccountTag.onCard(colour)],
                     ],
                   ),
                 ),

@@ -16,7 +16,7 @@ The files in this folder are the source of that canvas, kept in git so every rev
 | 3 | Add expense, UPI | 4 | Switch method, account and category |
 | 3b | Add expense, Credit Card | 4 | Same form with Credit Card chosen |
 | 3c | Add expense, Cash | 4 | Same form with Cash chosen: Cash in hand and what is left after this expense |
-| 4 | Accounts and cards | 4 | Cash in hand at the top, with Update count |
+| 4 | Accounts and cards | 4 | Cash in hand at the top, with Update cash |
 | 4b | Add bank account (sheet, searching "hd") | 4 | Type to search banks, pick one, nickname, last four digits, default; live preview |
 | 4c | Add credit card (sheet, bank chosen) | 4 | Same sheet for a card |
 | 5 | Lending: person page | 6 | |
@@ -170,7 +170,7 @@ Not a review round: these changes come from the owner's answers to the open poin
 | Answer | Change |
 | --- | --- |
 | Track cash | Add expense has a third method, **Cash** (3c). Choosing it replaces the account list with Cash in hand, showing the balance and what is left after this expense |
-| Show cash in hand | Accounts and cards (4) opens with a Cash in hand card: balance, the last ATM withdrawal and an Update count button. Today's Spending card splits into UPI, Credit Card and Cash, with a Cash in hand row that opens Accounts |
+| Show cash in hand | Accounts and cards (4) opens with a Cash in hand card: balance, the last ATM withdrawal and an Update cash button. Today's Spending card splits into UPI, Credit Card and Cash, with a Cash in hand row that opens Accounts |
 | Cash from the ATM | The Review Inbox (2) has an ATM withdrawal card with a Cash chip and "Moves to Cash in hand". Looks Good moves the money; it is not spending. Today's badge reads 5 New |
 | Travel times follow the trip | Ticket details (6b, 6c) show the four stages at 24 hours, 12 hours, 3 hours and 15 minutes before departure. The "Travel reminder times" row is removed from More |
 | Task times are the owner's choice | Task reminders (10g) has a "Daily summary at" choice (07:00, 08:00, 09:00, 21:00). Quiet hours now say they apply to tasks only; travel and payment alerts still come |
@@ -213,16 +213,31 @@ Built from the mockups, with these additions for a phase where no features exist
 
 Built from screens 4, 4b and 4c, with these additions the mockups do not show:
 
-- **A sheet, not a page** (owner, 18 Nov 2026; the mockup draws screen 4 as a full page). It opens from the Accounts and cards row in More, which shows no count (the mockup's "4 · 5" is dropped), and Today and the Money tab will open the same sheet (`showAccountsSheet`). It is a tall sheet over the whole app, tab bar included, with a title, the subtitle and a Close button instead of Back. It keeps one height from the start and shows its list only once everything has loaded, so nothing jumps into place. Close it to switch tabs, so More always comes back as More. The Add, Update count and account sheets open on top of it.
+- **The section above the cash card is titled "Cash"**, not "Cash in hand" (owner, 18 Nov 2026), because the amount on its right ("₹255 in Nov") is this month's cash spending, while the card shows the balance.
+- **Negative amounts** put the minus after the ₹: ₹−305, not −₹305 (owner, 18 Nov 2026).
+- **A sheet, not a page** (owner, 18 Nov 2026; the mockup draws screen 4 as a full page). It opens from the Accounts and cards row in More, which shows no count (the mockup's "4 · 5" is dropped), and Today and the Money tab will open the same sheet (`showAccountsSheet`). It is a tall sheet over the whole app, tab bar included, with a title, the subtitle and a Close button instead of Back. It keeps one height from the start and shows its list only once everything has loaded, so nothing jumps into place. Close it to switch tabs, so More always comes back as More. The Add, Update cash and account sheets open on top of it.
 - **Every sheet opens over the tab bar** (owner, 18 Nov 2026), wherever it is opened from, so no sheet stays behind on a tab you left.
 - **Cash in hand before the first count:** the card shows ₹0 and "Count your wallet to set it" (owner, 18 Nov 2026). The line under the amount shows the newer of the last count ("Counted 18 Nov") and the last money in from a bank ("₹2,000 from ATM · 12 Nov"). A cash expense does not change that line.
-- **Update count:** a sheet with one large amount field. Before saving it shows what Loopd has and that the count replaces it ("₹150 less than Loopd has. Your count replaces it; the difference is not spending."). There is no adjustment (owner, 18 Nov 2026).
+- **Update cash** (named Update count in the mockup; owner, 18 Nov 2026): a sheet with one large amount field and a plain Save. Before saving it shows what Loopd has and that the count replaces it ("₹150 less than Loopd has. Your count replaces it; the difference is not spending."). There is no adjustment (owner, 18 Nov 2026).
 - **Tapping an account or card:** a small sheet with its bank, digits and sender code, "Make default" and a red "Remove". Remove asks once more and says the past expenses stay under the name.
 - **Add sheet:** the last four digits are required; the nickname is optional and falls back to the bank's name. The default switch starts off, even for the first one (owner, 18 Nov 2026). The type switch slides its coloured half across to the tapped side. Searching "sbi" finds "State Bank of India (SBI)". A missing bank is offered as a coloured "Add “Zeta Bank” as a new bank" row; once chosen, its card is grey and a soft strip says its SMS are not linked yet but expenses can be added by hand. A listed bank gets the same strip in the sheet's colour, naming its sender code. The arrow and a tap outside a field put the keyboard away. The last four digits must be new among bank accounts, and separately among cards, whatever the bank (owner, 18 Nov 2026): as soon as four digits that are taken are typed, a red line says "Primary already ends ••2210. Each bank account needs its own last four digits." and Add stays off. A bank account and a card may share digits. Form errors use one shared look, `LoopdErrorNote` (owner, 18 Nov 2026): a soft red box with a red border and an error icon on the left.
 - **Empty sections:** with no accounts or cards, only the dashed Add button shows, and the section total is hidden.
 - **Default on a credit card:** a solid white "Default" pill next to the nickname, in the card's colour, so it shows on any bank colour (owner, 18 Nov 2026).
 - **Capture button:** steps aside while any sheet or dialog is open, on every tab (owner, 18 Nov 2026).
 - **Toasts** ("Added Savings", "Cash in hand is now ₹2,350") slide down at the top of the screen, under the status bar, over pages and sheets alike (owner, 18 Nov 2026). The Review mockup's toast with Undo sits at the bottom; when the Review Inbox is built (Phase 3) it moves to the top too.
+
+## Phase 2, part 3: the expense form (18 Nov 2026)
+
+Built from screens 3, 3b and 3c (`AddExpense.dc.html`, add mode), with these changes:
+
+- **A tall sheet, not a page** (owner, 18 Nov 2026), like Accounts and cards: a title with Close on the right instead of the mockup's centred title and X on the left. It covers the tab bar, keeps one height from the start and draws the form only once the accounts, cards, Cash in hand and categories have loaded. The capture sheet's Expense shortcut closes the capture sheet and opens this one.
+- **Save** sits under a hairline at the bottom of the sheet and stays above the keyboard. It reads "Save ₹250" once an amount is typed and stays faded until there is an amount, an account or card, and a category.
+- **The account or card** starts on the default; with no default and only one account, on that one; otherwise nothing is chosen until you tap one. With none at all, the list is replaced by a line ("No bank accounts yet. UPI is paid from one.") and the dashed Add button, which opens the Add sheet on top.
+- **Category** shows every category in the three-column grid (the mockup shows six); the category sheet arrives in part 4. Nothing is chosen at first. A long name, such as Subscriptions, shrinks a little to fit.
+- **Date and time** reads "Today, 10:29 am", "Yesterday, 9:15 pm" or "13 Nov, 10:29 am", and opens the date picker, then the time picker. A time still to come is refused with a red note.
+- **The amount** is grouped as you type (1,23,456), with at most two decimals.
+- **Default pill** (owner, 18 Nov 2026): the same pill as on Accounts and cards, green for a bank account and violet for a card, instead of the mockup's grey tag. On the chosen row, whose background is already that tint, the pill sits on the plain surface so it still shows. An account removed since an expense was saved shows a grey "Removed" pill.
+- **Undo:** after a save, a toast at the top says "Saved ₹250 · Food" with Undo for four seconds. Editing an expense (the same sheet, titled "Edit expense") adds a red delete button next to Close; Delete has Undo too. Expenses are opened for editing from the Money tab's list once it is built (part 5).
 
 ## Review of the Phase 1 screens (17 Nov 2026)
 

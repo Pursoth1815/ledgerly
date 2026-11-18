@@ -10,6 +10,7 @@ import '../../../design_system/components/loopd_button.dart';
 import '../../../design_system/components/loopd_error_note.dart';
 import '../../../design_system/components/loopd_pressable.dart';
 import '../../../design_system/components/loopd_round_button.dart';
+import '../../../design_system/components/loopd_segmented.dart';
 import '../../../design_system/components/loopd_sheet.dart';
 import '../../../design_system/components/loopd_switch.dart';
 import '../../../design_system/loopd_colors.dart';
@@ -17,7 +18,7 @@ import '../../../design_system/loopd_motion.dart';
 import '../../../design_system/loopd_spacing.dart';
 import '../../../design_system/loopd_typography.dart';
 import 'account_look.dart';
-import 'accounts_providers.dart';
+import 'providers/accounts_providers.dart';
 
 /// Opens the Add bank account or Add credit card sheet (mockup
 /// `AddAccount.dc.html`, screens 4b and 4c). Returns the saved nickname, or
@@ -198,7 +199,14 @@ class _AddAccountSheetState extends ConsumerState<AddAccountSheet> {
             ],
           ),
           const SizedBox(height: LoopdSpace.lg),
-          _TypeSwitch(kind: _kind, onChanged: _setKind),
+          LoopdSegmented<AccountKind>(
+            segments: [
+              LoopdSegment(value: AccountKind.bank, label: 'Bank account', color: c.money),
+              LoopdSegment(value: AccountKind.creditCard, label: 'Credit card', color: c.creditCard),
+            ],
+            selected: _kind,
+            onChanged: _setKind,
+          ),
           const SizedBox(height: LoopdSpace.lg),
           _CardPreview(
             colour: bankColour(_bankName, c),
@@ -244,75 +252,6 @@ class _AddAccountSheetState extends ConsumerState<AddAccountSheet> {
           if (error != null) ...[const SizedBox(height: LoopdSpace.sm), LoopdErrorNote(error)],
           const SizedBox(height: LoopdSpace.xl),
           LoopdButton(label: _isCard ? 'Add card' : 'Add account', onTap: ready ? _save : null),
-        ],
-      ),
-    );
-  }
-}
-
-/// Bank account or Credit card, as two halves of one pill. The active half
-/// slides across to the one you tap, changing colour on the way.
-class _TypeSwitch extends StatelessWidget {
-  const _TypeSwitch({required this.kind, required this.onChanged});
-
-  final AccountKind kind;
-  final ValueChanged<AccountKind> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.colors;
-    final motion = LoopdMotion.of(context);
-    final isCard = kind == AccountKind.creditCard;
-    Widget half(String label, AccountKind value) {
-      final selected = kind == value;
-      return Expanded(
-        child: Semantics(
-          selected: selected,
-          child: LoopdPressable(
-            onTap: () => onChanged(value),
-            label: label,
-            child: SizedBox(
-              height: 42,
-              child: Center(
-                child: AnimatedDefaultTextStyle(
-                  duration: motion.standard,
-                  style: LoopdType.label.copyWith(
-                    color: selected ? c.onAccent : c.textSecondary,
-                    fontWeight: FontWeight.w800,
-                  ),
-                  child: Text(label),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    return Container(
-      padding: const EdgeInsets.all(LoopdSpace.xs),
-      decoration: BoxDecoration(color: c.surfaceRaised, borderRadius: BorderRadius.circular(18)),
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: AnimatedAlign(
-              alignment: isCard ? Alignment.centerRight : Alignment.centerLeft,
-              duration: motion.emphasis,
-              curve: Curves.easeOutCubic,
-              child: FractionallySizedBox(
-                widthFactor: 0.5,
-                heightFactor: 1,
-                child: AnimatedContainer(
-                  duration: motion.emphasis,
-                  decoration: BoxDecoration(
-                    color: isCard ? c.creditCard : c.money,
-                    borderRadius: BorderRadius.circular(LoopdRadius.tile),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Row(children: [half('Bank account', AccountKind.bank), half('Credit card', AccountKind.creditCard)]),
         ],
       ),
     );

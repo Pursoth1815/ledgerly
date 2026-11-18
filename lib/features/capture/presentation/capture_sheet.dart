@@ -14,11 +14,24 @@ import '../../../design_system/loopd_typography.dart';
 /// input, five shortcuts and three ready questions. Understanding what is
 /// typed (the offline assistant's rules, never called AI) arrives in
 /// Phase 9; the shortcuts open their forms as those are built.
-Future<void> showCaptureSheet(BuildContext context) =>
-    showLoopdSheet<void>(context: context, builder: (_) => const _CaptureSheet());
+///
+/// [shortcuts] says what each built shortcut opens. `app/` passes them in,
+/// because the forms belong to other features (architecture rule 3). A
+/// shortcut closes this sheet and then runs; one without an entry says which
+/// phase builds it.
+Future<void> showCaptureSheet(BuildContext context, {Map<CaptureShortcut, VoidCallback> shortcuts = const {}}) =>
+    showLoopdSheet<void>(
+      context: context,
+      builder: (_) => _CaptureSheet(shortcuts: shortcuts),
+    );
+
+/// The five "Or start from" shortcuts, in the mockup's order.
+enum CaptureShortcut { expense, lent, trip, note, task }
 
 class _CaptureSheet extends StatefulWidget {
-  const _CaptureSheet();
+  const _CaptureSheet({required this.shortcuts});
+
+  final Map<CaptureShortcut, VoidCallback> shortcuts;
 
   @override
   State<_CaptureSheet> createState() => _CaptureSheetState();
@@ -70,15 +83,25 @@ class _CaptureSheetState extends State<_CaptureSheet> {
           const SizedBox(height: 10),
           Row(
             children: [
-              for (final (label, color, icon, phase) in [
-                ('Expense', c.money, Icons.currency_rupee_rounded, 2),
-                ('Lent', c.lending, Icons.handshake_outlined, 4),
-                ('Trip', c.travel, Icons.confirmation_number_outlined, 5),
-                ('Note', c.notes, Icons.sticky_note_2_outlined, 6),
-                ('Task', c.task, Icons.check_circle_outline_rounded, 6),
+              for (final (shortcut, label, color, icon, phase) in [
+                (CaptureShortcut.expense, 'Expense', c.money, Icons.currency_rupee_rounded, 2),
+                (CaptureShortcut.lent, 'Lent', c.lending, Icons.handshake_outlined, 4),
+                (CaptureShortcut.trip, 'Trip', c.travel, Icons.confirmation_number_outlined, 5),
+                (CaptureShortcut.note, 'Note', c.notes, Icons.sticky_note_2_outlined, 6),
+                (CaptureShortcut.task, 'Task', c.task, Icons.check_circle_outline_rounded, 6),
               ])
                 Expanded(
-                  child: _Shortcut(label: label, color: color, icon: icon, onTap: () => soon(label, phase)),
+                  child: _Shortcut(
+                    label: label,
+                    color: color,
+                    icon: icon,
+                    onTap: () {
+                      final open = widget.shortcuts[shortcut];
+                      if (open == null) return soon(label, phase);
+                      Navigator.of(context).pop();
+                      open();
+                    },
+                  ),
                 ),
             ],
           ),

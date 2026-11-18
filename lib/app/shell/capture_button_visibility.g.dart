@@ -48,16 +48,16 @@ final class CaptureButtonVisibleProvider extends $FunctionalProvider<bool, bool,
 
 String _$captureButtonVisibleHash() => r'8ce0b02ac63cf83306f57c43b9362235871124ed';
 
-/// The path of the page on screen, such as `/more/accounts`. The router
+/// The path of the page on screen, such as `/more`. The router
 /// keeps it current.
 
 @ProviderFor(ShellLocation)
 final shellLocationProvider = ShellLocationProvider._();
 
-/// The path of the page on screen, such as `/more/accounts`. The router
+/// The path of the page on screen, such as `/more`. The router
 /// keeps it current.
 final class ShellLocationProvider extends $NotifierProvider<ShellLocation, String> {
-  /// The path of the page on screen, such as `/more/accounts`. The router
+  /// The path of the page on screen, such as `/more`. The router
   /// keeps it current.
   ShellLocationProvider._()
     : super(
@@ -85,7 +85,7 @@ final class ShellLocationProvider extends $NotifierProvider<ShellLocation, Strin
 
 String _$shellLocationHash() => r'fd4b927622956ba7775d76bd1d82ce12c0dd9ab1';
 
-/// The path of the page on screen, such as `/more/accounts`. The router
+/// The path of the page on screen, such as `/more`. The router
 /// keeps it current.
 
 abstract class _$ShellLocation extends $Notifier<String> {

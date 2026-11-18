@@ -119,6 +119,49 @@ class LedgerAccount {
   final bool isDefault;
 }
 
+/// An expense category as screens show it: its name, a colour index into
+/// the category palette (0 to 7) and an icon key, such as food or bus.
+class LedgerCategory {
+  const LedgerCategory({required this.id, required this.name, required this.colour, required this.icon});
+
+  final String id;
+  final String name;
+  final int colour;
+  final String icon;
+}
+
+/// A saved expense, as the expense form loads it for editing.
+class ExpenseRecord {
+  const ExpenseRecord({
+    required this.id,
+    required this.revision,
+    required this.amountPaise,
+    required this.method,
+    required this.fundingAccountId,
+    required this.categoryId,
+    required this.occurredAt,
+    this.channel,
+    this.merchant,
+    this.note,
+  });
+
+  final String id;
+
+  /// The revision on screen; undo needs it to know nothing changed since.
+  final int revision;
+  final int amountPaise;
+
+  /// As stored, which may be a bank-only method such as debit card; screens
+  /// show [PaymentMethod.shownAs].
+  final PaymentMethod method;
+  final String fundingAccountId;
+  final String categoryId;
+  final DateTime occurredAt;
+  final String? channel;
+  final String? merchant;
+  final String? note;
+}
+
 /// A transaction as the engine checks it before writing: its postings by
 /// account (+ in, − out), which always sum to zero.
 class LedgerEntry {

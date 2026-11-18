@@ -4,6 +4,7 @@ import 'package:loopd/app/config/app_config.dart';
 import 'package:loopd/app/shell/app_shell.dart';
 import 'package:loopd/app/shell/loopd_tab_bar.dart';
 import 'package:loopd/design_system/loopd_colors.dart';
+import 'package:loopd/features/expenses/expenses.dart';
 
 import '../../support/pump_loopd_app.dart';
 
@@ -57,6 +58,24 @@ void main() {
     }
   });
 
+  testWidgets("the capture sheet's Expense shortcut opens the expense form in its place", (tester) async {
+    await pumpLoopdApp(tester);
+    await tester.tap(find.bySemanticsLabel('Add anything'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.bySemanticsLabel('New Expense'));
+    await tester.pumpAndSettle();
+    expect(find.text('Or start from'), findsNothing, reason: 'the capture sheet closes');
+    expect(find.text('Add expense'), findsOneWidget);
+    expect(find.byKey(ExpenseSheet.formKey), findsOneWidget, reason: 'loaded by the time it is up');
+    expect(find.text('No bank accounts yet. UPI is paid from one.'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('+ Add bank account'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('+ Add bank account'));
+    await tester.pumpAndSettle();
+    expect(find.text('Add bank account'), findsWidgets, reason: 'the Add sheet opens on top');
+  });
+
   group('the capture button steps aside while a sheet is open', () {
     Finder tappableButton() => find.byType(CaptureButton).hitTestable();
 
@@ -79,7 +98,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(tappableButton(), findsNothing, reason: 'Accounts and cards is a sheet');
 
-      for (final opener in ['+ Add bank account', 'Update count']) {
+      for (final opener in ['+ Add bank account', 'Update cash']) {
         await tester.ensureVisible(find.text(opener));
         await tester.pumpAndSettle();
         await tester.tap(find.text(opener));

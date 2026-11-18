@@ -221,6 +221,27 @@ class LoopdColors extends ThemeExtension<LoopdColors> {
   LoopdColors copyWith() => this;
 }
 
+/// The eight category colours (mockup `CategorySheet.dc.html`). A category
+/// stores an index (0 to 7) into one of these. They are the same in both
+/// themes; a chip shows them as a dot or a ring, never as text.
+abstract final class LoopdCategoryColours {
+  /// Expense categories: bright, so they read on dark and light.
+  static const expense = <Color>[
+    Color(0xFFFF8A4C),
+    Color(0xFFF472B6),
+    Color(0xFFEAB308),
+    Color(0xFF60A5FA),
+    Color(0xFFA78BFA),
+    Color(0xFF22D3EE),
+    Color(0xFF2DD4BF),
+    Color(0xFFF97316),
+  ];
+
+  /// The colour for a stored [index]; an index out of range falls back to
+  /// the first colour.
+  static Color expenseAt(int index) => expense[index >= 0 && index < expense.length ? index : 0];
+}
+
 extension LoopdColorsContext on BuildContext {
   /// The Loopd palette for the current theme.
   LoopdColors get colors => Theme.of(this).extension<LoopdColors>()!;

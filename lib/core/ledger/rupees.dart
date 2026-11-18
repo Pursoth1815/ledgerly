@@ -1,18 +1,20 @@
 /// Rupee amounts as Loopd shows them: Indian digit grouping (₹1,23,456),
-/// whole rupees without decimals, and a true minus sign.
+/// whole rupees without decimals, and a true minus sign after the ₹ (₹−200;
+/// owner, 18 Nov 2026).
 library;
 
-/// [paise] as text, such as ₹2,350, ₹62.50 or −₹200.
+/// [paise] as text, such as ₹2,350, ₹62.50 or ₹−200.
 String formatRupees(int paise) {
   final sign = paise < 0 ? '−' : '';
   final abs = paise.abs();
-  final rupees = _group((abs ~/ 100).toString());
+  final rupees = groupIndianDigits((abs ~/ 100).toString());
   final rest = abs % 100;
-  return rest == 0 ? '$sign₹$rupees' : '$sign₹$rupees.${rest.toString().padLeft(2, '0')}';
+  return rest == 0 ? '₹$sign$rupees' : '₹$sign$rupees.${rest.toString().padLeft(2, '0')}';
 }
 
-/// "1234567" as "12,34,567": the last three digits, then pairs.
-String _group(String digits) {
+/// "1234567" as "12,34,567": the last three digits, then pairs. Used while
+/// an amount is typed, too.
+String groupIndianDigits(String digits) {
   if (digits.length <= 3) return digits;
   final head = digits.substring(0, digits.length - 3);
   final tail = digits.substring(digits.length - 3);

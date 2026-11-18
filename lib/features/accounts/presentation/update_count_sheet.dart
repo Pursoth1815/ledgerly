@@ -10,9 +10,9 @@ import '../../../design_system/components/loopd_sheet.dart';
 import '../../../design_system/loopd_colors.dart';
 import '../../../design_system/loopd_spacing.dart';
 import '../../../design_system/loopd_typography.dart';
-import 'accounts_providers.dart';
+import 'providers/accounts_providers.dart';
 
-/// Opens Update count for Cash in hand (proposal section 4). Returns a short
+/// Opens Update cash for Cash in hand (proposal section 4). Returns a short
 /// message saying what was saved, or null when closed.
 Future<String?> showUpdateCountSheet(BuildContext context) =>
     showLoopdSheet<String>(context: context, builder: (_) => const UpdateCountSheet());
@@ -78,7 +78,7 @@ class _UpdateCountSheetState extends ConsumerState<UpdateCountSheet> {
               Expanded(
                 child: Semantics(
                   header: true,
-                  child: Text('Update count', style: LoopdType.title.copyWith(color: c.textPrimary)),
+                  child: Text('Update cash', style: LoopdType.title.copyWith(color: c.textPrimary)),
                 ),
               ),
               LoopdRoundButton(
@@ -134,7 +134,7 @@ class _UpdateCountSheetState extends ConsumerState<UpdateCountSheet> {
             style: LoopdType.small.copyWith(color: c.textSecondary, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: LoopdSpace.xl),
-          LoopdButton(label: 'Save count', onTap: ready ? () => _save(typed) : null),
+          LoopdButton(label: 'Save', onTap: ready ? () => _save(typed) : null),
         ],
       ),
     );

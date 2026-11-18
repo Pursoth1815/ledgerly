@@ -9,7 +9,7 @@ void main() {
     expect(formatRupees(1424000), '₹14,240');
     expect(formatRupees(12345678900), '₹12,34,56,789');
     expect(formatRupees(6250), '₹62.50');
-    expect(formatRupees(-20000), '−₹200');
+    expect(formatRupees(-20000), '₹−200');
   });
 
   test('typed rupees become paise', () {

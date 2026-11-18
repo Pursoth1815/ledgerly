@@ -49,7 +49,7 @@ Code depends downward only, and there are no cycles. `app/` is the only place th
 | `lib/core/file_store/` | Encrypted vault and ticket files | | Phase 5 |
 | `lib/design_system/` | Tokens (`loopd_colors`, `loopd_typography`, `loopd_spacing`, `loopd_motion`), the theme, and generic components | Domain types, providers, data access | [1] |
 | `assets/fonts/` | Bundled Plus Jakarta Sans 2.7.1 and JetBrains Mono 2.304, with their OFL licences | Fonts fetched at run time | [1] |
-| `lib/features/<name>/` | One module: `<name>.dart` (public API) plus `domain/`, `data/`, `presentation/` only where needed. So far `today`, `capture` (the sheet's shell) and `accounts` (accounts, cards and Cash in hand) | Another feature's internals; writes to another owner's tables | [1] |
+| `lib/features/<name>/` | One module: `<name>.dart` (public API) plus `domain/`, `data/`, `presentation/` only where needed. So far `today`, `capture` (the sheet's shell; `app/` passes in what each shortcut opens), `accounts` (accounts, cards and Cash in hand) and `expenses` (the expense form, to add or edit) | Another feature's internals; writes to another owner's tables | [1] |
 | `packages/sms_parser/`, `packages/command_parser/` | Pure Dart parsers with fixture tests | Flutter, the database, app imports | Phases 3 and 9 |
 | `pigeons/` | The Pigeon interface definition | | [0A] |
 | `tool/` | `check_architecture.dart`, `check_apk_permissions.sh` | App code | [0A] |
@@ -84,6 +84,7 @@ How features talk to each other:
 - Providers are declared next to the class they provide; the class itself takes its dependencies in its constructor and never sees `ref`.
 - Infrastructure is `keepAlive`. The database and the config are opened in `bootstrap()` and injected with `overrideWithValue`.
 - Screen state uses auto-dispose providers, with a family for anything looked up by id.
+- A feature's screen providers (the read models its screens watch) go in `lib/features/<name>/presentation/providers/`, one file per feature or per screen, such as `accounts/presentation/providers/accounts_providers.dart` (owner, 18 Nov 2026).
 - Live queries are stream providers.
 - Business rules live in the domain or in an engine, never in a widget or a notifier.
 - Tests use `ProviderScope` or a `ProviderContainer` with overrides.

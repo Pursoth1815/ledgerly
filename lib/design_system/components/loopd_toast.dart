@@ -12,12 +12,17 @@ import '../loopd_typography.dart';
 /// tab bar). It shows over every page and sheet, one at a time: a new toast
 /// replaces the one on screen. It leaves by itself after two seconds, or
 /// when tapped or swiped up.
-void showLoopdToast(BuildContext context, String message) {
+///
+/// With an [action], such as Undo after a save or a delete (mockup
+/// `Review.dc.html`), it stays four seconds and shows the action on the
+/// right; tapping it runs [onAction] and closes the toast.
+void showLoopdToast(BuildContext context, String message, {String? action, VoidCallback? onAction}) {
+  assert((action == null) == (onAction == null), 'an action needs both a label and a callback');
   final overlay = Overlay.of(context, rootOverlay: true);
   _dismiss(_current);
   late final OverlayEntry entry;
   entry = OverlayEntry(
-    builder: (_) => _Toast(message: message, onGone: () => _dismiss(entry)),
+    builder: (_) => _Toast(message: message, action: action, onAction: onAction, onGone: () => _dismiss(entry)),
   );
   _current = entry;
   overlay.insert(entry);
@@ -38,9 +43,11 @@ void _dismiss(OverlayEntry? entry) {
 }
 
 class _Toast extends StatefulWidget {
-  const _Toast({required this.message, required this.onGone});
+  const _Toast({required this.message, required this.onGone, this.action, this.onAction});
 
   final String message;
+  final String? action;
+  final VoidCallback? onAction;
   final VoidCallback onGone;
 
   @override
@@ -49,6 +56,7 @@ class _Toast extends StatefulWidget {
 
 class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
   static const _shown = Duration(seconds: 2);
+  static const _shownWithAction = Duration(seconds: 4);
 
   late final AnimationController _slide = AnimationController(vsync: this);
   Timer? _timer;
@@ -63,7 +71,7 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
       ..reverseDuration = motion.quick;
     if (_slide.isDismissed && !_leaving) {
       _slide.forward();
-      _timer = Timer(_shown, _leave);
+      _timer = Timer(widget.action == null ? _shown : _shownWithAction, _leave);
     }
   }
 
@@ -110,17 +118,54 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
                     type: MaterialType.transparency,
                     child: Center(
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                        // The action's own 44 px touch area sets the height.
+                        padding: widget.action == null
+                            ? const EdgeInsets.symmetric(horizontal: 18, vertical: 12)
+                            : const EdgeInsets.fromLTRB(18, 0, 14, 0),
                         decoration: ShapeDecoration(
                           color: c.buttonFill,
                           shape: const StadiumBorder(),
                           shadows: const [BoxShadow(color: Color(0x33000000), blurRadius: 16, offset: Offset(0, 6))],
                         ),
-                        child: Text(
-                          widget.message,
-                          textAlign: TextAlign.center,
-                          style: LoopdType.label.copyWith(color: c.onButton),
-                        ),
+                        child: widget.action == null
+                            ? Text(
+                                widget.message,
+                                textAlign: TextAlign.center,
+                                style: LoopdType.label.copyWith(color: c.onButton),
+                              )
+                            : Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Flexible(
+                                    child: Text(widget.message, style: LoopdType.label.copyWith(color: c.onButton)),
+                                  ),
+                                  const SizedBox(width: LoopdSpace.md),
+                                  Semantics(
+                                    button: true,
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: () {
+                                        widget.onAction!();
+                                        _leave();
+                                      },
+                                      child: ConstrainedBox(
+                                        constraints: const BoxConstraints(minHeight: LoopdSize.minTouch),
+                                        child: Center(
+                                          child: Text(
+                                            widget.action!,
+                                            style: LoopdType.label.copyWith(
+                                              color: c.onButton,
+                                              fontWeight: FontWeight.w800,
+                                              decoration: TextDecoration.underline,
+                                              decorationColor: c.onButton,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                       ),
                     ),
                   ),

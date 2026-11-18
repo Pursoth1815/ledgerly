@@ -36,7 +36,7 @@ As of 2026-11-17. Stage reached: revision 3.2 of the proposal (architecture agre
 
 - Capture sheet: stays on every tab (option a). Confirmed on 17 Nov 2026 after trying the Phase 1 sheet on the phone.
 - Phone: Tecno Pova Curve 5G on Android 16, HiOS 16.3 (confirmed 17 Nov 2026). The minimum stays Android 15.
-- Cash: tracked. A third method, Cash, spends from one Cash in hand balance. ATM withdrawal SMS become Review Inbox cards that move money from the bank account to Cash in hand (a transfer, not spending). "Update count" sets Cash in hand to what you counted; a new count replaces the last one, and the difference is not spending or an adjustment (changed 18 Nov 2026). Debit-card, net-banking and auto-debit messages go to the Review Inbox under their bank account.
+- Cash: tracked. A third method, Cash, spends from one Cash in hand balance. ATM withdrawal SMS become Review Inbox cards that move money from the bank account to Cash in hand (a transfer, not spending). "Update cash" sets Cash in hand to what you counted; a new count replaces the last one, and the difference is not spending or an adjustment (changed 18 Nov 2026). Debit-card, net-banking and auto-debit messages go to the Review Inbox under their bank account.
 - On-device AI text features (ML Kit GenAI): not built. Listed as removed.
 - Reminder times: travel stages follow the departure time, with no clock times and no travel setting. Only task reminders use times the owner picks: the lead, the snooze, the daily summary of overdue and today's tasks, and quiet hours. Payment cards, travel stages and other alerts follow their own rules; quiet hours apply to tasks only.
 - Time: no limit. The day estimates size the work and are not a schedule.

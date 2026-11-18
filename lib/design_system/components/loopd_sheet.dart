@@ -11,30 +11,43 @@ import '../loopd_typography.dart';
 /// Every sheet opens on the app's root navigator, over the tab bar, wherever
 /// it is opened from: the tab bar cannot be tapped behind it, so a sheet never
 /// stays open on a tab you left. Close the sheet to switch tabs.
-Future<T?> showLoopdSheet<T>({required BuildContext context, required WidgetBuilder builder, String? title}) =>
-    showModalBottomSheet<T>(
-      context: context,
-      useRootNavigator: true,
-      isScrollControlled: true,
-      useSafeArea: true,
-      showDragHandle: false,
-      backgroundColor: context.colors.surface,
-      barrierColor: context.colors.scrim,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(LoopdRadius.sheet))),
-      builder: (context) => LoopdSheet(title: title, child: builder(context)),
-    );
+///
+/// A [tall] sheet, such as Accounts and cards or the expense form, keeps one
+/// height from its first frame, so content that loads or changes never makes
+/// it jump.
+Future<T?> showLoopdSheet<T>({
+  required BuildContext context,
+  required WidgetBuilder builder,
+  String? title,
+  bool tall = false,
+}) => showModalBottomSheet<T>(
+  context: context,
+  useRootNavigator: true,
+  isScrollControlled: true,
+  useSafeArea: true,
+  showDragHandle: false,
+  backgroundColor: context.colors.surface,
+  barrierColor: context.colors.scrim,
+  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(LoopdRadius.sheet))),
+  builder: (context) => LoopdSheet(title: title, tall: tall, child: builder(context)),
+);
 
 /// The inside of a sheet: the handle, an optional [title] and the content,
 /// with the mockups' 10 / 20 / 28 padding. A tap on the sheet outside a
 /// field or button closes the keyboard.
 class LoopdSheet extends StatelessWidget {
-  const LoopdSheet({required this.child, this.title, super.key});
+  const LoopdSheet({required this.child, this.title, this.tall = false, super.key});
+
+  /// The height of a tall sheet's content: most of the screen, leaving the
+  /// top in view so it still reads as a sheet. A short screen gets what fits.
+  static double tallHeight(BuildContext context) => MediaQuery.sizeOf(context).height * 0.88;
 
   /// Finds the grab handle in tests.
   static const handleKey = ValueKey('loopd-sheet-handle');
 
   final Widget child;
   final String? title;
+  final bool tall;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +78,9 @@ class LoopdSheet extends StatelessWidget {
                 Text(title!, style: LoopdType.title.copyWith(color: colors.textPrimary)),
                 const SizedBox(height: LoopdSpace.lg),
               ],
-              Flexible(child: child),
+              Flexible(
+                child: tall ? SizedBox(height: tallHeight(context), child: child) : child,
+              ),
             ],
           ),
         ),

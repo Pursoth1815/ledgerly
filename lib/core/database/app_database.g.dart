@@ -534,6 +534,15 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _bankNameMeta = const VerificationMeta('bankName');
+  @override
+  late final GeneratedColumn<String> bankName = GeneratedColumn<String>(
+    'bank_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _bankCodeMeta = const VerificationMeta('bankCode');
   @override
   late final GeneratedColumn<String> bankCode = GeneratedColumn<String>(
@@ -582,7 +591,7 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
     requiredDuringInsert: false,
   );
   @override
-  List<GeneratedColumn> get $columns => [id, kind, name, bankCode, last4, isDefault, createdAt, removedAt];
+  List<GeneratedColumn> get $columns => [id, kind, name, bankName, bankCode, last4, isDefault, createdAt, removedAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -606,6 +615,9 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
       context.handle(_nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     } else if (isInserting) {
       context.missing(_nameMeta);
+    }
+    if (data.containsKey('bank_name')) {
+      context.handle(_bankNameMeta, bankName.isAcceptableOrUnknown(data['bank_name']!, _bankNameMeta));
     }
     if (data.containsKey('bank_code')) {
       context.handle(_bankCodeMeta, bankCode.isAcceptableOrUnknown(data['bank_code']!, _bankCodeMeta));
@@ -636,6 +648,7 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
       id: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       kind: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}kind'])!,
       name: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      bankName: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}bank_name']),
       bankCode: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}bank_code']),
       last4: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}last4']),
       isDefault: attachedDatabase.typeMapping.read(DriftSqlType.bool, data['${effectivePrefix}is_default'])!,
@@ -659,7 +672,15 @@ class Account extends DataClass implements Insertable<Account> {
   /// bank, credit_card, cash, category, income, loan, adjustment, write_off,
   /// opening.
   final String kind;
+
+  /// The nickname, such as Primary or Kiwi; the plain name for built-in
+  /// accounts and categories.
   final String name;
+
+  /// The bank as chosen from the list or typed, such as Federal Bank (banks
+  /// and cards). Kept as text because two list entries can share one sender
+  /// code, and a bank typed by hand has none.
+  final String? bankName;
 
   /// The six-letter SMS sender code, such as FEDBNK (banks and cards).
   final String? bankCode;
@@ -675,6 +696,7 @@ class Account extends DataClass implements Insertable<Account> {
     required this.id,
     required this.kind,
     required this.name,
+    this.bankName,
     this.bankCode,
     this.last4,
     required this.isDefault,
@@ -687,6 +709,9 @@ class Account extends DataClass implements Insertable<Account> {
     map['id'] = Variable<String>(id);
     map['kind'] = Variable<String>(kind);
     map['name'] = Variable<String>(name);
+    if (!nullToAbsent || bankName != null) {
+      map['bank_name'] = Variable<String>(bankName);
+    }
     if (!nullToAbsent || bankCode != null) {
       map['bank_code'] = Variable<String>(bankCode);
     }
@@ -706,6 +731,7 @@ class Account extends DataClass implements Insertable<Account> {
       id: Value(id),
       kind: Value(kind),
       name: Value(name),
+      bankName: bankName == null && nullToAbsent ? const Value.absent() : Value(bankName),
       bankCode: bankCode == null && nullToAbsent ? const Value.absent() : Value(bankCode),
       last4: last4 == null && nullToAbsent ? const Value.absent() : Value(last4),
       isDefault: Value(isDefault),
@@ -720,6 +746,7 @@ class Account extends DataClass implements Insertable<Account> {
       id: serializer.fromJson<String>(json['id']),
       kind: serializer.fromJson<String>(json['kind']),
       name: serializer.fromJson<String>(json['name']),
+      bankName: serializer.fromJson<String?>(json['bankName']),
       bankCode: serializer.fromJson<String?>(json['bankCode']),
       last4: serializer.fromJson<String?>(json['last4']),
       isDefault: serializer.fromJson<bool>(json['isDefault']),
@@ -734,6 +761,7 @@ class Account extends DataClass implements Insertable<Account> {
       'id': serializer.toJson<String>(id),
       'kind': serializer.toJson<String>(kind),
       'name': serializer.toJson<String>(name),
+      'bankName': serializer.toJson<String?>(bankName),
       'bankCode': serializer.toJson<String?>(bankCode),
       'last4': serializer.toJson<String?>(last4),
       'isDefault': serializer.toJson<bool>(isDefault),
@@ -746,6 +774,7 @@ class Account extends DataClass implements Insertable<Account> {
     String? id,
     String? kind,
     String? name,
+    Value<String?> bankName = const Value.absent(),
     Value<String?> bankCode = const Value.absent(),
     Value<String?> last4 = const Value.absent(),
     bool? isDefault,
@@ -755,6 +784,7 @@ class Account extends DataClass implements Insertable<Account> {
     id: id ?? this.id,
     kind: kind ?? this.kind,
     name: name ?? this.name,
+    bankName: bankName.present ? bankName.value : this.bankName,
     bankCode: bankCode.present ? bankCode.value : this.bankCode,
     last4: last4.present ? last4.value : this.last4,
     isDefault: isDefault ?? this.isDefault,
@@ -766,6 +796,7 @@ class Account extends DataClass implements Insertable<Account> {
       id: data.id.present ? data.id.value : this.id,
       kind: data.kind.present ? data.kind.value : this.kind,
       name: data.name.present ? data.name.value : this.name,
+      bankName: data.bankName.present ? data.bankName.value : this.bankName,
       bankCode: data.bankCode.present ? data.bankCode.value : this.bankCode,
       last4: data.last4.present ? data.last4.value : this.last4,
       isDefault: data.isDefault.present ? data.isDefault.value : this.isDefault,
@@ -780,6 +811,7 @@ class Account extends DataClass implements Insertable<Account> {
           ..write('id: $id, ')
           ..write('kind: $kind, ')
           ..write('name: $name, ')
+          ..write('bankName: $bankName, ')
           ..write('bankCode: $bankCode, ')
           ..write('last4: $last4, ')
           ..write('isDefault: $isDefault, ')
@@ -790,7 +822,7 @@ class Account extends DataClass implements Insertable<Account> {
   }
 
   @override
-  int get hashCode => Object.hash(id, kind, name, bankCode, last4, isDefault, createdAt, removedAt);
+  int get hashCode => Object.hash(id, kind, name, bankName, bankCode, last4, isDefault, createdAt, removedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -798,6 +830,7 @@ class Account extends DataClass implements Insertable<Account> {
           other.id == this.id &&
           other.kind == this.kind &&
           other.name == this.name &&
+          other.bankName == this.bankName &&
           other.bankCode == this.bankCode &&
           other.last4 == this.last4 &&
           other.isDefault == this.isDefault &&
@@ -809,6 +842,7 @@ class AccountsCompanion extends UpdateCompanion<Account> {
   final Value<String> id;
   final Value<String> kind;
   final Value<String> name;
+  final Value<String?> bankName;
   final Value<String?> bankCode;
   final Value<String?> last4;
   final Value<bool> isDefault;
@@ -819,6 +853,7 @@ class AccountsCompanion extends UpdateCompanion<Account> {
     this.id = const Value.absent(),
     this.kind = const Value.absent(),
     this.name = const Value.absent(),
+    this.bankName = const Value.absent(),
     this.bankCode = const Value.absent(),
     this.last4 = const Value.absent(),
     this.isDefault = const Value.absent(),
@@ -830,6 +865,7 @@ class AccountsCompanion extends UpdateCompanion<Account> {
     required String id,
     required String kind,
     required String name,
+    this.bankName = const Value.absent(),
     this.bankCode = const Value.absent(),
     this.last4 = const Value.absent(),
     this.isDefault = const Value.absent(),
@@ -844,6 +880,7 @@ class AccountsCompanion extends UpdateCompanion<Account> {
     Expression<String>? id,
     Expression<String>? kind,
     Expression<String>? name,
+    Expression<String>? bankName,
     Expression<String>? bankCode,
     Expression<String>? last4,
     Expression<bool>? isDefault,
@@ -855,6 +892,7 @@ class AccountsCompanion extends UpdateCompanion<Account> {
       if (id != null) 'id': id,
       if (kind != null) 'kind': kind,
       if (name != null) 'name': name,
+      if (bankName != null) 'bank_name': bankName,
       if (bankCode != null) 'bank_code': bankCode,
       if (last4 != null) 'last4': last4,
       if (isDefault != null) 'is_default': isDefault,
@@ -868,6 +906,7 @@ class AccountsCompanion extends UpdateCompanion<Account> {
     Value<String>? id,
     Value<String>? kind,
     Value<String>? name,
+    Value<String?>? bankName,
     Value<String?>? bankCode,
     Value<String?>? last4,
     Value<bool>? isDefault,
@@ -879,6 +918,7 @@ class AccountsCompanion extends UpdateCompanion<Account> {
       id: id ?? this.id,
       kind: kind ?? this.kind,
       name: name ?? this.name,
+      bankName: bankName ?? this.bankName,
       bankCode: bankCode ?? this.bankCode,
       last4: last4 ?? this.last4,
       isDefault: isDefault ?? this.isDefault,
@@ -899,6 +939,9 @@ class AccountsCompanion extends UpdateCompanion<Account> {
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (bankName.present) {
+      map['bank_name'] = Variable<String>(bankName.value);
     }
     if (bankCode.present) {
       map['bank_code'] = Variable<String>(bankCode.value);
@@ -927,6 +970,7 @@ class AccountsCompanion extends UpdateCompanion<Account> {
           ..write('id: $id, ')
           ..write('kind: $kind, ')
           ..write('name: $name, ')
+          ..write('bankName: $bankName, ')
           ..write('bankCode: $bankCode, ')
           ..write('last4: $last4, ')
           ..write('isDefault: $isDefault, ')
@@ -3376,6 +3420,7 @@ typedef $$AccountsTableCreateCompanionBuilder = AccountsCompanion Function({
   required String id,
   required String kind,
   required String name,
+  Value<String?> bankName,
   Value<String?> bankCode,
   Value<String?> last4,
   Value<bool> isDefault,
@@ -3387,6 +3432,7 @@ typedef $$AccountsTableUpdateCompanionBuilder = AccountsCompanion Function({
   Value<String> id,
   Value<String> kind,
   Value<String> name,
+  Value<String?> bankName,
   Value<String?> bankCode,
   Value<String?> last4,
   Value<bool> isDefault,
@@ -3452,6 +3498,9 @@ class $$AccountsTableFilterComposer extends Composer<_$AppDatabase, $AccountsTab
   ColumnFilters<String> get kind => $composableBuilder(column: $table.kind, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get name => $composableBuilder(column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get bankName =>
+      $composableBuilder(column: $table.bankName, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get bankCode =>
       $composableBuilder(column: $table.bankCode, builder: (column) => ColumnFilters(column));
@@ -3539,6 +3588,9 @@ class $$AccountsTableOrderingComposer extends Composer<_$AppDatabase, $AccountsT
   ColumnOrderings<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get bankName =>
+      $composableBuilder(column: $table.bankName, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get bankCode =>
       $composableBuilder(column: $table.bankCode, builder: (column) => ColumnOrderings(column));
 
@@ -3568,6 +3620,8 @@ class $$AccountsTableAnnotationComposer extends Composer<_$AppDatabase, $Account
   GeneratedColumn<String> get kind => $composableBuilder(column: $table.kind, builder: (column) => column);
 
   GeneratedColumn<String> get name => $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get bankName => $composableBuilder(column: $table.bankName, builder: (column) => column);
 
   GeneratedColumn<String> get bankCode => $composableBuilder(column: $table.bankCode, builder: (column) => column);
 
@@ -3664,6 +3718,7 @@ class $$AccountsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> kind = const Value.absent(),
                 Value<String> name = const Value.absent(),
+                Value<String?> bankName = const Value.absent(),
                 Value<String?> bankCode = const Value.absent(),
                 Value<String?> last4 = const Value.absent(),
                 Value<bool> isDefault = const Value.absent(),
@@ -3674,6 +3729,7 @@ class $$AccountsTableTableManager
                 id: id,
                 kind: kind,
                 name: name,
+                bankName: bankName,
                 bankCode: bankCode,
                 last4: last4,
                 isDefault: isDefault,
@@ -3686,6 +3742,7 @@ class $$AccountsTableTableManager
                 required String id,
                 required String kind,
                 required String name,
+                Value<String?> bankName = const Value.absent(),
                 Value<String?> bankCode = const Value.absent(),
                 Value<String?> last4 = const Value.absent(),
                 Value<bool> isDefault = const Value.absent(),
@@ -3696,6 +3753,7 @@ class $$AccountsTableTableManager
                 id: id,
                 kind: kind,
                 name: name,
+                bankName: bankName,
                 bankCode: bankCode,
                 last4: last4,
                 isDefault: isDefault,

@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
@@ -26,7 +25,7 @@ final _log = Logger('app.background');
 Future<void> backgroundBootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
   DartPluginRegistrant.ensureInitialized();
-  configureLogging(debugOutput: kDebugMode);
+  configureLogging();
   final host = BackgroundHostApi();
 
   final directory = await getApplicationSupportDirectory();

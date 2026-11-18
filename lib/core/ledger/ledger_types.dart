@@ -85,6 +85,40 @@ abstract final class SystemAccounts {
   static const all = {cash, adjustment, opening, income};
 }
 
+/// Where a balance checkpoint came from.
+abstract final class CheckpointSource {
+  /// A balance checked in a bank or card app and typed in. It is compared
+  /// with the tracked balance, never applied.
+  static const manual = 'manual';
+
+  /// An Update count of Cash in hand. Cash has no bank to ask, so the latest
+  /// count is its balance from then on.
+  static const count = 'count';
+}
+
+/// A bank account or credit card as screens show it (proposal section 4).
+class LedgerAccount {
+  const LedgerAccount({
+    required this.id,
+    required this.kind,
+    required this.nickname,
+    required this.isDefault,
+    this.bankName,
+    this.bankCode,
+    this.last4,
+  });
+
+  final String id;
+  final AccountKind kind;
+  final String nickname;
+  final String? bankName;
+
+  /// The six-letter SMS sender code; empty for a bank typed by hand.
+  final String? bankCode;
+  final String? last4;
+  final bool isDefault;
+}
+
 /// A transaction as the engine checks it before writing: its postings by
 /// account (+ in, − out), which always sum to zero.
 class LedgerEntry {

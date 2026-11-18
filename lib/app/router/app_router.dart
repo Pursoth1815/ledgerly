@@ -7,6 +7,7 @@ import '../../design_system/gallery/component_gallery.dart';
 import '../../features/today/today.dart';
 import '../shell/app_shell.dart';
 import '../shell/app_tab.dart';
+import '../shell/capture_button_visibility.dart';
 import '../shell/more_page.dart';
 import '../shell/placeholder_page.dart';
 
@@ -16,14 +17,19 @@ part 'app_router.g.dart';
 /// built; they navigate to each other only by path.
 @Riverpod(keepAlive: true)
 GoRouter appRouter(Ref ref) {
+  // Every navigator reports its sheets and dialogs, so the capture button
+  // can step aside (capture_button_visibility.dart).
+  final overlays = ref.read(openOverlaysProvider.notifier);
   final router = GoRouter(
     initialLocation: RoutePaths.today,
+    observers: [overlays.observer()],
     routes: [
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => AppShell(navigationShell: navigationShell),
         branches: [
           for (final tab in AppTab.values)
             StatefulShellBranch(
+              observers: [overlays.observer()],
               routes: [
                 GoRoute(
                   path: tab.path,
@@ -41,6 +47,12 @@ GoRouter appRouter(Ref ref) {
       if (!kReleaseMode) GoRoute(path: RoutePaths.gallery, builder: (context, state) => const ComponentGallery()),
     ],
   );
-  ref.onDispose(router.dispose);
+  final location = ref.read(shellLocationProvider.notifier);
+  void track() => location.update(router.routerDelegate.currentConfiguration.uri.path);
+  router.routerDelegate.addListener(track);
+  ref.onDispose(() {
+    router.routerDelegate.removeListener(track);
+    router.dispose();
+  });
   return router;
 }

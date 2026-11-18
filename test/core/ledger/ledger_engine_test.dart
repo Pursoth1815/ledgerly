@@ -76,11 +76,11 @@ void main() {
       expect((await (db.select(db.accounts)..where((a) => a.id.equals(cash))).getSingle()).name, 'Cash in hand');
     });
 
-    test('the first bank and the first card become the defaults; one default per kind', () async {
+    test('nothing is a default until chosen; one default per kind', () async {
       final accounts = {for (final a in await db.select(db.accounts).get()) a.id: a};
-      expect(accounts[primary]!.isDefault, isTrue);
-      expect(accounts[savings]!.isDefault, isFalse);
-      expect(accounts[kiwi]!.isDefault, isTrue);
+      expect([primary, savings, kiwi].map((id) => accounts[id]!.isDefault), [false, false, false]);
+      await ledger.setDefault(primary);
+      await ledger.setDefault(kiwi);
       await ledger.setDefault(savings);
       final after = {for (final a in await db.select(db.accounts).get()) a.id: a};
       expect(after[primary]!.isDefault, isFalse);
@@ -336,10 +336,11 @@ void main() {
   });
 
   group('Cash in hand and balances', () {
-    test('the first Update count becomes the opening balance; later ones are adjustments', () async {
-      expect(await ledger.countCash(250000), CashCountResult.opening);
+    test('each Update count sets Cash in hand; a new count replaces the last', () async {
+      expect(await balance(cash), 0, reason: 'Cash in hand starts at ₹0');
+      await ledger.countCash(250000);
       expect(await balance(cash), 250000);
-      // Spent after the count (the clock says 17 Nov), so it lowers the count.
+      // Spent after the count (the clock says 17 Nov, 12:00), so it lowers it.
       await ledger.recordExpense(
         amountPaise: 4000,
         method: PaymentMethod.cash,
@@ -348,11 +349,32 @@ void main() {
         occurredAt: DateTime.utc(2026, 11, 17, 13),
       );
       expect(await balance(cash), 246000);
-      expect(await ledger.countCash(240000), CashCountResult.adjusted);
-      expect(await balance(cash), 240000);
-      expect(await balance(SystemAccounts.adjustment), 6000, reason: 'the ₹60 gap is an adjustment');
-      expect(await balance(food), 4000, reason: 'adjustments are never spending');
-      expect(await ledger.countCash(240000), CashCountResult.unchanged);
+      await ledger.countCash(240000, at: DateTime.utc(2026, 11, 17, 14));
+      expect(await balance(cash), 240000, reason: 'the new count replaces it');
+      expect(await balance(food), 4000, reason: 'the ₹60 gap is not spending');
+      expect(await balance(SystemAccounts.adjustment), 0, reason: 'a count writes no money row');
+      await ledger.countCash(0, at: DateTime.utc(2026, 11, 17, 15));
+      expect(await balance(cash), 0, reason: 'an empty wallet is a valid count');
+    });
+
+    test('what is dated before the count is already in it, even when recorded later', () async {
+      await ledger.countCash(50000, at: DateTime.utc(2026, 11, 17, 12));
+      // The ATM SMS is read after the count (the phone froze Loopd).
+      await ledger.recordTransfer(
+        amountPaise: 200000,
+        fromAccountId: savings,
+        toAccountId: cash,
+        occurredAt: DateTime.utc(2026, 11, 17, 10),
+      );
+      expect(await balance(cash), 50000, reason: 'the counted cash already held it');
+      expect(await balance(savings), -200000, reason: 'the bank side still moves');
+      await ledger.recordTransfer(
+        amountPaise: 100000,
+        fromAccountId: savings,
+        toAccountId: cash,
+        occurredAt: DateTime.utc(2026, 11, 17, 18),
+      );
+      expect(await balance(cash), 150000, reason: 'a withdrawal after the count adds to it');
     });
 
     test('with an opening balance, older history does not count twice', () async {

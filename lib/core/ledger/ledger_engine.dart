@@ -13,35 +13,42 @@ import 'ledger_types.dart';
 
 part 'ledger_engine.g.dart';
 
-/// A balance as the ledger knows it (proposal section 13). With an opening
-/// balance it is the tracked balance; without one it is only the movement
-/// since tracking began, and is never called a balance.
+/// A balance as the ledger knows it (proposal section 13). With a starting
+/// point (an opening balance, or an Update count of Cash in hand) it is the
+/// tracked balance; without one it is only the movement since tracking
+/// began.
 class AccountBalance {
   const AccountBalance({required this.paise, this.openingAsOf});
 
   /// In the ledger's sign: positive is money held or owed to you; a card's
   /// negative is the amount owed.
   final int paise;
+
+  /// When the starting point was set.
   final DateTime? openingAsOf;
 
   bool get hasOpening => openingAsOf != null;
 }
 
-/// What Update count did to Cash in hand.
-enum CashCountResult {
-  /// The first count: it became the opening balance.
-  opening,
+/// Cash in hand as Accounts and cards shows it.
+class CashInHand {
+  const CashInHand({required this.balance, this.lastInPaise, this.lastInAt});
 
-  /// The difference was saved as an adjustment outside spending.
-  adjusted,
+  /// Before the first count this starts from ₹0 and follows what is
+  /// recorded; each count sets it again.
+  final AccountBalance balance;
 
-  /// The count matched; nothing was saved.
-  unchanged,
+  /// The latest Update count.
+  DateTime? get lastCountAt => balance.openingAsOf;
+
+  /// The latest money moved in from a bank, such as an ATM withdrawal.
+  final int? lastInPaise;
+  final DateTime? lastInAt;
 }
 
 /// Every money movement goes through here (ADR 0006): expenses, refunds,
 /// income, transfers (including ATM withdrawals into Cash in hand), card
-/// settlements and cash adjustments. Modules never write money rows
+/// settlements and Update count. Modules never write money rows
 /// themselves, so the totals cannot disagree.
 ///
 /// Each command checks the posting shape for its kind, writes in one
@@ -90,19 +97,35 @@ class LedgerEngine {
 
   // --- Accounts and categories -------------------------------------------
 
-  /// Adds a bank account (used for UPI) or a credit card. The first of each
-  /// kind becomes the default.
+  /// Adds a bank account (used for UPI) or a credit card. It becomes the
+  /// default of its kind only when [makeDefault] is set; there may be none.
+  ///
+  /// [last4], when given, must be four digits. The same four digits cannot
+  /// be saved twice among bank accounts, or twice among cards, whatever the
+  /// bank (owner, 18 Nov 2026). A bank account and a card may share them.
   Future<String> addAccount({
     required AccountKind kind,
     required String name,
+    String? bankName,
     String? bankCode,
     String? last4,
     bool makeDefault = false,
-  }) {
-    assert(kind == AccountKind.bank || kind == AccountKind.creditCard, 'only banks and cards are added by hand');
+  }) async {
+    if (kind != AccountKind.bank && kind != AccountKind.creditCard) {
+      throw const LedgerException(LedgerFailure.invalidAccount);
+    }
+    final nickname = name.trim();
+    final bank = bankName?.trim();
+    if (nickname.isEmpty || (bank != null && bank.isEmpty)) throw const LedgerException(LedgerFailure.invalidAccount);
+    if (last4 != null && !RegExp(r'^\d{4}$').hasMatch(last4)) {
+      throw const LedgerException(LedgerFailure.invalidAccount);
+    }
     return _db.transaction(() async {
+      final existing = await _dao.activeAccounts(kind);
+      if (last4 != null && existing.any((a) => a.last4 == last4)) {
+        throw const LedgerException(LedgerFailure.duplicateAccount);
+      }
       final id = _newId();
-      final isFirst = (await _dao.activeAccounts(kind)).isEmpty;
       if (makeDefault) await _clearDefault(kind);
       await _db
           .into(_db.accounts)
@@ -110,10 +133,11 @@ class LedgerEngine {
             AccountsCompanion.insert(
               id: id,
               kind: kind.db,
-              name: name,
+              name: nickname,
+              bankName: Value(bank),
               bankCode: Value(bankCode),
               last4: Value(last4),
-              isDefault: Value(makeDefault || isFirst),
+              isDefault: Value(makeDefault),
               createdAt: _now,
             ),
           );
@@ -124,6 +148,7 @@ class LedgerEngine {
   /// Makes [accountId] the one default of its kind.
   Future<void> setDefault(String accountId) => _db.transaction(() async {
     final account = await _dao.getAccount(accountId) ?? (throw const LedgerException(LedgerFailure.notFound));
+    if (account.removedAt != null) throw const LedgerException(LedgerFailure.accountRemoved);
     await _clearDefault(AccountKind.fromDb(account.kind));
     await (_db.update(
       _db.accounts,
@@ -135,13 +160,17 @@ class LedgerEngine {
   )..where((a) => a.kind.equals(kind.db))).write(const AccountsCompanion(isDefault: Value(false)));
 
   /// Removes an account or card. Its past transactions stay, under the name
-  /// they were saved with; there is no archived state.
+  /// they were saved with; there is no archived state. Removing the default
+  /// leaves no default until you choose one.
   Future<void> removeAccount(String accountId) async {
     if (SystemAccounts.all.contains(accountId)) throw const LedgerException(LedgerFailure.systemAccount);
-    final account = await _dao.getAccount(accountId) ?? (throw const LedgerException(LedgerFailure.notFound));
-    await (_db.update(_db.accounts)..where((a) => a.id.equals(account.id))).write(
-      AccountsCompanion(removedAt: Value(_now), isDefault: const Value(false)),
-    );
+    await _db.transaction(() async {
+      final account = await _dao.getAccount(accountId) ?? (throw const LedgerException(LedgerFailure.notFound));
+      if (account.removedAt != null) return;
+      await (_db.update(_db.accounts)..where((a) => a.id.equals(account.id))).write(
+        AccountsCompanion(removedAt: Value(_now), isDefault: const Value(false)),
+      );
+    });
   }
 
   /// Adds a category with a name, one of eight colours and an icon.
@@ -344,31 +373,17 @@ class LedgerEngine {
     );
   }
 
-  /// Update count: you type what is really in your wallet. The first count
-  /// becomes Cash in hand's opening balance; later differences are saved as
-  /// a visible adjustment, outside spending.
-  Future<CashCountResult> countCash(int actualPaise, {DateTime? at}) async {
+  /// Update count: you type what is really in your wallet, and that is Cash
+  /// in hand from then on. A new count replaces the last one.
+  ///
+  /// Anything dated after the count changes Cash in hand as usual. Anything
+  /// dated before it is already in the count, even when it is recorded
+  /// later, such as an ATM SMS read after you counted. A count is not
+  /// spending or income, so it writes no money row: it is kept as a
+  /// checkpoint ([CheckpointSource.count]), and ₹0 is a valid count.
+  Future<void> countCash(int actualPaise, {DateTime? at}) async {
     if (actualPaise < 0) throw const LedgerException(LedgerFailure.invalidAmount);
-    final when = at ?? _clock();
-    final balance = await balanceOf(SystemAccounts.cash);
-    if (!balance.hasOpening) {
-      // The first count. Movements recorded so far are part of what was
-      // counted, so the opening is dated now and they do not count twice.
-      if (actualPaise == 0) return CashCountResult.unchanged;
-      await setOpeningBalance(SystemAccounts.cash, actualPaise, asOf: when);
-      return CashCountResult.opening;
-    }
-    final difference = actualPaise - balance.paise;
-    if (difference == 0) return CashCountResult.unchanged;
-    await _create(
-      LedgerEntry(
-        kind: TransactionKind.adjustment,
-        occurredAt: when,
-        note: 'Update count',
-        postings: {SystemAccounts.cash: difference, SystemAccounts.adjustment: -difference},
-      ),
-    );
-    return CashCountResult.adjusted;
+    await _checkpoint(SystemAccounts.cash, actualPaise, asOf: at ?? _clock(), source: CheckpointSource.count);
   }
 
   /// An optional opening balance, as of a day you choose. The tracked
@@ -386,7 +401,16 @@ class LedgerEngine {
 
   /// A balance you checked in your bank or card app, in the ledger's sign:
   /// a card's amount owed is negative.
-  Future<String> addCheckpoint(String accountId, int actualPaise, {required DateTime asOf, String? note}) async {
+  Future<String> addCheckpoint(String accountId, int actualPaise, {required DateTime asOf, String? note}) =>
+      _checkpoint(accountId, actualPaise, asOf: asOf, source: CheckpointSource.manual, note: note);
+
+  Future<String> _checkpoint(
+    String accountId,
+    int actualPaise, {
+    required DateTime asOf,
+    required String source,
+    String? note,
+  }) async {
     final id = _newId();
     await _db
         .into(_db.balanceCheckpoints)
@@ -396,7 +420,7 @@ class LedgerEngine {
             accountId: accountId,
             asOf: asOf.toUtc().millisecondsSinceEpoch,
             actualPaise: actualPaise,
-            source: 'manual',
+            source: source,
             note: Value(note),
             createdAt: _now,
           ),
@@ -444,24 +468,67 @@ class LedgerEngine {
 
   // --- Reading ---------------------------------------------------------------
 
-  /// The account's balance in the ledger's sign. With an opening balance,
-  /// only what is dated after it counts, so older history does not count
-  /// twice.
+  /// The account's balance in the ledger's sign. From a starting point (the
+  /// latest opening balance or Update count, whichever is later), only what
+  /// is dated after it counts, so older history does not count twice.
   Future<AccountBalance> balanceOf(String accountId) async {
+    DateTime utc(int ms) => DateTime.fromMillisecondsSinceEpoch(ms, isUtc: true);
     final opening = await _dao.getOpeningBalance(accountId);
+    final count = await _dao.latestCount(accountId);
+    if (count != null && (opening == null || count.asOf >= opening.occurredAt)) {
+      final after = await _dao.accountTotal(accountId, after: count.asOf, createdFrom: count.createdAt);
+      return AccountBalance(paise: count.actualPaise + after, openingAsOf: utc(count.asOf));
+    }
     if (opening == null) return AccountBalance(paise: await _dao.accountTotal(accountId));
     final openingPaise = (await _dao.getPostings(opening.id))[accountId]!;
     final after = await _dao.accountTotal(
       accountId,
       after: opening.occurredAt,
-      openingId: opening.id,
-      openingCreatedAt: opening.createdAt,
+      createdFrom: opening.createdAt,
+      excluding: opening.id,
     );
-    return AccountBalance(
-      paise: openingPaise + after,
-      openingAsOf: DateTime.fromMillisecondsSinceEpoch(opening.occurredAt, isUtc: true),
-    );
+    return AccountBalance(paise: openingPaise + after, openingAsOf: utc(opening.occurredAt));
   }
+
+  /// The bank accounts or credit cards that are not removed, oldest first, as
+  /// they change.
+  Stream<List<LedgerAccount>> watchAccounts(AccountKind kind) => _dao
+      .watchActiveAccounts(kind)
+      .map(
+        (rows) => [
+          for (final row in rows)
+            LedgerAccount(
+              id: row.id,
+              kind: kind,
+              nickname: row.name,
+              bankName: row.bankName,
+              bankCode: row.bankCode,
+              last4: row.last4,
+              isDefault: row.isDefault,
+            ),
+        ],
+      );
+
+  /// What each bank account, card and Cash in hand spent in the calendar
+  /// month of [month] (local time), net of refunds of those purchases:
+  /// account id → paise. Accounts with no spending are left out.
+  Stream<Map<String, int>> watchMonthSpending(DateTime month) {
+    String day(int year, int m) => '${year + (m - 1) ~/ 12}-${((m - 1) % 12 + 1).toString().padLeft(2, '0')}-01';
+    final from = day(month.year, month.month);
+    final to = day(month.year, month.month + 1);
+    return _dao.watchLedgerChanges().asyncMap((_) => _dao.spendingByFunding(from, to));
+  }
+
+  /// Cash in hand for the top of Accounts and cards, as it changes.
+  Stream<CashInHand> watchCashInHand() => _dao.watchLedgerChanges().asyncMap((_) async {
+    DateTime? time(int? ms) => ms == null ? null : DateTime.fromMillisecondsSinceEpoch(ms, isUtc: true);
+    final withdrawal = await _dao.lastTransferInto(SystemAccounts.cash);
+    return CashInHand(
+      balance: await balanceOf(SystemAccounts.cash),
+      lastInPaise: withdrawal?.$1,
+      lastInAt: time(withdrawal?.$2),
+    );
+  });
 
   /// Checks every live transaction against the rules: shapes, sums, methods
   /// and refund limits. Returns one line per problem; empty when healthy.

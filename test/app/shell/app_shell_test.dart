@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:loopd/app/config/app_config.dart';
+import 'package:loopd/app/shell/app_shell.dart';
 import 'package:loopd/app/shell/loopd_tab_bar.dart';
 import 'package:loopd/design_system/loopd_colors.dart';
 
@@ -54,6 +55,44 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Or start from'), findsNothing);
     }
+  });
+
+  group('the capture button steps aside while a sheet is open', () {
+    Finder tappableButton() => find.byType(CaptureButton).hitTestable();
+
+    testWidgets('the capture sheet itself, opened from the root', (tester) async {
+      await pumpLoopdApp(tester);
+      expect(tappableButton(), findsOneWidget);
+      await tester.tap(tappableButton());
+      await tester.pumpAndSettle();
+      expect(tappableButton(), findsNothing);
+      await tester.tap(find.bySemanticsLabel('Close'));
+      await tester.pumpAndSettle();
+      expect(tappableButton(), findsOneWidget);
+    });
+
+    testWidgets('sheets opened inside a tab, and sheets on top of them', (tester) async {
+      await pumpLoopdApp(tester);
+      await tester.tap(tabButton('More'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Accounts and cards'));
+      await tester.pumpAndSettle();
+      expect(tappableButton(), findsNothing, reason: 'Accounts and cards is a sheet');
+
+      for (final opener in ['+ Add bank account', 'Update count']) {
+        await tester.ensureVisible(find.text(opener));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(opener));
+        await tester.pumpAndSettle();
+        expect(tappableButton(), findsNothing, reason: opener);
+        await tester.tap(find.bySemanticsLabel('Close').last);
+        await tester.pumpAndSettle();
+        expect(tappableButton(), findsNothing, reason: '$opener closed, Accounts and cards still open');
+      }
+      await tester.tap(find.bySemanticsLabel('Close').last);
+      await tester.pumpAndSettle();
+      expect(tappableButton(), findsOneWidget, reason: 'every sheet closed');
+    });
   });
 
   testWidgets('More shows which build is running', (tester) async {

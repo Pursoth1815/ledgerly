@@ -21,9 +21,14 @@ class LedgerDao extends DatabaseAccessor<AppDatabase> with _$LedgerDaoMixin {
     return {for (final row in rows) row.id: AccountKind.fromDb(row.kind)};
   }
 
-  /// Accounts of [kind] that are not removed.
-  Future<List<Account>> activeAccounts(AccountKind kind) =>
-      (select(accounts)..where((a) => a.kind.equals(kind.db) & a.removedAt.isNull())).get();
+  /// Accounts of [kind] that are not removed, oldest first.
+  Future<List<Account>> activeAccounts(AccountKind kind) => _activeAccounts(kind).get();
+
+  /// Accounts of [kind] that are not removed, oldest first. Ties (added in
+  /// the same millisecond) keep the order they were added in (SQLite's rowid).
+  SimpleSelectStatement<$AccountsTable, Account> _activeAccounts(AccountKind kind) => select(accounts)
+    ..where((a) => a.kind.equals(kind.db) & a.removedAt.isNull())
+    ..orderBy([(a) => OrderingTerm.asc(a.createdAt), (_) => OrderingTerm.asc(const CustomExpression<int>('rowid'))]);
 
   /// One transaction, deleted or not.
   Future<LedgerTransaction?> getTransaction(String id) =>
@@ -73,10 +78,12 @@ class LedgerDao extends DatabaseAccessor<AppDatabase> with _$LedgerDaoMixin {
     return query.map((row) => row.readTable(ledgerTransactions)).getSingleOrNull();
   }
 
-  /// The total of [accountId]'s postings in transactions that are not deleted. With [after]
-  /// (an opening balance), only what is dated after it counts, plus anything
-  /// at the same moment created after it ([openingId], [openingCreatedAt]).
-  Future<int> accountTotal(String accountId, {int? after, String? openingId, int? openingCreatedAt}) async {
+  /// The total of [accountId]'s postings in transactions that are not
+  /// deleted. With [after] (a starting point: an opening balance or a cash
+  /// count), only what is dated after it counts, plus anything at the same
+  /// moment created from [createdFrom] on, other than [excluding] (the
+  /// opening balance itself).
+  Future<int> accountTotal(String accountId, {int? after, int? createdFrom, String? excluding}) async {
     final total = postings.amountPaise.sum();
     final query =
         selectOnly(postings)
@@ -84,15 +91,24 @@ class LedgerDao extends DatabaseAccessor<AppDatabase> with _$LedgerDaoMixin {
           ..addColumns([total])
           ..where(postings.accountId.equals(accountId) & ledgerTransactions.deletedAt.isNull());
     if (after != null) {
-      query.where(
-        ledgerTransactions.occurredAt.isBiggerThanValue(after) |
-            (ledgerTransactions.occurredAt.equals(after) &
-                ledgerTransactions.id.equals(openingId!).not() &
-                ledgerTransactions.createdAt.isBiggerOrEqualValue(openingCreatedAt!)),
-      );
+      var sameMoment =
+          ledgerTransactions.occurredAt.equals(after) & ledgerTransactions.createdAt.isBiggerOrEqualValue(createdFrom!);
+      if (excluding != null) sameMoment = sameMoment & ledgerTransactions.id.equals(excluding).not();
+      query.where(ledgerTransactions.occurredAt.isBiggerThanValue(after) | sameMoment);
     }
     return (await query.map((row) => row.read(total)).getSingle()) ?? 0;
   }
+
+  /// The latest Update count of [accountId] (Cash in hand) that is not
+  /// deleted.
+  Future<BalanceCheckpoint?> latestCount(String accountId) =>
+      (select(balanceCheckpoints)
+            ..where(
+              (c) => c.accountId.equals(accountId) & c.source.equals(CheckpointSource.count) & c.deletedAt.isNull(),
+            )
+            ..orderBy([(c) => OrderingTerm.desc(c.asOf), (c) => OrderingTerm.desc(c.createdAt)])
+            ..limit(1))
+          .getSingleOrNull();
 
   /// Marks verified balances of [accountIds] dated after [occurredAt] as
   /// needing a recheck, because something before them changed.
@@ -100,6 +116,64 @@ class LedgerDao extends DatabaseAccessor<AppDatabase> with _$LedgerDaoMixin {
       (update(balanceCheckpoints)
             ..where((c) => c.accountId.isIn(accountIds) & c.asOf.isBiggerThanValue(occurredAt) & c.deletedAt.isNull()))
           .write(const BalanceCheckpointsCompanion(needsRecheck: Value(true)));
+
+  /// Banks or cards of [kind] that are not removed, oldest first, as they
+  /// change.
+  Stream<List<Account>> watchActiveAccounts(AccountKind kind) => _activeAccounts(kind).watch();
+
+  /// Emits once now and again after every change to the ledger, so a reader
+  /// built from several queries stays current.
+  Stream<void> watchLedgerChanges() => customSelect(
+    'SELECT 1',
+    readsFrom: {accounts, ledgerTransactions, postings, balanceCheckpoints},
+  ).watch().map((_) {});
+
+  /// What each funding account spent on expenses dated from [fromDate] up to
+  /// [toDate] (local days, YYYY-MM-DD, end excluded), less the live refunds
+  /// of those expenses: account id → paise. Refunds count in the purchase's
+  /// month (the default reporting mode, 17 Nov 2026).
+  Future<Map<String, int>> spendingByFunding(String fromDate, String toDate) async {
+    final rows = await customSelect(
+      '''
+      SELECT f.account_id AS account_id,
+             SUM(-f.amount_paise) AS spent,
+             SUM(COALESCE((
+               SELECT SUM(rp.amount_paise)
+               FROM ledger_transactions r
+               JOIN postings rp ON rp.transaction_id = r.id
+               JOIN accounts ra ON ra.id = rp.account_id
+               WHERE r.refund_of = t.id AND r.kind = 'refund' AND r.deleted_at IS NULL
+                 AND ra.kind IN ('bank', 'credit_card', 'cash')
+             ), 0)) AS refunded
+      FROM ledger_transactions t
+      JOIN postings f ON f.transaction_id = t.id
+      WHERE t.kind = 'expense' AND t.deleted_at IS NULL AND f.amount_paise < 0
+        AND t.local_date >= ? AND t.local_date < ?
+      GROUP BY f.account_id
+      ''',
+      variables: [Variable.withString(fromDate), Variable.withString(toDate)],
+      readsFrom: {ledgerTransactions, postings, accounts},
+    ).get();
+    return {for (final row in rows) row.read<String>('account_id'): row.read<int>('spent') - row.read<int>('refunded')};
+  }
+
+  /// The latest live transfer into [accountId], such as an ATM withdrawal
+  /// into Cash in hand: (paise, UTC milliseconds).
+  Future<(int, int)?> lastTransferInto(String accountId) async {
+    final query =
+        select(ledgerTransactions).join([innerJoin(postings, postings.transactionId.equalsExp(ledgerTransactions.id))])
+          ..where(
+            ledgerTransactions.kind.equals(TransactionKind.transfer.db) &
+                ledgerTransactions.deletedAt.isNull() &
+                postings.accountId.equals(accountId) &
+                postings.amountPaise.isBiggerThanValue(0),
+          )
+          ..orderBy([OrderingTerm.desc(ledgerTransactions.occurredAt)])
+          ..limit(1);
+    final row = await query.getSingleOrNull();
+    if (row == null) return null;
+    return (row.readTable(postings).amountPaise, row.readTable(ledgerTransactions).occurredAt);
+  }
 
   /// Every transaction that is not deleted (for the health check).
   Future<List<LedgerTransaction>> activeTransactions() =>

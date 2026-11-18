@@ -22,7 +22,7 @@ void main() {
 
   Future<void> pumpScreen(WidgetTester tester, Widget screen, Brightness brightness) async {
     driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
-    final database = AppDatabase(NativeDatabase.memory());
+    final database = AppDatabase(DatabaseConnection(NativeDatabase.memory(), closeStreamsSynchronously: true));
     addTearDown(database.close);
     tester.view.physicalSize = const Size(1080, 2340);
     tester.view.devicePixelRatio = 2.75;

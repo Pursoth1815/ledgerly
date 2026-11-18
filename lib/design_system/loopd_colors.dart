@@ -30,6 +30,7 @@ class LoopdColors extends ThemeExtension<LoopdColors> {
     required this.creditCardTint,
     required this.cash,
     required this.cashTint,
+    required this.cardBlank,
     required this.lending,
     required this.lendingTint,
     required this.travel,
@@ -84,6 +85,10 @@ class LoopdColors extends ThemeExtension<LoopdColors> {
   final Color creditCardTint;
   final Color cash;
   final Color cashTint;
+
+  /// The face of a card preview before a bank is chosen, and of a bank typed
+  /// by hand (mockup `AddAccount.dc.html`).
+  final Color cardBlank;
   final Color lending;
   final Color lendingTint;
   final Color travel;
@@ -136,6 +141,7 @@ class LoopdColors extends ThemeExtension<LoopdColors> {
     creditCardTint: Color(0x26C4A5FF),
     cash: Color(0xFF38BDF8),
     cashTint: Color(0x2438BDF8),
+    cardBlank: Color(0xFF3A4050),
     lending: Color(0xFFFBBF24),
     lendingTint: Color(0x21FBBF24),
     travel: Color(0xFF8F98FF),
@@ -180,6 +186,7 @@ class LoopdColors extends ThemeExtension<LoopdColors> {
     creditCardTint: Color(0xFFEFE7FD),
     cash: Color(0xFF0369A1),
     cashTint: Color(0xFFE0F2FE),
+    cardBlank: Color(0xFF64748B),
     lending: Color(0xFFA14A06),
     lendingTint: Color(0xFFFDF0D8),
     travel: Color(0xFF4338CA),

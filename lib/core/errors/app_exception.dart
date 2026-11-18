@@ -106,6 +106,14 @@ enum LedgerFailure {
   /// Built-in accounts, such as Cash in hand, cannot be removed.
   systemAccount('system_account'),
 
+  /// An account or card needs a nickname, a bank and exactly four digits.
+  invalidAccount('invalid_account'),
+
+  /// These last four digits are already saved for another bank account, or
+  /// another card. The Add sheet checks this as you type; the ledger checks
+  /// again on save, so no other path can add a second one.
+  duplicateAccount('duplicate_account'),
+
   /// Loans, repayments and write-offs arrive with lending (Phase 4).
   notBuiltYet('not_built_yet');
 

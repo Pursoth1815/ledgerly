@@ -209,6 +209,21 @@ Built from the mockups, with these additions for a phase where no features exist
 - **Icons:** Material icons stand in for the mockups' line icons, except the tab bar, which is drawn from the mockup paths.
 
 
+## Phase 2, part 2: Accounts and cards (18 Nov 2026)
+
+Built from screens 4, 4b and 4c, with these additions the mockups do not show:
+
+- **A sheet, not a page** (owner, 18 Nov 2026; the mockup draws screen 4 as a full page). It opens from the Accounts and cards row in More, which shows no count (the mockup's "4 · 5" is dropped), and Today and the Money tab will open the same sheet (`showAccountsSheet`). It is a tall sheet over the whole app, tab bar included, with a title, the subtitle and a Close button instead of Back. It keeps one height from the start and shows its list only once everything has loaded, so nothing jumps into place. Close it to switch tabs, so More always comes back as More. The Add, Update count and account sheets open on top of it.
+- **Every sheet opens over the tab bar** (owner, 18 Nov 2026), wherever it is opened from, so no sheet stays behind on a tab you left.
+- **Cash in hand before the first count:** the card shows ₹0 and "Count your wallet to set it" (owner, 18 Nov 2026). The line under the amount shows the newer of the last count ("Counted 18 Nov") and the last money in from a bank ("₹2,000 from ATM · 12 Nov"). A cash expense does not change that line.
+- **Update count:** a sheet with one large amount field. Before saving it shows what Loopd has and that the count replaces it ("₹150 less than Loopd has. Your count replaces it; the difference is not spending."). There is no adjustment (owner, 18 Nov 2026).
+- **Tapping an account or card:** a small sheet with its bank, digits and sender code, "Make default" and a red "Remove". Remove asks once more and says the past expenses stay under the name.
+- **Add sheet:** the last four digits are required; the nickname is optional and falls back to the bank's name. The default switch starts off, even for the first one (owner, 18 Nov 2026). The type switch slides its coloured half across to the tapped side. Searching "sbi" finds "State Bank of India (SBI)". A missing bank is offered as a coloured "Add “Zeta Bank” as a new bank" row; once chosen, its card is grey and a soft strip says its SMS are not linked yet but expenses can be added by hand. A listed bank gets the same strip in the sheet's colour, naming its sender code. The arrow and a tap outside a field put the keyboard away. The last four digits must be new among bank accounts, and separately among cards, whatever the bank (owner, 18 Nov 2026): as soon as four digits that are taken are typed, a red line says "Primary already ends ••2210. Each bank account needs its own last four digits." and Add stays off. A bank account and a card may share digits. Form errors use one shared look, `LoopdErrorNote` (owner, 18 Nov 2026): a soft red box with a red border and an error icon on the left.
+- **Empty sections:** with no accounts or cards, only the dashed Add button shows, and the section total is hidden.
+- **Default on a credit card:** a solid white "Default" pill next to the nickname, in the card's colour, so it shows on any bank colour (owner, 18 Nov 2026).
+- **Capture button:** steps aside while any sheet or dialog is open, on every tab (owner, 18 Nov 2026).
+- **Toasts** ("Added Savings", "Cash in hand is now ₹2,350") slide down at the top of the screen, under the status bar, over pages and sheets alike (owner, 18 Nov 2026). The Review mockup's toast with Undo sits at the bottom; when the Review Inbox is built (Phase 3) it moves to the top too.
+
 ## Review of the Phase 1 screens (17 Nov 2026)
 
 Changed in the app and on the canvas (version 57), with nothing else on the canvas changed:

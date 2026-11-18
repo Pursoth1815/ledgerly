@@ -8,6 +8,7 @@ import 'package:loopd/design_system/components/loopd_card.dart';
 import 'package:loopd/design_system/components/loopd_card_stack.dart';
 import 'package:loopd/design_system/components/loopd_check.dart';
 import 'package:loopd/design_system/components/loopd_chip.dart';
+import 'package:loopd/design_system/components/loopd_error_note.dart';
 import 'package:loopd/design_system/components/loopd_source_strip.dart';
 import 'package:loopd/design_system/components/loopd_switch.dart';
 import 'package:loopd/design_system/loopd_colors.dart';
@@ -91,6 +92,8 @@ Widget _sample(Brightness brightness) => MaterialApp(
               ),
               Text('PNR 482-1937560', style: LoopdType.code.copyWith(color: c.travel)),
               const SizedBox(height: LoopdSpace.sm),
+              const LoopdErrorNote('Primary already ends ••2210.'),
+              const SizedBox(height: LoopdSpace.sm),
               Row(
                 children: [
                   Expanded(
@@ -118,7 +121,7 @@ void main() {
 
   for (final brightness in Brightness.values) {
     testWidgets('components in ${brightness.name}', (tester) async {
-      tester.view.physicalSize = const Size(1080, 1500);
+      tester.view.physicalSize = const Size(1080, 1680);
       tester.view.devicePixelRatio = 2.75;
       addTearDown(tester.view.reset);
       await tester.pumpWidget(_sample(brightness));

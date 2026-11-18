@@ -31,7 +31,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.executor);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -53,6 +53,10 @@ class AppDatabase extends _$AppDatabase {
         await migrator.createTable(schema.postings);
         await migrator.createTable(schema.transactionRevisions);
         await migrator.createTable(schema.balanceCheckpoints);
+      },
+      // Phase 2, part 2: the bank name of each account and card.
+      from4To5: (migrator, schema) async {
+        await migrator.addColumn(schema.accounts, schema.accounts.bankName);
       },
     ),
     beforeOpen: (details) async {

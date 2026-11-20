@@ -245,4 +245,34 @@ void main() {
       expect(platform.calls.last, 'restart');
     });
   });
+
+  group('passphrase', () {
+    setUp(() => engine.setUp(passphrase: 'a long made up phrase', folder: folder));
+
+    test('change needs the current passphrase and a long enough new one', () async {
+      await expectLater(
+        engine.changePassphrase(current: 'a long made up phrase', next: 'too short'),
+        fails(BackupFailure.writeFailed),
+      );
+      await expectLater(
+        engine.changePassphrase(current: 'not the current one', next: 'a brand new phrase'),
+        fails(BackupFailure.wrongPassphrase),
+      );
+      await engine.changePassphrase(current: 'a long made up phrase', next: 'a brand new phrase');
+      expect(platform.passphrase, 'a brand new phrase');
+    });
+
+    test('a reset needs the owner check first, every time', () async {
+      await expectLater(engine.resetPassphrase('a brand new phrase'), fails(BackupFailure.cancelled));
+      platform.ownerConfirms = false;
+      expect(await engine.confirmOwner(), isFalse);
+      await expectLater(engine.resetPassphrase('a brand new phrase'), fails(BackupFailure.cancelled));
+
+      platform.ownerConfirms = true;
+      expect(await engine.confirmOwner(), isTrue);
+      await engine.resetPassphrase('a brand new phrase');
+      expect(platform.passphrase, 'a brand new phrase');
+      await expectLater(engine.resetPassphrase('and another one'), fails(BackupFailure.cancelled), reason: 'used up');
+    });
+  });
 }

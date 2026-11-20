@@ -227,6 +227,26 @@ class BackupEngine {
     }
   }
 
+  /// Changes the passphrase (ADR 0011): after checking [current], a new
+  /// backup key wrapped by [next]. The caller then backs up at once, so a
+  /// backup with the new passphrase exists; older ones keep the old one.
+  Future<void> changePassphrase({required String current, required String next}) async {
+    if (next.length < passphraseMin) throw const BackupException(BackupFailure.writeFailed);
+    await _platform.changePassphrase(current: current, next: next);
+  }
+
+  /// Asks for fingerprint, face or the phone's PIN before a reset.
+  Future<bool> confirmOwner() =>
+      _platform.confirmOwner(title: 'Confirm it’s you', subtitle: 'To set a new backup passphrase on this phone');
+
+  /// A forgotten passphrase, on this phone only (owner, 17 Nov 2026): the same
+  /// backup key wrapped by [next], right after [confirmOwner]. New backups use
+  /// it; older ones still need the old passphrase.
+  Future<void> resetPassphrase(String next) async {
+    if (next.length < passphraseMin) throw const BackupException(BackupFailure.writeFailed);
+    await _platform.resetPassphrase(next);
+  }
+
   /// Starts Loopd again, so the restored database is switched in.
   Future<void> restartToFinish() => _platform.restartApp();
 

@@ -887,4 +887,51 @@ class BackupApi {
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     _extractReplyValueOrThrow(pigeonVar_replyList, pigeonVar_channelName, isNullValid: true);
   }
+
+  /// Changes the passphrase after checking [current]: a new backup key,
+  /// wrapped by [next]. Fails with `wrong_passphrase`.
+  Future<void> changePassphrase(String current, String next) async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.loopd.BackupApi.changePassphrase$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[current, next]);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+    _extractReplyValueOrThrow(pigeonVar_replyList, pigeonVar_channelName, isNullValid: true);
+  }
+
+  /// Asks the phone's owner to confirm with fingerprint, face or the phone's
+  /// PIN. True once confirmed; false when cancelled.
+  Future<bool> confirmOwner(String title, String subtitle) async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.loopd.BackupApi.confirmOwner$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[title, subtitle]);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+    final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: false,
+    );
+    return pigeonVar_replyValue! as bool;
+  }
+
+  /// A forgotten passphrase: wraps the same backup key with [next]. Allowed
+  /// only within two minutes of [confirmOwner]; otherwise `cancelled`.
+  Future<void> resetPassphrase(String next) async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.loopd.BackupApi.resetPassphrase$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[next]);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+    _extractReplyValueOrThrow(pigeonVar_replyList, pigeonVar_channelName, isNullValid: true);
+  }
 }

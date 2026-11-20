@@ -210,4 +210,19 @@ abstract class BackupApi {
 
   /// Starts Loopd again, so a restored database is switched in at start-up.
   void restartApp();
+
+  /// Changes the passphrase after checking [current]: a new backup key,
+  /// wrapped by [next]. Fails with `wrong_passphrase`.
+  @async
+  void changePassphrase(String current, String next);
+
+  /// Asks the phone's owner to confirm with fingerprint, face or the phone's
+  /// PIN. True once confirmed; false when cancelled.
+  @async
+  bool confirmOwner(String title, String subtitle);
+
+  /// A forgotten passphrase: wraps the same backup key with [next]. Allowed
+  /// only within two minutes of [confirmOwner]; otherwise `cancelled`.
+  @async
+  void resetPassphrase(String next);
 }

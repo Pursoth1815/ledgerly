@@ -35,7 +35,6 @@ class _BackupSetupSheetState extends ConsumerState<BackupSetupSheet> {
   final _passphrase = TextEditingController();
   final _again = TextEditingController();
   BackupFolder? _folder;
-  bool _shown = false;
   bool _busy = false;
   String? _error;
 
@@ -112,8 +111,6 @@ class _BackupSetupSheetState extends ConsumerState<BackupSetupSheet> {
                   label: 'Passphrase',
                   hint: 'At least ${BackupEngine.passphraseMin} characters',
                   controller: _passphrase,
-                  shown: _shown,
-                  onToggle: () => setState(() => _shown = !_shown),
                 ),
                 const SizedBox(height: 10),
                 PassphraseField(
@@ -121,8 +118,6 @@ class _BackupSetupSheetState extends ConsumerState<BackupSetupSheet> {
                   label: 'Type it again',
                   hint: 'The same again',
                   controller: _again,
-                  shown: _shown,
-                  onToggle: () => setState(() => _shown = !_shown),
                   wrong: _again.text.isNotEmpty && !_same,
                 ),
                 const SizedBox(height: LoopdSpace.md),
@@ -150,14 +145,13 @@ class _BackupSetupSheetState extends ConsumerState<BackupSetupSheet> {
   }
 }
 
-/// A passphrase box with a show button. Shared by the backup sheets.
-class PassphraseField extends StatelessWidget {
+/// A passphrase box with a show button. Shared by the backup sheets. Each
+/// box shows or hides only its own text (owner, 20 Nov 2026).
+class PassphraseField extends StatefulWidget {
   const PassphraseField({
     required this.label,
     required this.hint,
     required this.controller,
-    required this.shown,
-    required this.onToggle,
     this.wrong = false,
     super.key,
   });
@@ -165,16 +159,22 @@ class PassphraseField extends StatelessWidget {
   final String label;
   final String hint;
   final TextEditingController controller;
-  final bool shown;
-  final VoidCallback onToggle;
 
   /// Draws a red border, such as when the two entries differ.
   final bool wrong;
 
   @override
+  State<PassphraseField> createState() => _PassphraseFieldState();
+}
+
+class _PassphraseFieldState extends State<PassphraseField> {
+  bool _shown = false;
+
+  @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final border = wrong ? c.danger : (controller.text.isEmpty ? c.surfaceRaised : c.vaultSolid);
+    final wrong = widget.wrong;
+    final border = wrong ? c.danger : (widget.controller.text.isEmpty ? c.surfaceRaised : c.vaultSolid);
     OutlineInputBorder outline(Color colour) => OutlineInputBorder(
       borderRadius: BorderRadius.circular(LoopdRadius.inner),
       borderSide: BorderSide(color: colour, width: 1.5),
@@ -182,17 +182,17 @@ class PassphraseField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(label, style: LoopdType.caption.copyWith(color: c.textMuted)),
+        Text(widget.label, style: LoopdType.caption.copyWith(color: c.textMuted)),
         const SizedBox(height: 6),
         TextField(
-          controller: controller,
-          obscureText: !shown,
+          controller: widget.controller,
+          obscureText: !_shown,
           enableSuggestions: false,
           autocorrect: false,
           keyboardType: TextInputType.visiblePassword,
           style: LoopdType.bodyStrong.copyWith(color: c.textPrimary, fontSize: 16),
           decoration: InputDecoration(
-            hintText: hint,
+            hintText: widget.hint,
             hintStyle: LoopdType.body.copyWith(color: c.textMuted),
             filled: true,
             fillColor: c.surfaceRaised,
@@ -200,9 +200,9 @@ class PassphraseField extends StatelessWidget {
             enabledBorder: outline(border),
             focusedBorder: outline(wrong ? c.danger : c.vaultSolid),
             suffixIcon: IconButton(
-              onPressed: onToggle,
-              tooltip: shown ? 'Hide passphrase' : 'Show passphrase',
-              icon: Icon(shown ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: c.textMuted),
+              onPressed: () => setState(() => _shown = !_shown),
+              tooltip: _shown ? 'Hide ${widget.label.toLowerCase()}' : 'Show ${widget.label.toLowerCase()}',
+              icon: Icon(_shown ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: c.textMuted),
             ),
           ),
         ),

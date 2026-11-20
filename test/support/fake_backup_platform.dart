@@ -107,4 +107,29 @@ class FakeBackupPlatform implements BackupPlatform {
 
   @override
   Future<void> restartApp() async => calls.add('restart');
+
+  /// What the owner check answers.
+  bool ownerConfirms = true;
+  bool _confirmed = false;
+
+  @override
+  Future<void> changePassphrase({required String current, required String next}) async {
+    calls.add('change');
+    if (current != passphrase) throw const BackupException(BackupFailure.wrongPassphrase);
+    passphrase = next;
+  }
+
+  @override
+  Future<bool> confirmOwner({required String title, required String subtitle}) async {
+    calls.add('confirm');
+    return _confirmed = ownerConfirms;
+  }
+
+  @override
+  Future<void> resetPassphrase(String next) async {
+    calls.add('reset');
+    if (!_confirmed) throw const BackupException(BackupFailure.cancelled);
+    _confirmed = false;
+    passphrase = next;
+  }
 }

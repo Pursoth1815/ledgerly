@@ -854,6 +854,21 @@ interface BackupApi {
   suspend fun extractOpenedDatabase(targetPath: String): String
   /** Starts Loopd again, so a restored database is switched in at start-up. */
   fun restartApp()
+  /**
+   * Changes the passphrase after checking [current]: a new backup key,
+   * wrapped by [next]. Fails with `wrong_passphrase`.
+   */
+  suspend fun changePassphrase(current: String, next: String)
+  /**
+   * Asks the phone's owner to confirm with fingerprint, face or the phone's
+   * PIN. True once confirmed; false when cancelled.
+   */
+  suspend fun confirmOwner(title: String, subtitle: String): Boolean
+  /**
+   * A forgotten passphrase: wraps the same backup key with [next]. Allowed
+   * only within two minutes of [confirmOwner]; otherwise `cancelled`.
+   */
+  suspend fun resetPassphrase(next: String)
 
   companion object {
     /** The codec used by BackupApi. */
@@ -1082,6 +1097,67 @@ interface BackupApi {
               PlatformApiPigeonUtils.wrapError(exception)
             }
             reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.loopd.BackupApi.changePassphrase$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val currentArg = args[0] as String
+            val nextArg = args[1] as String
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                api.changePassphrase(currentArg, nextArg)
+                listOf(null)
+              } catch (exception: Throwable) {
+                PlatformApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.loopd.BackupApi.confirmOwner$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val titleArg = args[0] as String
+            val subtitleArg = args[1] as String
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                listOf(api.confirmOwner(titleArg, subtitleArg))
+              } catch (exception: Throwable) {
+                PlatformApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.loopd.BackupApi.resetPassphrase$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val nextArg = args[0] as String
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                api.resetPassphrase(nextArg)
+                listOf(null)
+              } catch (exception: Throwable) {
+                PlatformApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
           }
         } else {
           channel.setMessageHandler(null)

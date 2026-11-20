@@ -108,9 +108,7 @@ void main() {
     expect(find.textContaining('can’t reach the backup folder'), findsOneWidget);
   });
 
-  testWidgets('weekly is off until Phase 7; passphrase changes say when they come; Restore opens its sheet', (
-    tester,
-  ) async {
+  testWidgets('weekly is off until Phase 7; Change passphrase and Restore open their sheets', (tester) async {
     final (engine, _) = await pumpPage(tester);
     await tester.runAsync(
       () => engine.setUp(
@@ -121,9 +119,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.widget<LoopdSwitch>(find.byType(LoopdSwitch)).onChanged, isNull);
     await tester.tap(find.bySemanticsLabel('Change').last);
-    await tester.pump();
-    expect(find.text('Changing the passphrase comes in the next update'), findsOneWidget);
-    await tester.pumpAndSettle(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+    expect(find.text('Change passphrase'), findsOneWidget, reason: 'the passphrase sheet opens');
+    await tester.state<NavigatorState>(find.byType(Navigator).first).maybePop();
+    await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Restore from a backup file'));
     await tester.tap(find.text('Restore from a backup file'));
     await tester.pumpAndSettle();

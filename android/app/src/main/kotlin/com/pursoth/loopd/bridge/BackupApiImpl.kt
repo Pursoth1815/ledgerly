@@ -3,6 +3,10 @@ package com.pursoth.loopd.bridge
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.hardware.biometrics.BiometricManager
+import android.hardware.biometrics.BiometricPrompt
+import android.os.CancellationSignal
+import android.os.SystemClock
 import android.net.Uri
 import android.provider.DocumentsContract
 import android.util.Log
@@ -198,6 +202,64 @@ class BackupApiImpl private constructor(private val context: Context) : BackupAp
         android.os.Process.killProcess(android.os.Process.myPid())
     }
 
+    override suspend fun changePassphrase(current: String, next: String) = work("change_passphrase") {
+        val old = current.toByteArray(Charsets.UTF_8)
+        val new = next.toByteArray(Charsets.UTF_8)
+        try {
+            if (!keys.checkPassphrase(old)) throw BackupException(BackupFailure.WRONG_PASSPHRASE, "Not the current passphrase")
+            keys.setUp(new)
+        } finally {
+            old.fill(0)
+            new.fill(0)
+        }
+    }
+
+    /** When the owner last confirmed it is them, for [resetPassphrase]. */
+    @Volatile private var confirmedAt = 0L
+
+    override suspend fun confirmOwner(title: String, subtitle: String): Boolean {
+        val host = activity ?: throw FlutterError("cancelled", "No screen to ask on")
+        val ok = suspendCancellableCoroutine { continuation ->
+            val prompt = BiometricPrompt.Builder(host)
+                .setTitle(title)
+                .setSubtitle(subtitle)
+                .setAllowedAuthenticators(
+                    BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL,
+                )
+                .build()
+            val cancel = CancellationSignal()
+            continuation.invokeOnCancellation { cancel.cancel() }
+            prompt.authenticate(
+                cancel,
+                host.mainExecutor,
+                object : BiometricPrompt.AuthenticationCallback() {
+                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                        if (continuation.isActive) continuation.resume(true)
+                    }
+
+                    override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                        if (continuation.isActive) continuation.resume(false)
+                    }
+                },
+            )
+        }
+        if (ok) confirmedAt = SystemClock.elapsedRealtime()
+        Log.i(TAG, "owner_check passed=$ok")
+        return ok
+    }
+
+    override suspend fun resetPassphrase(next: String) = work("reset_passphrase") {
+        val fresh = confirmedAt != 0L && SystemClock.elapsedRealtime() - confirmedAt < CONFIRM_WINDOW_MS
+        confirmedAt = 0L
+        if (!fresh) throw FlutterError("cancelled", "Confirm it is you first")
+        val bytes = next.toByteArray(Charsets.UTF_8)
+        try {
+            keys.rewrap(bytes)
+        } finally {
+            bytes.fill(0)
+        }
+    }
+
     private fun folder(uri: String): DocumentTreeFolder {
         if (!canWrite(uri)) throw BackupException(BackupFailure.FOLDER_LOST, "No access to the folder")
         return DocumentTreeFolder(context, Uri.parse(uri))
@@ -255,6 +317,9 @@ class BackupApiImpl private constructor(private val context: Context) : BackupAp
         private const val TAG = "loopd.backup"
         private const val MASTER_KEY_ALIAS = "loopd_master_v1"
         private const val PICK_FOLDER = 4101
+
+        /** How long a fingerprint or PIN check counts for a passphrase reset. */
+        private const val CONFIRM_WINDOW_MS = 2 * 60 * 1000L
 
         @Volatile private var instance: BackupApiImpl? = null
 

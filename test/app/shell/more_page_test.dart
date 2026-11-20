@@ -6,6 +6,7 @@ import 'package:loopd/app/shell/more_page.dart';
 import 'package:loopd/core/settings/theme_setting.dart';
 import 'package:loopd/design_system/components/loopd_switch.dart';
 import 'package:loopd/features/accounts/accounts.dart';
+import 'package:loopd/features/backup/backup.dart';
 import 'package:loopd/features/expenses/expenses.dart';
 
 import '../../support/pump_loopd_app.dart';
@@ -73,6 +74,28 @@ void main() {
     await tester.tap(find.descendant(of: find.byType(MorePage), matching: find.text('Vault')));
     await tester.pump();
     expect(find.text('The Vault is built in Phase 7'), findsOneWidget);
+  });
+
+  testWidgets('Backup & restore opens as a sheet over the tab bar', (tester) async {
+    await pumpLoopdApp(tester);
+    await openMore(tester);
+    // Scroll to the end, so the row is clear of the floating capture button.
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, -2000));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Backup & restore'));
+    await tester.pumpAndSettle();
+    expect(find.byType(BackupSheet), findsOneWidget);
+    expect(find.text('Backups are off'), findsOneWidget);
+    expect(
+      find.descendant(of: find.byType(LoopdTabBar), matching: find.text('Money')).hitTestable(),
+      findsNothing,
+      reason: 'the tab bar sits behind the sheet',
+    );
+    expect(find.bySemanticsLabel('Back to More'), findsNothing, reason: 'a sheet, not a page');
+    // The phone's back closes it.
+    await tester.state<NavigatorState>(find.byType(Navigator).first).maybePop();
+    await tester.pumpAndSettle();
+    expect(find.byType(BackupSheet), findsNothing);
   });
 
   testWidgets('Expense categories opens its sheet', (tester) async {

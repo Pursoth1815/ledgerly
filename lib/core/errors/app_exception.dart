@@ -149,3 +149,55 @@ final class LedgerException extends AppException {
   @override
   String get code => 'ledger.${failure.code}';
 }
+
+/// Why a backup could not be made or opened (ADR 0011). The codes match the
+/// Pigeon contract in `pigeons/platform_api.dart`.
+enum BackupFailure {
+  /// No backup key or folder yet.
+  notSetUp('not_set_up'),
+
+  /// The passphrase does not open this backup.
+  wrongPassphrase('wrong_passphrase'),
+
+  /// The Keystore could not wrap or unwrap the backup key.
+  keystoreUnavailable('keystore_unavailable'),
+
+  /// Loopd can no longer write to the chosen folder (it was deleted, or the
+  /// app that holds it was removed): choose it again.
+  folderLost('folder_lost'),
+
+  /// The folder's storage is full.
+  outOfSpace('out_of_space'),
+
+  /// Writing failed for another reason.
+  writeFailed('write_failed'),
+
+  /// Reading the new backup back did not match what was written.
+  verifyFailed('verify_failed'),
+
+  /// The file is not a Loopd backup, or was made by a newer Loopd.
+  notABackup('not_a_backup'),
+
+  /// The picker or the run was cancelled.
+  cancelled('cancelled'),
+
+  /// Another backup is already running.
+  busy('busy');
+
+  const BackupFailure(this.code);
+
+  final String code;
+
+  /// Unknown codes are treated as a write failure, never as success.
+  static BackupFailure fromCode(String code) =>
+      values.firstWhere((failure) => failure.code == code, orElse: () => writeFailed);
+}
+
+final class BackupException extends AppException {
+  const BackupException(this.failure);
+
+  final BackupFailure failure;
+
+  @override
+  String get code => 'backup.${failure.code}';
+}

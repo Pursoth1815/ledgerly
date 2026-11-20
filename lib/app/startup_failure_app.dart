@@ -59,5 +59,7 @@ class StartupFailureApp extends StatelessWidget {
     DatabaseOpenException(failure: DatabaseOpenFailure.keyMismatch) => 'The stored key does not match your data.',
     DatabaseOpenException(failure: DatabaseOpenFailure.openFailed) => 'Your data could not be opened.',
     LedgerException() => 'Your money records could not be set up.',
+    // Backups never run at start-up; listed so the switch stays complete.
+    BackupException() => 'A backup could not be read.',
   };
 }

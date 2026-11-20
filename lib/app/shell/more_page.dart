@@ -13,6 +13,7 @@ import '../../design_system/loopd_colors.dart';
 import '../../design_system/loopd_spacing.dart';
 import '../../design_system/loopd_typography.dart';
 import '../../features/accounts/accounts.dart';
+import '../../features/backup/backup.dart';
 import '../../features/expenses/expenses.dart';
 import '../config/app_config.dart';
 
@@ -125,10 +126,9 @@ class MorePage extends ConsumerWidget {
                 ),
                 _LinkRow(
                   label: 'Backup & restore',
-                  value: 'Phase 2',
                   dot: c.vault,
                   tint: c.vaultTint,
-                  onTap: () => soon('Backup & restore', 'in Phase 2'),
+                  onTap: () => showBackupSheet(context),
                 ),
                 _LinkRow(
                   label: 'Export logs',

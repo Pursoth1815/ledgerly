@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:loopd/core/database/database_opener.dart';
+import 'package:loopd/core/database/encrypted_executor.dart';
 import 'package:loopd/core/errors/app_exception.dart';
 import 'package:loopd/core/platform/platform_api.g.dart';
 import 'package:loopd/core/security/database_key_store.dart';
 import 'package:path/path.dart' as p;
+import 'package:sqlite3/sqlite3.dart';
 
 /// Uses the real SQLCipher library from the `sqlite3` build hook, on a real
 /// file, so these tests prove encryption rather than assume it (ADR 0004).
@@ -96,7 +98,56 @@ void main() {
     );
     expect(databaseFile().existsSync(), isTrue);
   });
+
+  group('a restored database waiting to be switched in (ADR 0011)', () {
+    Future<void> writeProbe(String path, Uint8List key, int value) async {
+      final db = sqlite3.open(path);
+      try {
+        applyEncryption(db, _hexOf(key));
+        db.execute('CREATE TABLE IF NOT EXISTS probe (value INTEGER)');
+        db.execute('DELETE FROM probe');
+        db.execute('INSERT INTO probe VALUES ($value)');
+      } finally {
+        db.close();
+      }
+    }
+
+    Future<int> probeOf(Directory dir, Uint8List key) async {
+      final database = await openAppDatabase(
+        keys: DatabaseKeyStore(FakeKeyStoreApi(key: key)),
+        directory: dir,
+      );
+      try {
+        return (await database.customSelect('SELECT value FROM probe').getSingle()).read<int>('value');
+      } finally {
+        await database.close();
+      }
+    }
+
+    List<String> leftovers() =>
+        dir.listSync().map((e) => p.basename(e.path)).where((n) => n.contains('restore')).toList();
+
+    test('switches in, then removes the old data', () async {
+      final key = _key(5);
+      await writeProbe(databaseFile().path, key, 1);
+      await writeProbe(p.join(dir.path, restoreFileName), key, 2);
+
+      expect(await probeOf(dir, key), 2, reason: 'the restored data');
+      expect(leftovers(), isEmpty, reason: 'nothing waits aside any more');
+    });
+
+    test('a restored file that does not open is dropped and the old data opens', () async {
+      final key = _key(6);
+      await writeProbe(databaseFile().path, key, 1);
+      File(p.join(dir.path, restoreFileName)).writeAsStringSync('not a database');
+
+      expect(await probeOf(dir, key), 1, reason: 'the old data is back');
+      expect(leftovers(), isEmpty);
+    });
+  });
 }
+
+String _hexOf(Uint8List key) => key.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
 
 Uint8List _key(int seed) => Uint8List.fromList(List.generate(32, (i) => (i * 7 + seed) & 0xff));
 

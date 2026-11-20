@@ -108,7 +108,9 @@ void main() {
     expect(find.textContaining('can’t reach the backup folder'), findsOneWidget);
   });
 
-  testWidgets('weekly is off until Phase 7; restore and passphrase changes say when they come', (tester) async {
+  testWidgets('weekly is off until Phase 7; passphrase changes say when they come; Restore opens its sheet', (
+    tester,
+  ) async {
     final (engine, _) = await pumpPage(tester);
     await tester.runAsync(
       () => engine.setUp(
@@ -124,8 +126,7 @@ void main() {
     await tester.pumpAndSettle(const Duration(seconds: 3));
     await tester.ensureVisible(find.text('Restore from a backup file'));
     await tester.tap(find.text('Restore from a backup file'));
-    await tester.pump();
-    expect(find.text('Restore comes in the next update'), findsOneWidget);
-    await tester.pumpAndSettle(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+    expect(find.text('Restore from a backup'), findsOneWidget, reason: 'the restore sheet opens');
   });
 }

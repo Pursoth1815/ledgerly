@@ -1,15 +1,18 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:loopd/core/backup/backup_engine.dart';
 import 'package:loopd/core/database/app_database.dart';
+import 'package:loopd/core/database/database_opener.dart';
 import 'package:loopd/core/database/encrypted_executor.dart';
 import 'package:loopd/core/errors/app_exception.dart';
 import 'package:loopd/core/ledger/ledger_engine.dart';
 import 'package:loopd/core/ledger/ledger_types.dart';
+import 'package:path/path.dart' as p;
 import 'package:sqlite3/sqlite3.dart';
 
 import '../../support/fake_backup_platform.dart';
@@ -139,5 +142,107 @@ void main() {
     await expectLater(engine.backUpNow(), fails(BackupFailure.busy));
     platform.holdWrite!.complete();
     await first;
+  });
+
+  group('restore', () {
+    late Directory dataDir;
+    final phoneKey = Uint8List.fromList(List.generate(32, (i) => (i * 11 + 3) & 0xff));
+    String hex(Uint8List k) => k.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+
+    /// A second phone: its own empty database and folders, the same fake folder.
+    BackupEngine otherPhone() {
+      final other = AppDatabase(NativeDatabase.memory());
+      addTearDown(other.close);
+      return BackupEngine(
+        other,
+        platform,
+        workDir: () async => work,
+        dataDir: () async => dataDir,
+        phoneKey: () async => phoneKey,
+        clock: () => now,
+      );
+    }
+
+    setUp(() async {
+      dataDir = await Directory(p.join(work.path, 'data')).create();
+      final ledger = LedgerEngine(db, clock: () => now);
+      await ledger.ensureDefaults();
+      final primary = await ledger.addAccount(kind: AccountKind.bank, name: 'Primary', last4: '2210');
+      await ledger.recordExpense(
+        amountPaise: 32000,
+        method: PaymentMethod.upi,
+        fundingAccountId: primary,
+        categoryId: 'category-food',
+        occurredAt: now,
+      );
+      await engine.setUp(passphrase: 'a long made up phrase', folder: folder);
+      await engine.backUpNow();
+    });
+
+    test('restores into a file ready for the next start, under this phone\'s key', () async {
+      platform.writable = false; // the other phone cannot reach the first one's folder
+      final steps = <RestoreStep>[];
+      await otherPhone().restore(
+        folderUri: folder.uri,
+        indexName: 'loopd-x.lpdb',
+        passphrase: 'a long made up phrase',
+        onStep: steps.add,
+      );
+
+      expect(steps, RestoreStep.values);
+      expect(platform.calls, containsAllInOrder(['open', 'check', 'extract']));
+      final ready = File(p.join(dataDir.path, restoreFileName));
+      expect(ready.existsSync(), isTrue);
+      expect(Directory(p.join(dataDir.path, 'restore')).existsSync(), isFalse, reason: 'staging is cleaned up');
+      expect(dataDir.listSync().map((e) => p.basename(e.path)), [restoreFileName], reason: 'one file, no WAL');
+
+      final restored = sqlite3.open(ready.path);
+      try {
+        applyEncryption(restored, hex(phoneKey));
+        expect(restored.select("SELECT name FROM accounts WHERE kind = 'bank'").single['name'], 'Primary');
+        expect(
+          restored.select('SELECT COUNT(*) AS n FROM backup_configs').single['n'],
+          0,
+          reason: 'other phone folder',
+        );
+        expect(restored.select('SELECT COUNT(*) AS n FROM backup_runs').single['n'], 0);
+      } finally {
+        restored.close();
+      }
+    });
+
+    test('a wrong passphrase leaves nothing behind', () async {
+      await expectLater(
+        otherPhone().restore(folderUri: folder.uri, indexName: 'loopd-x.lpdb', passphrase: 'not the one at all'),
+        fails(BackupFailure.wrongPassphrase),
+      );
+      expect(dataDir.listSync(), isEmpty);
+    });
+
+    test('a backup from a newer Loopd is refused before anything is taken out', () async {
+      platform.backupSchemaVersion = 99;
+      await expectLater(
+        otherPhone().restore(folderUri: folder.uri, indexName: 'loopd-x.lpdb', passphrase: 'a long made up phrase'),
+        fails(BackupFailure.notABackup),
+      );
+      expect(platform.calls, isNot(contains('extract')));
+      expect(dataDir.listSync(), isEmpty);
+    });
+
+    test('data that fails the ledger check is refused', () async {
+      // Break one posting so the transaction no longer sums to zero.
+      await db.customStatement('UPDATE postings SET amount_paise = amount_paise + 1 WHERE amount_paise > 0');
+      await engine.backUpNow();
+      await expectLater(
+        otherPhone().restore(folderUri: folder.uri, indexName: 'loopd-x.lpdb', passphrase: 'a long made up phrase'),
+        fails(BackupFailure.verifyFailed),
+      );
+      expect(dataDir.listSync(), isEmpty);
+    });
+
+    test('Restart Loopd asks the phone to start again', () async {
+      await otherPhone().restartToFinish();
+      expect(platform.calls.last, 'restart');
+    });
   });
 }

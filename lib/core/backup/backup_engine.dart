@@ -1,13 +1,20 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
+import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../database/app_database.dart';
+import '../database/database_opener.dart';
+import '../database/encrypted_executor.dart';
 import '../errors/app_exception.dart';
+import '../ledger/ledger_engine.dart';
+import '../platform/platform_api.g.dart';
+import '../security/database_key_store.dart';
 import 'backup_dao.dart';
 import 'backup_platform.dart';
 
@@ -32,6 +39,9 @@ class BackupStatus {
 /// The steps of Back up now, for its progress.
 enum BackupStage { copying, encrypting, checking, tidying }
 
+/// The steps of a restore, as the restore sheet ticks them off (mockup 10j).
+enum RestoreStep { unlocking, checkingParts, restoring, checkingData, switching }
+
 /// Backups (ADR 0011): setup, Back up now with a read-back check, and keeping
 /// the last three good backups. Restore and the passphrase sheets come in the
 /// next two parts.
@@ -44,10 +54,14 @@ class BackupEngine {
     this._db,
     this._platform, {
     Future<Directory> Function()? workDir,
+    Future<Directory> Function()? dataDir,
+    Future<Uint8List> Function()? phoneKey,
     DateTime Function()? clock,
     Random? random,
   }) : _dao = BackupDao(_db),
        _workDir = workDir ?? getTemporaryDirectory,
+       _dataDir = dataDir ?? getApplicationSupportDirectory,
+       _phoneKey = phoneKey ?? (() => DatabaseKeyStore(KeyStoreApi()).databaseKey(createIfMissing: false)),
        _clock = clock ?? DateTime.now,
        _random = random ?? Random.secure();
 
@@ -55,6 +69,12 @@ class BackupEngine {
   final BackupDao _dao;
   final BackupPlatform _platform;
   final Future<Directory> Function() _workDir;
+
+  /// Where the database lives; a restore leaves its file here.
+  final Future<Directory> Function() _dataDir;
+
+  /// This phone's database key, which a restored database is re-encrypted with.
+  final Future<Uint8List> Function() _phoneKey;
   final DateTime Function() _clock;
   final Random _random;
   bool _running = false;
@@ -152,6 +172,97 @@ class BackupEngine {
           if (file.existsSync()) file.deleteSync();
         }
       }
+    }
+  }
+
+  /// The backups in [folderUri], newest first.
+  Future<List<FoundBackup>> listBackups(String folderUri) => _platform.listBackups(folderUri);
+
+  /// Restores [indexName] from [folderUri] (ADR 0011): unlock it with
+  /// [passphrase], read every part back, take the database out into a staging
+  /// area, check it (integrity, migrations, the ledger's health check), and
+  /// re-encrypt it with this phone's key. It is then left ready as
+  /// [restoreFileName]; Loopd switches it in when it starts again
+  /// ([restartToFinish]). Nothing on the phone changes until then, and a
+  /// failure leaves nothing behind.
+  Future<void> restore({
+    required String folderUri,
+    required String indexName,
+    required String passphrase,
+    void Function(RestoreStep step)? onStep,
+  }) async {
+    if (_running) throw const BackupException(BackupFailure.busy);
+    _running = true;
+    final dir = await _dataDir();
+    final staging = Directory(p.join(dir.path, 'restore'));
+    try {
+      if (staging.existsSync()) staging.deleteSync(recursive: true);
+      staging.createSync(recursive: true);
+      final incoming = File(p.join(staging.path, 'incoming.db'));
+
+      onStep?.call(RestoreStep.unlocking);
+      final opened = await _platform.openBackup(folderUri: folderUri, indexName: indexName, passphrase: passphrase);
+      if (opened.schemaVersion > _db.schemaVersion) throw const BackupException(BackupFailure.notABackup);
+
+      onStep?.call(RestoreStep.checkingParts);
+      await _platform.verifyOpenedBackup();
+
+      onStep?.call(RestoreStep.restoring);
+      final key = await _platform.extractOpenedDatabase(incoming.path);
+
+      onStep?.call(RestoreStep.checkingData);
+      await _prepareRestored(incoming, key);
+
+      onStep?.call(RestoreStep.switching);
+      final ready = File(p.join(dir.path, restoreFileName));
+      if (ready.existsSync()) ready.deleteSync();
+      incoming.renameSync(ready.path);
+    } on BackupException {
+      rethrow;
+    } on Exception {
+      throw const BackupException(BackupFailure.writeFailed);
+    } finally {
+      _running = false;
+      if (staging.existsSync()) staging.deleteSync(recursive: true);
+    }
+  }
+
+  /// Starts Loopd again, so the restored database is switched in.
+  Future<void> restartToFinish() => _platform.restartApp();
+
+  /// Opens the restored copy with its own key, checks it, brings it up to
+  /// this version, and re-encrypts it with this phone's key as one file.
+  Future<void> _prepareRestored(File file, String backupKeyHex) async {
+    final restored = AppDatabase(NativeDatabase(file, setup: (database) => applyEncryption(database, backupKeyHex)));
+    try {
+      final integrity = await restored.customSelect('PRAGMA integrity_check').get();
+      if (integrity.length != 1 || integrity.single.data.values.single != 'ok') {
+        throw const BackupException(BackupFailure.verifyFailed);
+      }
+      // Opening ran the migrations; the money must still add up.
+      if ((await LedgerEngine(restored).healthCheck()).isNotEmpty) {
+        throw const BackupException(BackupFailure.verifyFailed);
+      }
+      await _forgetUnreachableFolders(restored);
+      final phoneKey = await _phoneKey();
+      final hex = phoneKey.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+      await restored.customStatement("PRAGMA rekey = \"x'$hex'\"");
+    } finally {
+      // Closing the last connection folds the WAL back in, leaving one file.
+      await restored.close();
+    }
+  }
+
+  /// A backup from another phone carries that phone's folder, which this one
+  /// cannot reach: drop it, so backup here starts with its own setup.
+  Future<void> _forgetUnreachableFolders(AppDatabase restored) async {
+    final dao = BackupDao(restored);
+    final config = await dao.config();
+    if (config != null && !await _platform.canWrite(config.folderUri)) {
+      await restored.customStatement('DELETE FROM backup_configs');
+    }
+    for (final run in await dao.runs()) {
+      if (!await _platform.canWrite(run.folderUri)) await dao.deleteRun(run.id);
     }
   }
 

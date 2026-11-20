@@ -127,6 +127,35 @@ class BackupWritten {
   int totalBytes;
 }
 
+/// A backup found in a folder, from its file names (no passphrase needed).
+class FoundBackupInfo {
+  FoundBackupInfo({required this.indexName, required this.runId, required this.parts, required this.totalBytes});
+
+  String indexName;
+
+  /// Starts with the local date and time it was made: `20261115-020000-4f2a`.
+  String runId;
+  int parts;
+  int totalBytes;
+}
+
+/// What an unlocked backup says about itself.
+class OpenedBackupInfo {
+  OpenedBackupInfo({
+    required this.runId,
+    required this.createdAt,
+    required this.appVersion,
+    required this.schemaVersion,
+    required this.parts,
+  });
+
+  String runId;
+  int createdAt;
+  String appVersion;
+  int schemaVersion;
+  int parts;
+}
+
 /// Encrypted backups (ADR 0011). Errors are `PlatformException`s whose `code`
 /// is one of: `not_set_up`, `wrong_passphrase`, `keystore_unavailable`,
 /// `folder_lost`, `out_of_space`, `write_failed`, `verify_failed`,
@@ -159,4 +188,26 @@ abstract class BackupApi {
   /// Removes [names] from the folder; files already gone are fine.
   @async
   void deleteFiles(String folderUri, List<String> names);
+
+  /// The backups in [folderUri], newest first.
+  @async
+  List<FoundBackupInfo> listBackups(String folderUri);
+
+  /// Unlocks [indexName] with [passphrase] (Argon2id, about a second) and
+  /// reads its manifest. Fails with `wrong_passphrase` or `not_a_backup`.
+  /// The unlocked backup is kept for the next two calls.
+  @async
+  OpenedBackupInfo openBackup(String folderUri, String indexName, String passphrase);
+
+  /// Reads every part of the opened backup back and checks it.
+  @async
+  void verifyOpenedBackup();
+
+  /// Writes the opened backup's database copy to [targetPath] and returns
+  /// that copy's key (hex). Forgets the unlocked backup afterwards.
+  @async
+  String extractOpenedDatabase(String targetPath);
+
+  /// Starts Loopd again, so a restored database is switched in at start-up.
+  void restartApp();
 }

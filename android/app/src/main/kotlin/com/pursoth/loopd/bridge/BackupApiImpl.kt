@@ -6,11 +6,15 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
 import android.util.Log
+import com.pursoth.loopd.MainActivity
 import com.pursoth.loopd.backup.BackupException
 import com.pursoth.loopd.backup.BackupFailure
 import com.pursoth.loopd.backup.BackupKeys
 import com.pursoth.loopd.backup.BackupReader
 import com.pursoth.loopd.backup.BackupWriter
+import com.pursoth.loopd.backup.Manifest
+import com.pursoth.loopd.backup.findBackups
+import com.google.crypto.tink.StreamingAead
 import com.pursoth.loopd.backup.DocumentTreeFolder
 import com.pursoth.loopd.backup.Passphrase
 import com.pursoth.loopd.backup.RunInfo
@@ -46,6 +50,11 @@ class BackupApiImpl private constructor(private val context: Context) : BackupAp
     )
 
     private var activity: Activity? = null
+
+    /** The backup unlocked by [openBackup], for checking and extracting it. */
+    private class Opened(val folderUri: String, val indexName: String, val aead: StreamingAead, val manifest: Manifest)
+
+    private var opened: Opened? = null
     private var pendingPick: CancellableContinuation<BackupFolderInfo?>? = null
 
     fun attach(activity: Activity?) {
@@ -128,6 +137,66 @@ class BackupApiImpl private constructor(private val context: Context) : BackupAp
         val info = context.packageManager.getPackageInfo(context.packageName, 0)
         "${info.versionName}+${info.longVersionCode}"
     }.getOrDefault("unknown")
+
+    override suspend fun listBackups(folderUri: String): List<FoundBackupInfo> = work("list") {
+        findBackups(folder(folderUri)).map { FoundBackupInfo(it.indexName, it.runId, it.parts.toLong(), it.totalBytes) }
+    }
+
+    override suspend fun openBackup(folderUri: String, indexName: String, passphrase: String): OpenedBackupInfo =
+        work("open") {
+            opened = null
+            val folder = folder(folderUri)
+            val reader = BackupReader(folder)
+            val wrap = reader.header(indexName)
+            val bytes = passphrase.toByteArray(Charsets.UTF_8)
+            val aead = try {
+                BackupKeys.open(wrap, bytes)
+            } finally {
+                bytes.fill(0)
+            }
+            val manifest = reader.manifest(indexName, aead)
+            opened = Opened(folderUri, indexName, aead, manifest)
+            OpenedBackupInfo(manifest.runId, manifest.createdAt, manifest.appVersion, manifest.schemaVersion.toLong(), manifest.parts.size.toLong())
+        }
+
+    override suspend fun verifyOpenedBackup() = work("check") {
+        val o = opened ?: throw BackupException(BackupFailure.NOT_A_BACKUP, "No backup is open")
+        BackupReader(folder(o.folderUri)).verify(o.indexName, o.aead)
+        Unit
+    }
+
+    override suspend fun extractOpenedDatabase(targetPath: String): String = work("extract") {
+        val o = opened ?: throw BackupException(BackupFailure.NOT_A_BACKUP, "No backup is open")
+        try {
+            val entry = o.manifest.entries.firstOrNull { it.name == "database" }
+                ?: throw BackupException(BackupFailure.NOT_A_BACKUP, "No database in this backup")
+            val key = entry.meta["key"] ?: throw BackupException(BackupFailure.NOT_A_BACKUP, "No key for the database")
+            val target = File(targetPath)
+            target.parentFile?.mkdirs()
+            target.outputStream().use { out -> BackupReader(folder(o.folderUri)).extract(o.manifest, entry, o.aead, out) }
+            if (target.length() != entry.size) {
+                target.delete()
+                throw BackupException(BackupFailure.VERIFY_FAILED, "The database came out the wrong size")
+            }
+            key
+        } finally {
+            opened = null
+        }
+    }
+
+    override fun restartApp() {
+        Log.i(TAG, "restart_for_restore")
+        // Loopd's own screen by name: profile builds have a second launcher
+        // icon (the Phase 0B spike lab), which the package's launch intent
+        // could pick instead.
+        val launch = Intent(context, MainActivity::class.java)
+            .setAction(Intent.ACTION_MAIN)
+            .addCategory(Intent.CATEGORY_LAUNCHER)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        context.startActivity(launch)
+        // A fresh process, so the database is opened (and the restore switched in) from the start.
+        android.os.Process.killProcess(android.os.Process.myPid())
+    }
 
     private fun folder(uri: String): DocumentTreeFolder {
         if (!canWrite(uri)) throw BackupException(BackupFailure.FOLDER_LOST, "No access to the folder")

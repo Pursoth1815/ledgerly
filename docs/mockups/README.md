@@ -226,6 +226,15 @@ Built from screens 4, 4b and 4c, with these additions the mockups do not show:
 - **Capture button:** steps aside while any sheet or dialog is open, on every tab (owner, 18 Nov 2026).
 - **Toasts** ("Added Savings", "Cash in hand is now ₹2,350") slide down at the top of the screen, under the status bar, over pages and sheets alike (owner, 18 Nov 2026). The Review mockup's toast with Undo sits at the bottom; when the Review Inbox is built (Phase 3) it moves to the top too.
 
+## Phase 2, part 6b: restore (20 Nov 2026)
+
+Built from screen 10j, opened from Restore from a backup file on the Backup & restore sheet:
+
+- **Choosing:** the backups in the backup folder are listed newest first and the newest is chosen, shown as its file name and "Backed up Sun 15 Nov, 02:00 · 43.6 MB · 1 part". **Change** lists every backup and offers Another folder. On a new phone (no backup folder yet) the sheet first asks to **Choose the folder with your backups**; a folder with none says so.
+- **Passphrase of this backup**, the red note, and the red **Replace with this backup**. A wrong passphrase shows "That passphrase doesn't open this backup." in the red error box; a backup made by a newer Loopd, or one that fails its checks, says so too, and nothing changes.
+- **The five steps** tick off as they finish. The last reads **Ready to switch over** rather than the mockup's "Switched over": the restored data is checked, re-encrypted with this phone's key and left ready, and Loopd switches it in when it starts again. **Restart Loopd** does that. The old data is moved aside first and deleted only once the restored data opens; if it does not open, the old data comes straight back. The sheet cannot be closed while a restore runs.
+- A backup from another phone does not bring that phone's backup folder with it; backup is set up again on this one.
+
 ## Phase 2, part 6a: backup (19 Nov 2026)
 
 Built from screens 10f (Backup & restore) and 10i (Set up backup), with these changes:

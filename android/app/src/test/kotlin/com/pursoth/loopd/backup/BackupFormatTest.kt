@@ -168,6 +168,20 @@ class BackupFormatTest {
     }
 
     @Test
+    fun findsBackupsInAFolderNewestFirstAndIgnoresOtherFiles() {
+        keys.setUp(passphrase)
+        write(listOf(SourceEntry("database", source("a.db", 10_000, 6), emptyMap())), run = "20261110-090000-aaaa")
+        write(listOf(SourceEntry("database", source("b.db", 10_000, 7), emptyMap())), run = "20261112-090000-bbbb")
+        File(folderDir, "loopd-spike-test.bin").writeText("left over")
+        File(folderDir, "holiday.jpg").writeText("not ours")
+        val found = findBackups(folder)
+        assertEquals(listOf("20261112-090000-bbbb", "20261110-090000-aaaa"), found.map { it.runId })
+        assertEquals(1, found[0].parts)
+        val own = folder.sizes().filterKeys { it.startsWith("loopd-20261112") }.values.sum()
+        assertEquals(own, found[0].totalBytes)
+    }
+
+    @Test
     fun aFileThatIsNotABackupIsSaidSo() {
         File(folderDir.apply { mkdirs() }, "notes.lpdb").writeText("hello")
         try {

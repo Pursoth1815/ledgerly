@@ -326,6 +326,127 @@ class BackupWritten {
   }
 }
 
+/// A backup found in a folder, from its file names (no passphrase needed).
+class FoundBackupInfo {
+  FoundBackupInfo({required this.indexName, required this.runId, required this.parts, required this.totalBytes});
+
+  String indexName;
+
+  /// Starts with the local date and time it was made: `20261115-020000-4f2a`.
+  String runId;
+
+  int parts;
+
+  int totalBytes;
+
+  List<Object?> _toList() {
+    return <Object?>[indexName, runId, parts, totalBytes];
+  }
+
+  Object encode() {
+    return _toList();
+  }
+
+  static FoundBackupInfo decode(Object result) {
+    result as List<Object?>;
+    return FoundBackupInfo(
+      indexName: result[0]! as String,
+      runId: result[1]! as String,
+      parts: result[2]! as int,
+      totalBytes: result[3]! as int,
+    );
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  bool operator ==(Object other) {
+    if (other is! FoundBackupInfo || other.runtimeType != runtimeType) {
+      return false;
+    }
+    if (identical(this, other)) {
+      return true;
+    }
+    return _deepEquals(indexName, other.indexName) &&
+        _deepEquals(runId, other.runId) &&
+        _deepEquals(parts, other.parts) &&
+        _deepEquals(totalBytes, other.totalBytes);
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  int get hashCode => _deepHash(<Object?>[runtimeType, ..._toList()]);
+
+  @override
+  String toString() {
+    return 'FoundBackupInfo(indexName: $indexName, runId: $runId, parts: $parts, totalBytes: $totalBytes)';
+  }
+}
+
+/// What an unlocked backup says about itself.
+class OpenedBackupInfo {
+  OpenedBackupInfo({
+    required this.runId,
+    required this.createdAt,
+    required this.appVersion,
+    required this.schemaVersion,
+    required this.parts,
+  });
+
+  String runId;
+
+  int createdAt;
+
+  String appVersion;
+
+  int schemaVersion;
+
+  int parts;
+
+  List<Object?> _toList() {
+    return <Object?>[runId, createdAt, appVersion, schemaVersion, parts];
+  }
+
+  Object encode() {
+    return _toList();
+  }
+
+  static OpenedBackupInfo decode(Object result) {
+    result as List<Object?>;
+    return OpenedBackupInfo(
+      runId: result[0]! as String,
+      createdAt: result[1]! as int,
+      appVersion: result[2]! as String,
+      schemaVersion: result[3]! as int,
+      parts: result[4]! as int,
+    );
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  bool operator ==(Object other) {
+    if (other is! OpenedBackupInfo || other.runtimeType != runtimeType) {
+      return false;
+    }
+    if (identical(this, other)) {
+      return true;
+    }
+    return _deepEquals(runId, other.runId) &&
+        _deepEquals(createdAt, other.createdAt) &&
+        _deepEquals(appVersion, other.appVersion) &&
+        _deepEquals(schemaVersion, other.schemaVersion) &&
+        _deepEquals(parts, other.parts);
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  int get hashCode => _deepHash(<Object?>[runtimeType, ..._toList()]);
+
+  @override
+  String toString() {
+    return 'OpenedBackupInfo(runId: $runId, createdAt: $createdAt, appVersion: $appVersion, schemaVersion: $schemaVersion, parts: $parts)';
+  }
+}
+
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
   @override
@@ -348,6 +469,12 @@ class _PigeonCodec extends StandardMessageCodec {
     } else if (value is BackupWritten) {
       buffer.putUint8(133);
       writeValue(buffer, value.encode());
+    } else if (value is FoundBackupInfo) {
+      buffer.putUint8(134);
+      writeValue(buffer, value.encode());
+    } else if (value is OpenedBackupInfo) {
+      buffer.putUint8(135);
+      writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
     }
@@ -367,6 +494,10 @@ class _PigeonCodec extends StandardMessageCodec {
         return BackupRequest.decode(readValue(buffer)!);
       case 133:
         return BackupWritten.decode(readValue(buffer)!);
+      case 134:
+        return FoundBackupInfo.decode(readValue(buffer)!);
+      case 135:
+        return OpenedBackupInfo.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -668,6 +799,91 @@ class BackupApi {
       binaryMessenger: pigeonVar_binaryMessenger,
     );
     final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[folderUri, names]);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+    _extractReplyValueOrThrow(pigeonVar_replyList, pigeonVar_channelName, isNullValid: true);
+  }
+
+  /// The backups in [folderUri], newest first.
+  Future<List<FoundBackupInfo>> listBackups(String folderUri) async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.loopd.BackupApi.listBackups$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[folderUri]);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+    final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: false,
+    );
+    return (pigeonVar_replyValue! as List<Object?>).cast<FoundBackupInfo>();
+  }
+
+  /// Unlocks [indexName] with [passphrase] (Argon2id, about a second) and
+  /// reads its manifest. Fails with `wrong_passphrase` or `not_a_backup`.
+  /// The unlocked backup is kept for the next two calls.
+  Future<OpenedBackupInfo> openBackup(String folderUri, String indexName, String passphrase) async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.loopd.BackupApi.openBackup$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[folderUri, indexName, passphrase]);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+    final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: false,
+    );
+    return pigeonVar_replyValue! as OpenedBackupInfo;
+  }
+
+  /// Reads every part of the opened backup back and checks it.
+  Future<void> verifyOpenedBackup() async {
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.loopd.BackupApi.verifyOpenedBackup$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+    _extractReplyValueOrThrow(pigeonVar_replyList, pigeonVar_channelName, isNullValid: true);
+  }
+
+  /// Writes the opened backup's database copy to [targetPath] and returns
+  /// that copy's key (hex). Forgets the unlocked backup afterwards.
+  Future<String> extractOpenedDatabase(String targetPath) async {
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.loopd.BackupApi.extractOpenedDatabase$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[targetPath]);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+    final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: false,
+    );
+    return pigeonVar_replyValue! as String;
+  }
+
+  /// Starts Loopd again, so a restored database is switched in at start-up.
+  Future<void> restartApp() async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.loopd.BackupApi.restartApp$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     _extractReplyValueOrThrow(pigeonVar_replyList, pigeonVar_channelName, isNullValid: true);
   }

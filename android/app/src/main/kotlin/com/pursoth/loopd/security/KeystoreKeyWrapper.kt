@@ -13,20 +13,26 @@ import com.google.crypto.tink.integration.android.AndroidKeystore
  * neither user authentication nor an unlocked device, so background work can
  * use it while the phone is locked. Phase 0B checks this on the owner's phone.
  *
- * Not thread-safe, like the Tink helper: callers use one background thread.
+ * The Tink helper is not thread-safe, and the database key and backup run on
+ * different threads, so every call takes one process-wide lock: Keystore
+ * calls never overlap (ADR 0009).
  */
 class KeystoreKeyWrapper(private val alias: String) : KeyWrapper {
-    override fun hasKey(): Boolean = AndroidKeystore.hasKey(alias)
+    override fun hasKey(): Boolean = synchronized(LOCK) { AndroidKeystore.hasKey(alias) }
 
-    override fun ensureKey() {
+    override fun ensureKey() = synchronized(LOCK) {
         if (!AndroidKeystore.hasKey(alias)) {
             AndroidKeystore.generateNewAes256GcmKey(alias)
         }
     }
 
     override fun wrap(plaintext: ByteArray, associatedData: ByteArray): ByteArray =
-        AndroidKeystore.getAead(alias).encrypt(plaintext, associatedData)
+        synchronized(LOCK) { AndroidKeystore.getAead(alias).encrypt(plaintext, associatedData) }
 
     override fun unwrap(ciphertext: ByteArray, associatedData: ByteArray): ByteArray =
-        AndroidKeystore.getAead(alias).decrypt(ciphertext, associatedData)
+        synchronized(LOCK) { AndroidKeystore.getAead(alias).decrypt(ciphertext, associatedData) }
+
+    private companion object {
+        val LOCK = Any()
+    }
 }

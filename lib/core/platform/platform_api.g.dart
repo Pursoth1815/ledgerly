@@ -153,6 +153,179 @@ class JobResult {
   }
 }
 
+/// A folder picked with the system folder picker, kept with permanent access.
+class BackupFolderInfo {
+  BackupFolderInfo({required this.uri, required this.name});
+
+  /// The tree URI, kept to write there later.
+  String uri;
+
+  /// What to show, such as "Drive › Loopd backups".
+  String name;
+
+  List<Object?> _toList() {
+    return <Object?>[uri, name];
+  }
+
+  Object encode() {
+    return _toList();
+  }
+
+  static BackupFolderInfo decode(Object result) {
+    result as List<Object?>;
+    return BackupFolderInfo(uri: result[0]! as String, name: result[1]! as String);
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  bool operator ==(Object other) {
+    if (other is! BackupFolderInfo || other.runtimeType != runtimeType) {
+      return false;
+    }
+    if (identical(this, other)) {
+      return true;
+    }
+    return _deepEquals(uri, other.uri) && _deepEquals(name, other.name);
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  int get hashCode => _deepHash(<Object?>[runtimeType, ..._toList()]);
+
+  @override
+  String toString() {
+    return 'BackupFolderInfo(uri: $uri, name: $name)';
+  }
+}
+
+/// One backup run to write (ADR 0011).
+class BackupRequest {
+  BackupRequest({
+    required this.runId,
+    required this.folderUri,
+    required this.databasePath,
+    required this.databaseKeyHex,
+    required this.createdAt,
+    required this.appVersion,
+    required this.schemaVersion,
+  });
+
+  String runId;
+
+  String folderUri;
+
+  /// The encrypted database copy (`sqlcipher_export` under a fresh key).
+  String databasePath;
+
+  /// That copy's key; it travels only inside the encrypted manifest.
+  String databaseKeyHex;
+
+  int createdAt;
+
+  String appVersion;
+
+  int schemaVersion;
+
+  List<Object?> _toList() {
+    return <Object?>[runId, folderUri, databasePath, databaseKeyHex, createdAt, appVersion, schemaVersion];
+  }
+
+  Object encode() {
+    return _toList();
+  }
+
+  static BackupRequest decode(Object result) {
+    result as List<Object?>;
+    return BackupRequest(
+      runId: result[0]! as String,
+      folderUri: result[1]! as String,
+      databasePath: result[2]! as String,
+      databaseKeyHex: result[3]! as String,
+      createdAt: result[4]! as int,
+      appVersion: result[5]! as String,
+      schemaVersion: result[6]! as int,
+    );
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  bool operator ==(Object other) {
+    if (other is! BackupRequest || other.runtimeType != runtimeType) {
+      return false;
+    }
+    if (identical(this, other)) {
+      return true;
+    }
+    return _deepEquals(runId, other.runId) &&
+        _deepEquals(folderUri, other.folderUri) &&
+        _deepEquals(databasePath, other.databasePath) &&
+        _deepEquals(databaseKeyHex, other.databaseKeyHex) &&
+        _deepEquals(createdAt, other.createdAt) &&
+        _deepEquals(appVersion, other.appVersion) &&
+        _deepEquals(schemaVersion, other.schemaVersion);
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  int get hashCode => _deepHash(<Object?>[runtimeType, ..._toList()]);
+
+  @override
+  String toString() {
+    return 'BackupRequest(runId: $runId, folderUri: $folderUri, databasePath: $databasePath, databaseKeyHex: $databaseKeyHex, createdAt: $createdAt, appVersion: $appVersion, schemaVersion: $schemaVersion)';
+  }
+}
+
+/// What a run wrote.
+class BackupWritten {
+  BackupWritten({required this.indexName, required this.files, required this.totalBytes});
+
+  String indexName;
+
+  List<String> files;
+
+  int totalBytes;
+
+  List<Object?> _toList() {
+    return <Object?>[indexName, files, totalBytes];
+  }
+
+  Object encode() {
+    return _toList();
+  }
+
+  static BackupWritten decode(Object result) {
+    result as List<Object?>;
+    return BackupWritten(
+      indexName: result[0]! as String,
+      files: (result[1]! as List<Object?>).cast<String>(),
+      totalBytes: result[2]! as int,
+    );
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  bool operator ==(Object other) {
+    if (other is! BackupWritten || other.runtimeType != runtimeType) {
+      return false;
+    }
+    if (identical(this, other)) {
+      return true;
+    }
+    return _deepEquals(indexName, other.indexName) &&
+        _deepEquals(files, other.files) &&
+        _deepEquals(totalBytes, other.totalBytes);
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  int get hashCode => _deepHash(<Object?>[runtimeType, ..._toList()]);
+
+  @override
+  String toString() {
+    return 'BackupWritten(indexName: $indexName, files: $files, totalBytes: $totalBytes)';
+  }
+}
+
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
   @override
@@ -165,6 +338,15 @@ class _PigeonCodec extends StandardMessageCodec {
       writeValue(buffer, value.index);
     } else if (value is JobResult) {
       buffer.putUint8(130);
+      writeValue(buffer, value.encode());
+    } else if (value is BackupFolderInfo) {
+      buffer.putUint8(131);
+      writeValue(buffer, value.encode());
+    } else if (value is BackupRequest) {
+      buffer.putUint8(132);
+      writeValue(buffer, value.encode());
+    } else if (value is BackupWritten) {
+      buffer.putUint8(133);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -179,6 +361,12 @@ class _PigeonCodec extends StandardMessageCodec {
         return value == null ? null : JobOutcome.values[value];
       case 130:
         return JobResult.decode(readValue(buffer)!);
+      case 131:
+        return BackupFolderInfo.decode(readValue(buffer)!);
+      case 132:
+        return BackupRequest.decode(readValue(buffer)!);
+      case 133:
+        return BackupWritten.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -352,5 +540,135 @@ abstract class BackgroundJobApi {
         });
       }
     }
+  }
+}
+
+/// Encrypted backups (ADR 0011). Errors are `PlatformException`s whose `code`
+/// is one of: `not_set_up`, `wrong_passphrase`, `keystore_unavailable`,
+/// `folder_lost`, `out_of_space`, `write_failed`, `verify_failed`,
+/// `not_a_backup`, `cancelled`.
+class BackupApi {
+  /// Constructor for [BackupApi]. The [binaryMessenger] named argument is
+  /// available for dependency injection. If it is left null, the default
+  /// BinaryMessenger will be used which routes to the host platform.
+  BackupApi({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
+    : pigeonVar_binaryMessenger = binaryMessenger,
+      pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+
+  final BinaryMessenger? pigeonVar_binaryMessenger;
+  static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
+
+  final String pigeonVar_messageChannelSuffix;
+
+  /// Opens the system folder picker; null when nothing was picked.
+  Future<BackupFolderInfo?> pickFolder() async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.loopd.BackupApi.pickFolder$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+    final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: true,
+    );
+    return pigeonVar_replyValue as BackupFolderInfo?;
+  }
+
+  /// Whether Loopd can still write to [folderUri].
+  Future<bool> canWrite(String folderUri) async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.loopd.BackupApi.canWrite$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[folderUri]);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+    final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: false,
+    );
+    return pigeonVar_replyValue! as bool;
+  }
+
+  /// Makes the backup key, wrapped by the Keystore and by [passphrase]
+  /// (Argon2id, about a second).
+  Future<void> setUp(String passphrase) async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.loopd.BackupApi.setUp$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[passphrase]);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+    _extractReplyValueOrThrow(pigeonVar_replyList, pigeonVar_channelName, isNullValid: true);
+  }
+
+  /// Whether a backup key exists on this phone.
+  Future<bool> isSetUp() async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.loopd.BackupApi.isSetUp$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+    final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: false,
+    );
+    return pigeonVar_replyValue! as bool;
+  }
+
+  /// Writes the parts, then the index.
+  Future<BackupWritten> writeBackup(BackupRequest request) async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.loopd.BackupApi.writeBackup$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[request]);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+    final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: false,
+    );
+    return pigeonVar_replyValue! as BackupWritten;
+  }
+
+  /// Reads the backup in [indexName] back and checks every part.
+  Future<void> verifyBackup(String folderUri, String indexName) async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.loopd.BackupApi.verifyBackup$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[folderUri, indexName]);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+    _extractReplyValueOrThrow(pigeonVar_replyList, pigeonVar_channelName, isNullValid: true);
+  }
+
+  /// Removes [names] from the folder; files already gone are fine.
+  Future<void> deleteFiles(String folderUri, List<String> names) async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.loopd.BackupApi.deleteFiles$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[folderUri, names]);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+    _extractReplyValueOrThrow(pigeonVar_replyList, pigeonVar_channelName, isNullValid: true);
   }
 }

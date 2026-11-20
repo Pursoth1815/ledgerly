@@ -43,13 +43,13 @@ Code depends downward only, and there are no cycles. `app/` is the only place th
 | `lib/core/background/` | The job runner, the `BackgroundJob` interface and job checkpoints (ADR 0013) | Feature rules | [0B] |
 | `lib/core/settings/` | App settings in the `app_settings` table, starting with the theme; later lock timeout and switches | | [1] |
 | `lib/core/ledger/` | Accounts, cards, Cash in hand, categories, transactions, postings, money rules: `LedgerEngine` (the only writer of money), `ledger_rules.dart` (posting shapes), `LedgerDao` (used only here) | Screens | [2] |
-| `lib/core/backup/` | Snapshot, archive, verification, retention, restore | Crypto internals | Phase 2, completed in 7 |
+| `lib/core/backup/` | `BackupEngine`: setup, Back up now (an encrypted `sqlcipher_export` copy of the database), the read-back check, keeping the last three; restore from Phase 2, part 6b. `BackupPlatform` is the bridge to the Kotlin half (`android/.../backup/`: the backup key, Argon2id, the format and the folder); `BackupDao` (used only here) | Crypto internals | Phase 2, completed in 7 |
 | `lib/core/capture_inbox/` | Drafts, identity hash, transaction sources, merchant memory | Saving final records itself | Phase 3 |
 | `lib/core/reminders/` | The schedule worked out from records | Drawing notifications | Phase 5 |
 | `lib/core/file_store/` | Encrypted vault and ticket files | | Phase 5 |
 | `lib/design_system/` | Tokens (`loopd_colors`, `loopd_typography`, `loopd_spacing`, `loopd_motion`), the theme, and generic components | Domain types, providers, data access | [1] |
 | `assets/fonts/` | Bundled Plus Jakarta Sans 2.7.1 and JetBrains Mono 2.304, with their OFL licences | Fonts fetched at run time | [1] |
-| `lib/features/<name>/` | One module: `<name>.dart` (public API) plus `domain/`, `data/`, `presentation/` only where needed. So far `today`, `capture` (the sheet's shell; `app/` passes in what each shortcut opens), `accounts` (accounts, cards and Cash in hand) and `expenses` (the Money tab's Expenses segment with its Show all sheet, the expense form, to add or edit, and the expense categories sheet; `app/` passes in what opens Accounts and cards) | Another feature's internals; writes to another owner's tables | [1] |
+| `lib/features/<name>/` | One module: `<name>.dart` (public API) plus `domain/`, `data/`, `presentation/` only where needed. So far `today`, `capture` (the sheet's shell; `app/` passes in what each shortcut opens), `accounts` (accounts, cards and Cash in hand), `expenses` (the Money tab's Expenses segment with its Show all sheet, the expense form, to add or edit, and the expense categories sheet; `app/` passes in what opens Accounts and cards) and `backup` (the Backup & restore page and its sheets, over the `core/backup` engine) | Another feature's internals; writes to another owner's tables | [1] |
 | `packages/sms_parser/`, `packages/command_parser/` | Pure Dart parsers with fixture tests | Flutter, the database, app imports | Phases 3 and 9 |
 | `pigeons/` | The Pigeon interface definition | | [0A] |
 | `tool/` | `check_architecture.dart`, `check_apk_permissions.sh` | App code | [0A] |

@@ -226,6 +226,17 @@ Built from screens 4, 4b and 4c, with these additions the mockups do not show:
 - **Capture button:** steps aside while any sheet or dialog is open, on every tab (owner, 18 Nov 2026).
 - **Toasts** ("Added Savings", "Cash in hand is now ₹2,350") slide down at the top of the screen, under the status bar, over pages and sheets alike (owner, 18 Nov 2026). The Review mockup's toast with Undo sits at the bottom; when the Review Inbox is built (Phase 3) it moves to the top too.
 
+## Phase 2, part 6a: backup (19 Nov 2026)
+
+Built from screens 10f (Backup & restore) and 10i (Set up backup), with these changes:
+
+- **Backup & restore is a tall sheet, not a page** (owner, 19 Nov 2026; the mockup draws 10f as a page). More opens it, like Accounts and cards: it covers the whole app, tab bar included, and has no back or close button; swipe it down or press back. Set up backup opens on top of it.
+- **Before setup** the blue card says "Backups are off" with **Set up backup**; Save to, the weekly switch, the passphrase and what is inside appear once backup is set up.
+- **Back up now** steps through Copying your data, Encrypting it into the folder, Reading it back to check it and Keeping the last 3, then the card turns green: "Backed up just now". After seven days it is blue again with "A backup is due". A failure shows in the red error box, and a failed run leaves no files in the folder.
+- **What is inside** shows the last backup's size as "Money, notes and tasks" until the Vault and tickets arrive.
+- **One backup is two files** in the folder: the index (`.lpdb`) and its part (`.lpdp`); a large backup has more parts. With the last three kept, the folder holds at most six of Loopd's files, and Loopd never touches anything else there.
+- The weekly switch stays off with "Comes in Phase 7" (its battery and charging conditions are still to decide); Restore and Change passphrase say they come in the next update (parts 6b and 6c).
+
 ## Phase 2, part 4: expense categories (18 Nov 2026)
 
 Built from screens 10c and 10d (`CategorySheet.dc.html`, expense mode), with these additions:

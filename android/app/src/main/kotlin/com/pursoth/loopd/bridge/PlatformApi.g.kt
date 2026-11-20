@@ -267,6 +267,169 @@ data class JobResult (
     return "JobResult(outcome=$outcome, detail=$detail)"
   }
 }
+
+/**
+ * A folder picked with the system folder picker, kept with permanent access.
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class BackupFolderInfo (
+  /** The tree URI, kept to write there later. */
+  val uri: String,
+  /** What to show, such as "Drive › Loopd backups". */
+  val name: String
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): BackupFolderInfo {
+      val uri = pigeonVar_list[0] as String
+      val name = pigeonVar_list[1] as String
+      return BackupFolderInfo(uri, name)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      uri,
+      name,
+    )
+  }
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other.javaClass != javaClass) {
+      return false
+    }
+    if (this === other) {
+      return true
+    }
+    val other = other as BackupFolderInfo
+    return PlatformApiPigeonUtils.deepEquals(this.uri, other.uri) && PlatformApiPigeonUtils.deepEquals(this.name, other.name)
+  }
+
+  override fun hashCode(): Int {
+    var result = javaClass.hashCode()
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.uri)
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.name)
+    return result
+  }
+  override fun toString(): String {
+    return "BackupFolderInfo(uri=$uri, name=$name)"
+  }
+}
+
+/**
+ * One backup run to write (ADR 0011).
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class BackupRequest (
+  val runId: String,
+  val folderUri: String,
+  /** The encrypted database copy (`sqlcipher_export` under a fresh key). */
+  val databasePath: String,
+  /** That copy's key; it travels only inside the encrypted manifest. */
+  val databaseKeyHex: String,
+  val createdAt: Long,
+  val appVersion: String,
+  val schemaVersion: Long
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): BackupRequest {
+      val runId = pigeonVar_list[0] as String
+      val folderUri = pigeonVar_list[1] as String
+      val databasePath = pigeonVar_list[2] as String
+      val databaseKeyHex = pigeonVar_list[3] as String
+      val createdAt = pigeonVar_list[4] as Long
+      val appVersion = pigeonVar_list[5] as String
+      val schemaVersion = pigeonVar_list[6] as Long
+      return BackupRequest(runId, folderUri, databasePath, databaseKeyHex, createdAt, appVersion, schemaVersion)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      runId,
+      folderUri,
+      databasePath,
+      databaseKeyHex,
+      createdAt,
+      appVersion,
+      schemaVersion,
+    )
+  }
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other.javaClass != javaClass) {
+      return false
+    }
+    if (this === other) {
+      return true
+    }
+    val other = other as BackupRequest
+    return PlatformApiPigeonUtils.deepEquals(this.runId, other.runId) && PlatformApiPigeonUtils.deepEquals(this.folderUri, other.folderUri) && PlatformApiPigeonUtils.deepEquals(this.databasePath, other.databasePath) && PlatformApiPigeonUtils.deepEquals(this.databaseKeyHex, other.databaseKeyHex) && PlatformApiPigeonUtils.deepEquals(this.createdAt, other.createdAt) && PlatformApiPigeonUtils.deepEquals(this.appVersion, other.appVersion) && PlatformApiPigeonUtils.deepEquals(this.schemaVersion, other.schemaVersion)
+  }
+
+  override fun hashCode(): Int {
+    var result = javaClass.hashCode()
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.runId)
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.folderUri)
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.databasePath)
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.databaseKeyHex)
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.createdAt)
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.appVersion)
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.schemaVersion)
+    return result
+  }
+  override fun toString(): String {
+    return "BackupRequest(runId=$runId, folderUri=$folderUri, databasePath=$databasePath, databaseKeyHex=$databaseKeyHex, createdAt=$createdAt, appVersion=$appVersion, schemaVersion=$schemaVersion)"
+  }
+}
+
+/**
+ * What a run wrote.
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class BackupWritten (
+  val indexName: String,
+  val files: List<String>,
+  val totalBytes: Long
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): BackupWritten {
+      val indexName = pigeonVar_list[0] as String
+      val files = pigeonVar_list[1] as List<String>
+      val totalBytes = pigeonVar_list[2] as Long
+      return BackupWritten(indexName, files, totalBytes)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      indexName,
+      files,
+      totalBytes,
+    )
+  }
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other.javaClass != javaClass) {
+      return false
+    }
+    if (this === other) {
+      return true
+    }
+    val other = other as BackupWritten
+    return PlatformApiPigeonUtils.deepEquals(this.indexName, other.indexName) && PlatformApiPigeonUtils.deepEquals(this.files, other.files) && PlatformApiPigeonUtils.deepEquals(this.totalBytes, other.totalBytes)
+  }
+
+  override fun hashCode(): Int {
+    var result = javaClass.hashCode()
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.indexName)
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.files)
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.totalBytes)
+    return result
+  }
+  override fun toString(): String {
+    return "BackupWritten(indexName=$indexName, files=$files, totalBytes=$totalBytes)"
+  }
+}
 private open class PlatformApiPigeonCodec : StandardMessageCodec() {
   override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
     return when (type) {
@@ -280,6 +443,21 @@ private open class PlatformApiPigeonCodec : StandardMessageCodec() {
           JobResult.fromList(it)
         }
       }
+      131.toByte() -> {
+        (readValue(buffer) as? List<Any?>)?.let {
+          BackupFolderInfo.fromList(it)
+        }
+      }
+      132.toByte() -> {
+        (readValue(buffer) as? List<Any?>)?.let {
+          BackupRequest.fromList(it)
+        }
+      }
+      133.toByte() -> {
+        (readValue(buffer) as? List<Any?>)?.let {
+          BackupWritten.fromList(it)
+        }
+      }
       else -> super.readValueOfType(type, buffer)
     }
   }
@@ -291,6 +469,18 @@ private open class PlatformApiPigeonCodec : StandardMessageCodec() {
       }
       is JobResult -> {
         stream.write(130)
+        writeValue(stream, value.toList())
+      }
+      is BackupFolderInfo -> {
+        stream.write(131)
+        writeValue(stream, value.toList())
+      }
+      is BackupRequest -> {
+        stream.write(132)
+        writeValue(stream, value.toList())
+      }
+      is BackupWritten -> {
+        stream.write(133)
         writeValue(stream, value.toList())
       }
       else -> super.writeValue(stream, value)
@@ -488,6 +678,175 @@ class BackgroundJobApi(private val binaryMessenger: BinaryMessenger, private val
         } else {
           continuation.resumeWithException(PlatformApiPigeonUtils.createConnectionError(channelName))
         } 
+      }
+    }
+  }
+}
+/**
+ * Encrypted backups (ADR 0011). Errors are `PlatformException`s whose `code`
+ * is one of: `not_set_up`, `wrong_passphrase`, `keystore_unavailable`,
+ * `folder_lost`, `out_of_space`, `write_failed`, `verify_failed`,
+ * `not_a_backup`, `cancelled`.
+ *
+ * Generated interface from Pigeon that represents a handler of messages from Flutter.
+ */
+interface BackupApi {
+  /** Opens the system folder picker; null when nothing was picked. */
+  suspend fun pickFolder(): BackupFolderInfo?
+  /** Whether Loopd can still write to [folderUri]. */
+  fun canWrite(folderUri: String): Boolean
+  /**
+   * Makes the backup key, wrapped by the Keystore and by [passphrase]
+   * (Argon2id, about a second).
+   */
+  suspend fun setUp(passphrase: String)
+  /** Whether a backup key exists on this phone. */
+  fun isSetUp(): Boolean
+  /** Writes the parts, then the index. */
+  suspend fun writeBackup(request: BackupRequest): BackupWritten
+  /** Reads the backup in [indexName] back and checks every part. */
+  suspend fun verifyBackup(folderUri: String, indexName: String)
+  /** Removes [names] from the folder; files already gone are fine. */
+  suspend fun deleteFiles(folderUri: String, names: List<String>)
+
+  companion object {
+    /** The codec used by BackupApi. */
+    val codec: MessageCodec<Any?> by lazy {
+      PlatformApiPigeonCodec()
+    }
+    /** Sets up an instance of `BackupApi` to handle messages through the `binaryMessenger`. */
+    @JvmOverloads
+    fun setUp(binaryMessenger: BinaryMessenger, api: BackupApi?, messageChannelSuffix: String = "") {
+      val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.loopd.BackupApi.pickFolder$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                listOf(api.pickFolder())
+              } catch (exception: Throwable) {
+                PlatformApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.loopd.BackupApi.canWrite$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val folderUriArg = args[0] as String
+            val wrapped: List<Any?> = try {
+              listOf(api.canWrite(folderUriArg))
+            } catch (exception: Throwable) {
+              PlatformApiPigeonUtils.wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.loopd.BackupApi.setUp$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val passphraseArg = args[0] as String
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                api.setUp(passphraseArg)
+                listOf(null)
+              } catch (exception: Throwable) {
+                PlatformApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.loopd.BackupApi.isSetUp$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              listOf(api.isSetUp())
+            } catch (exception: Throwable) {
+              PlatformApiPigeonUtils.wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.loopd.BackupApi.writeBackup$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val requestArg = args[0] as BackupRequest
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                listOf(api.writeBackup(requestArg))
+              } catch (exception: Throwable) {
+                PlatformApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.loopd.BackupApi.verifyBackup$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val folderUriArg = args[0] as String
+            val indexNameArg = args[1] as String
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                api.verifyBackup(folderUriArg, indexNameArg)
+                listOf(null)
+              } catch (exception: Throwable) {
+                PlatformApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.loopd.BackupApi.deleteFiles$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val folderUriArg = args[0] as String
+            val namesArg = args[1] as List<String>
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                api.deleteFiles(folderUriArg, namesArg)
+                listOf(null)
+              } catch (exception: Throwable) {
+                PlatformApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
       }
     }
   }

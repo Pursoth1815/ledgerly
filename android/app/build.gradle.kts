@@ -64,15 +64,18 @@ dependencies {
     // Keystore key wrapping now; streaming file encryption from Phase 5 (ADR 0009).
     // Pinned after checking Maven Central on 2026-11-16.
     implementation("com.google.crypto.tink:tink-android:1.24.0")
-    // Argon2id for the backup passphrase (ADR 0009). Only the Phase 0B spike
-    // lab uses it so far; it moves to `implementation` with backup.
-    "profileImplementation"("org.bouncycastle:bcprov-jdk18on:1.86")
+    // Argon2id for the backup passphrase (ADR 0009), used by backup since
+    // Phase 2, part 6. 1.87 is taken once it is two weeks old.
+    implementation("org.bouncycastle:bcprov-jdk18on:1.86")
 
     // Background jobs (ADR 0013). Pinned after checking Google's Maven on
     // 2026-11-17: 2.12.0, released 23 Sep 2026.
     implementation("androidx.work:work-runtime:2.12.0")
 
     testImplementation("junit:junit:4.13.2")
+    // Android's org.json is only a stub in JVM unit tests; the backup
+    // manifest tests need the real thing.
+    testImplementation("org.json:json:20240303")
 }
 
 flutter {

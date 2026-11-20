@@ -81,3 +81,82 @@ abstract class BackgroundJobApi {
   /// checkpoint. Its `runJob` call then returns [JobOutcome.stopped].
   void stopJob(String runId);
 }
+
+/// A folder picked with the system folder picker, kept with permanent access.
+class BackupFolderInfo {
+  BackupFolderInfo({required this.uri, required this.name});
+
+  /// The tree URI, kept to write there later.
+  String uri;
+
+  /// What to show, such as "Drive › Loopd backups".
+  String name;
+}
+
+/// One backup run to write (ADR 0011).
+class BackupRequest {
+  BackupRequest({
+    required this.runId,
+    required this.folderUri,
+    required this.databasePath,
+    required this.databaseKeyHex,
+    required this.createdAt,
+    required this.appVersion,
+    required this.schemaVersion,
+  });
+
+  String runId;
+  String folderUri;
+
+  /// The encrypted database copy (`sqlcipher_export` under a fresh key).
+  String databasePath;
+
+  /// That copy's key; it travels only inside the encrypted manifest.
+  String databaseKeyHex;
+  int createdAt;
+  String appVersion;
+  int schemaVersion;
+}
+
+/// What a run wrote.
+class BackupWritten {
+  BackupWritten({required this.indexName, required this.files, required this.totalBytes});
+
+  String indexName;
+  List<String> files;
+  int totalBytes;
+}
+
+/// Encrypted backups (ADR 0011). Errors are `PlatformException`s whose `code`
+/// is one of: `not_set_up`, `wrong_passphrase`, `keystore_unavailable`,
+/// `folder_lost`, `out_of_space`, `write_failed`, `verify_failed`,
+/// `not_a_backup`, `cancelled`.
+@HostApi()
+abstract class BackupApi {
+  /// Opens the system folder picker; null when nothing was picked.
+  @async
+  BackupFolderInfo? pickFolder();
+
+  /// Whether Loopd can still write to [folderUri].
+  bool canWrite(String folderUri);
+
+  /// Makes the backup key, wrapped by the Keystore and by [passphrase]
+  /// (Argon2id, about a second).
+  @async
+  void setUp(String passphrase);
+
+  /// Whether a backup key exists on this phone.
+  bool isSetUp();
+
+  /// Writes the parts, then the index.
+  @async
+  BackupWritten writeBackup(BackupRequest request);
+
+  /// Reads the backup in [indexName] back and checks every part.
+  @async
+  void verifyBackup(String folderUri, String indexName);
+
+  /// Removes [names] from the folder; files already gone are fine.
+  @async
+  void deleteFiles(String folderUri, List<String> names);
+}

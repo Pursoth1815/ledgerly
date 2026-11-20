@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'app_database.steps.dart';
 import 'migrations/unique_category_looks.dart';
 import 'tables/background.dart';
+import 'tables/backup.dart';
 import 'tables/ledger.dart';
 import 'tables/settings.dart';
 
@@ -26,13 +27,15 @@ part 'app_database.g.dart';
     Postings,
     TransactionRevisions,
     BalanceCheckpoints,
+    BackupConfigs,
+    BackupRuns,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.executor);
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -87,6 +90,11 @@ class AppDatabase extends _$AppDatabase {
       // Misc, the new default, is added by the ledger's defaults on start.
       from6To7: (migrator, schema) async {
         await migrator.alterTable(TableMigration(schema.categories));
+      },
+      // Phase 2, part 6: backup settings and runs (ADR 0011).
+      from7To8: (migrator, schema) async {
+        await migrator.createTable(schema.backupConfigs);
+        await migrator.createTable(schema.backupRuns);
       },
     ),
     beforeOpen: (details) async {

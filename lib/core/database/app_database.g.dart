@@ -3127,6 +3127,658 @@ class BalanceCheckpointsCompanion extends UpdateCompanion<BalanceCheckpoint> {
   }
 }
 
+class $BackupConfigsTable extends BackupConfigs with TableInfo<$BackupConfigsTable, BackupConfig> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BackupConfigsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    check: () => id.equals(1),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _folderUriMeta = const VerificationMeta('folderUri');
+  @override
+  late final GeneratedColumn<String> folderUri = GeneratedColumn<String>(
+    'folder_uri',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _folderNameMeta = const VerificationMeta('folderName');
+  @override
+  late final GeneratedColumn<String> folderName = GeneratedColumn<String>(
+    'folder_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _setUpAtMeta = const VerificationMeta('setUpAt');
+  @override
+  late final GeneratedColumn<int> setUpAt = GeneratedColumn<int>(
+    'set_up_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, folderUri, folderName, setUpAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'backup_configs';
+  @override
+  VerificationContext validateIntegrity(Insertable<BackupConfig> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('folder_uri')) {
+      context.handle(_folderUriMeta, folderUri.isAcceptableOrUnknown(data['folder_uri']!, _folderUriMeta));
+    } else if (isInserting) {
+      context.missing(_folderUriMeta);
+    }
+    if (data.containsKey('folder_name')) {
+      context.handle(_folderNameMeta, folderName.isAcceptableOrUnknown(data['folder_name']!, _folderNameMeta));
+    } else if (isInserting) {
+      context.missing(_folderNameMeta);
+    }
+    if (data.containsKey('set_up_at')) {
+      context.handle(_setUpAtMeta, setUpAt.isAcceptableOrUnknown(data['set_up_at']!, _setUpAtMeta));
+    } else if (isInserting) {
+      context.missing(_setUpAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  BackupConfig map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BackupConfig(
+      id: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      folderUri: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}folder_uri'])!,
+      folderName: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}folder_name'])!,
+      setUpAt: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}set_up_at'])!,
+    );
+  }
+
+  @override
+  $BackupConfigsTable createAlias(String alias) {
+    return $BackupConfigsTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class BackupConfig extends DataClass implements Insertable<BackupConfig> {
+  final int id;
+
+  /// The folder picked in the system picker (a tree URI), and what to show.
+  final String folderUri;
+  final String folderName;
+  final int setUpAt;
+  const BackupConfig({required this.id, required this.folderUri, required this.folderName, required this.setUpAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['folder_uri'] = Variable<String>(folderUri);
+    map['folder_name'] = Variable<String>(folderName);
+    map['set_up_at'] = Variable<int>(setUpAt);
+    return map;
+  }
+
+  BackupConfigsCompanion toCompanion(bool nullToAbsent) {
+    return BackupConfigsCompanion(
+      id: Value(id),
+      folderUri: Value(folderUri),
+      folderName: Value(folderName),
+      setUpAt: Value(setUpAt),
+    );
+  }
+
+  factory BackupConfig.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BackupConfig(
+      id: serializer.fromJson<int>(json['id']),
+      folderUri: serializer.fromJson<String>(json['folderUri']),
+      folderName: serializer.fromJson<String>(json['folderName']),
+      setUpAt: serializer.fromJson<int>(json['setUpAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'folderUri': serializer.toJson<String>(folderUri),
+      'folderName': serializer.toJson<String>(folderName),
+      'setUpAt': serializer.toJson<int>(setUpAt),
+    };
+  }
+
+  BackupConfig copyWith({int? id, String? folderUri, String? folderName, int? setUpAt}) => BackupConfig(
+    id: id ?? this.id,
+    folderUri: folderUri ?? this.folderUri,
+    folderName: folderName ?? this.folderName,
+    setUpAt: setUpAt ?? this.setUpAt,
+  );
+  BackupConfig copyWithCompanion(BackupConfigsCompanion data) {
+    return BackupConfig(
+      id: data.id.present ? data.id.value : this.id,
+      folderUri: data.folderUri.present ? data.folderUri.value : this.folderUri,
+      folderName: data.folderName.present ? data.folderName.value : this.folderName,
+      setUpAt: data.setUpAt.present ? data.setUpAt.value : this.setUpAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BackupConfig(')
+          ..write('id: $id, ')
+          ..write('folderUri: $folderUri, ')
+          ..write('folderName: $folderName, ')
+          ..write('setUpAt: $setUpAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, folderUri, folderName, setUpAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BackupConfig &&
+          other.id == this.id &&
+          other.folderUri == this.folderUri &&
+          other.folderName == this.folderName &&
+          other.setUpAt == this.setUpAt);
+}
+
+class BackupConfigsCompanion extends UpdateCompanion<BackupConfig> {
+  final Value<int> id;
+  final Value<String> folderUri;
+  final Value<String> folderName;
+  final Value<int> setUpAt;
+  const BackupConfigsCompanion({
+    this.id = const Value.absent(),
+    this.folderUri = const Value.absent(),
+    this.folderName = const Value.absent(),
+    this.setUpAt = const Value.absent(),
+  });
+  BackupConfigsCompanion.insert({
+    this.id = const Value.absent(),
+    required String folderUri,
+    required String folderName,
+    required int setUpAt,
+  }) : folderUri = Value(folderUri),
+       folderName = Value(folderName),
+       setUpAt = Value(setUpAt);
+  static Insertable<BackupConfig> custom({
+    Expression<int>? id,
+    Expression<String>? folderUri,
+    Expression<String>? folderName,
+    Expression<int>? setUpAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (folderUri != null) 'folder_uri': folderUri,
+      if (folderName != null) 'folder_name': folderName,
+      if (setUpAt != null) 'set_up_at': setUpAt,
+    });
+  }
+
+  BackupConfigsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? folderUri,
+    Value<String>? folderName,
+    Value<int>? setUpAt,
+  }) {
+    return BackupConfigsCompanion(
+      id: id ?? this.id,
+      folderUri: folderUri ?? this.folderUri,
+      folderName: folderName ?? this.folderName,
+      setUpAt: setUpAt ?? this.setUpAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (folderUri.present) {
+      map['folder_uri'] = Variable<String>(folderUri.value);
+    }
+    if (folderName.present) {
+      map['folder_name'] = Variable<String>(folderName.value);
+    }
+    if (setUpAt.present) {
+      map['set_up_at'] = Variable<int>(setUpAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BackupConfigsCompanion(')
+          ..write('id: $id, ')
+          ..write('folderUri: $folderUri, ')
+          ..write('folderName: $folderName, ')
+          ..write('setUpAt: $setUpAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $BackupRunsTable extends BackupRuns with TableInfo<$BackupRunsTable, BackupRun> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BackupRunsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _folderUriMeta = const VerificationMeta('folderUri');
+  @override
+  late final GeneratedColumn<String> folderUri = GeneratedColumn<String>(
+    'folder_uri',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startedAtMeta = const VerificationMeta('startedAt');
+  @override
+  late final GeneratedColumn<int> startedAt = GeneratedColumn<int>(
+    'started_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    check: () => status.isIn(const ['written', 'verified', 'failed']),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _filesMeta = const VerificationMeta('files');
+  @override
+  late final GeneratedColumn<String> files = GeneratedColumn<String>(
+    'files',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _totalBytesMeta = const VerificationMeta('totalBytes');
+  @override
+  late final GeneratedColumn<int> totalBytes = GeneratedColumn<int>(
+    'total_bytes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _finishedAtMeta = const VerificationMeta('finishedAt');
+  @override
+  late final GeneratedColumn<int> finishedAt = GeneratedColumn<int>(
+    'finished_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, folderUri, startedAt, status, files, totalBytes, finishedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'backup_runs';
+  @override
+  VerificationContext validateIntegrity(Insertable<BackupRun> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('folder_uri')) {
+      context.handle(_folderUriMeta, folderUri.isAcceptableOrUnknown(data['folder_uri']!, _folderUriMeta));
+    } else if (isInserting) {
+      context.missing(_folderUriMeta);
+    }
+    if (data.containsKey('started_at')) {
+      context.handle(_startedAtMeta, startedAt.isAcceptableOrUnknown(data['started_at']!, _startedAtMeta));
+    } else if (isInserting) {
+      context.missing(_startedAtMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(_statusMeta, status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('files')) {
+      context.handle(_filesMeta, files.isAcceptableOrUnknown(data['files']!, _filesMeta));
+    }
+    if (data.containsKey('total_bytes')) {
+      context.handle(_totalBytesMeta, totalBytes.isAcceptableOrUnknown(data['total_bytes']!, _totalBytesMeta));
+    }
+    if (data.containsKey('finished_at')) {
+      context.handle(_finishedAtMeta, finishedAt.isAcceptableOrUnknown(data['finished_at']!, _finishedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  BackupRun map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BackupRun(
+      id: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      folderUri: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}folder_uri'])!,
+      startedAt: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}started_at'])!,
+      status: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}status'])!,
+      files: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}files'])!,
+      totalBytes: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}total_bytes'])!,
+      finishedAt: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}finished_at']),
+    );
+  }
+
+  @override
+  $BackupRunsTable createAlias(String alias) {
+    return $BackupRunsTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class BackupRun extends DataClass implements Insertable<BackupRun> {
+  /// Also in the file names: `loopd-<id>.lpdb`.
+  final String id;
+  final String folderUri;
+  final int startedAt;
+
+  /// written (not yet read back), verified, or failed.
+  final String status;
+
+  /// The files of the run, as a JSON list; empty until written.
+  final String files;
+  final int totalBytes;
+  final int? finishedAt;
+  const BackupRun({
+    required this.id,
+    required this.folderUri,
+    required this.startedAt,
+    required this.status,
+    required this.files,
+    required this.totalBytes,
+    this.finishedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['folder_uri'] = Variable<String>(folderUri);
+    map['started_at'] = Variable<int>(startedAt);
+    map['status'] = Variable<String>(status);
+    map['files'] = Variable<String>(files);
+    map['total_bytes'] = Variable<int>(totalBytes);
+    if (!nullToAbsent || finishedAt != null) {
+      map['finished_at'] = Variable<int>(finishedAt);
+    }
+    return map;
+  }
+
+  BackupRunsCompanion toCompanion(bool nullToAbsent) {
+    return BackupRunsCompanion(
+      id: Value(id),
+      folderUri: Value(folderUri),
+      startedAt: Value(startedAt),
+      status: Value(status),
+      files: Value(files),
+      totalBytes: Value(totalBytes),
+      finishedAt: finishedAt == null && nullToAbsent ? const Value.absent() : Value(finishedAt),
+    );
+  }
+
+  factory BackupRun.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BackupRun(
+      id: serializer.fromJson<String>(json['id']),
+      folderUri: serializer.fromJson<String>(json['folderUri']),
+      startedAt: serializer.fromJson<int>(json['startedAt']),
+      status: serializer.fromJson<String>(json['status']),
+      files: serializer.fromJson<String>(json['files']),
+      totalBytes: serializer.fromJson<int>(json['totalBytes']),
+      finishedAt: serializer.fromJson<int?>(json['finishedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'folderUri': serializer.toJson<String>(folderUri),
+      'startedAt': serializer.toJson<int>(startedAt),
+      'status': serializer.toJson<String>(status),
+      'files': serializer.toJson<String>(files),
+      'totalBytes': serializer.toJson<int>(totalBytes),
+      'finishedAt': serializer.toJson<int?>(finishedAt),
+    };
+  }
+
+  BackupRun copyWith({
+    String? id,
+    String? folderUri,
+    int? startedAt,
+    String? status,
+    String? files,
+    int? totalBytes,
+    Value<int?> finishedAt = const Value.absent(),
+  }) => BackupRun(
+    id: id ?? this.id,
+    folderUri: folderUri ?? this.folderUri,
+    startedAt: startedAt ?? this.startedAt,
+    status: status ?? this.status,
+    files: files ?? this.files,
+    totalBytes: totalBytes ?? this.totalBytes,
+    finishedAt: finishedAt.present ? finishedAt.value : this.finishedAt,
+  );
+  BackupRun copyWithCompanion(BackupRunsCompanion data) {
+    return BackupRun(
+      id: data.id.present ? data.id.value : this.id,
+      folderUri: data.folderUri.present ? data.folderUri.value : this.folderUri,
+      startedAt: data.startedAt.present ? data.startedAt.value : this.startedAt,
+      status: data.status.present ? data.status.value : this.status,
+      files: data.files.present ? data.files.value : this.files,
+      totalBytes: data.totalBytes.present ? data.totalBytes.value : this.totalBytes,
+      finishedAt: data.finishedAt.present ? data.finishedAt.value : this.finishedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BackupRun(')
+          ..write('id: $id, ')
+          ..write('folderUri: $folderUri, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('status: $status, ')
+          ..write('files: $files, ')
+          ..write('totalBytes: $totalBytes, ')
+          ..write('finishedAt: $finishedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, folderUri, startedAt, status, files, totalBytes, finishedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BackupRun &&
+          other.id == this.id &&
+          other.folderUri == this.folderUri &&
+          other.startedAt == this.startedAt &&
+          other.status == this.status &&
+          other.files == this.files &&
+          other.totalBytes == this.totalBytes &&
+          other.finishedAt == this.finishedAt);
+}
+
+class BackupRunsCompanion extends UpdateCompanion<BackupRun> {
+  final Value<String> id;
+  final Value<String> folderUri;
+  final Value<int> startedAt;
+  final Value<String> status;
+  final Value<String> files;
+  final Value<int> totalBytes;
+  final Value<int?> finishedAt;
+  final Value<int> rowid;
+  const BackupRunsCompanion({
+    this.id = const Value.absent(),
+    this.folderUri = const Value.absent(),
+    this.startedAt = const Value.absent(),
+    this.status = const Value.absent(),
+    this.files = const Value.absent(),
+    this.totalBytes = const Value.absent(),
+    this.finishedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  BackupRunsCompanion.insert({
+    required String id,
+    required String folderUri,
+    required int startedAt,
+    required String status,
+    this.files = const Value.absent(),
+    this.totalBytes = const Value.absent(),
+    this.finishedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       folderUri = Value(folderUri),
+       startedAt = Value(startedAt),
+       status = Value(status);
+  static Insertable<BackupRun> custom({
+    Expression<String>? id,
+    Expression<String>? folderUri,
+    Expression<int>? startedAt,
+    Expression<String>? status,
+    Expression<String>? files,
+    Expression<int>? totalBytes,
+    Expression<int>? finishedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (folderUri != null) 'folder_uri': folderUri,
+      if (startedAt != null) 'started_at': startedAt,
+      if (status != null) 'status': status,
+      if (files != null) 'files': files,
+      if (totalBytes != null) 'total_bytes': totalBytes,
+      if (finishedAt != null) 'finished_at': finishedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  BackupRunsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? folderUri,
+    Value<int>? startedAt,
+    Value<String>? status,
+    Value<String>? files,
+    Value<int>? totalBytes,
+    Value<int?>? finishedAt,
+    Value<int>? rowid,
+  }) {
+    return BackupRunsCompanion(
+      id: id ?? this.id,
+      folderUri: folderUri ?? this.folderUri,
+      startedAt: startedAt ?? this.startedAt,
+      status: status ?? this.status,
+      files: files ?? this.files,
+      totalBytes: totalBytes ?? this.totalBytes,
+      finishedAt: finishedAt ?? this.finishedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (folderUri.present) {
+      map['folder_uri'] = Variable<String>(folderUri.value);
+    }
+    if (startedAt.present) {
+      map['started_at'] = Variable<int>(startedAt.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (files.present) {
+      map['files'] = Variable<String>(files.value);
+    }
+    if (totalBytes.present) {
+      map['total_bytes'] = Variable<int>(totalBytes.value);
+    }
+    if (finishedAt.present) {
+      map['finished_at'] = Variable<int>(finishedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BackupRunsCompanion(')
+          ..write('id: $id, ')
+          ..write('folderUri: $folderUri, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('status: $status, ')
+          ..write('files: $files, ')
+          ..write('totalBytes: $totalBytes, ')
+          ..write('finishedAt: $finishedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3138,6 +3790,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $PostingsTable postings = $PostingsTable(this);
   late final $TransactionRevisionsTable transactionRevisions = $TransactionRevisionsTable(this);
   late final $BalanceCheckpointsTable balanceCheckpoints = $BalanceCheckpointsTable(this);
+  late final $BackupConfigsTable backupConfigs = $BackupConfigsTable(this);
+  late final $BackupRunsTable backupRuns = $BackupRunsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables => allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
@@ -3150,6 +3804,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     postings,
     transactionRevisions,
     balanceCheckpoints,
+    backupConfigs,
+    backupRuns,
   ];
 }
 
@@ -5521,6 +6177,330 @@ typedef $$BalanceCheckpointsTableProcessedTableManager =
       BalanceCheckpoint,
       PrefetchHooks Function({bool accountId})
     >;
+typedef $$BackupConfigsTableCreateCompanionBuilder = BackupConfigsCompanion Function({
+  Value<int> id,
+  required String folderUri,
+  required String folderName,
+  required int setUpAt,
+});
+typedef $$BackupConfigsTableUpdateCompanionBuilder = BackupConfigsCompanion Function({
+  Value<int> id,
+  Value<String> folderUri,
+  Value<String> folderName,
+  Value<int> setUpAt,
+});
+
+class $$BackupConfigsTableFilterComposer extends Composer<_$AppDatabase, $BackupConfigsTable> {
+  $$BackupConfigsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get folderUri =>
+      $composableBuilder(column: $table.folderUri, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get folderName =>
+      $composableBuilder(column: $table.folderName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get setUpAt =>
+      $composableBuilder(column: $table.setUpAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$BackupConfigsTableOrderingComposer extends Composer<_$AppDatabase, $BackupConfigsTable> {
+  $$BackupConfigsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get folderUri =>
+      $composableBuilder(column: $table.folderUri, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get folderName =>
+      $composableBuilder(column: $table.folderName, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get setUpAt =>
+      $composableBuilder(column: $table.setUpAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$BackupConfigsTableAnnotationComposer extends Composer<_$AppDatabase, $BackupConfigsTable> {
+  $$BackupConfigsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id => $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get folderUri => $composableBuilder(column: $table.folderUri, builder: (column) => column);
+
+  GeneratedColumn<String> get folderName => $composableBuilder(column: $table.folderName, builder: (column) => column);
+
+  GeneratedColumn<int> get setUpAt => $composableBuilder(column: $table.setUpAt, builder: (column) => column);
+}
+
+class $$BackupConfigsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $BackupConfigsTable,
+          BackupConfig,
+          $$BackupConfigsTableFilterComposer,
+          $$BackupConfigsTableOrderingComposer,
+          $$BackupConfigsTableAnnotationComposer,
+          $$BackupConfigsTableCreateCompanionBuilder,
+          $$BackupConfigsTableUpdateCompanionBuilder,
+          (BackupConfig, BaseReferences<_$AppDatabase, $BackupConfigsTable, BackupConfig>),
+          BackupConfig,
+          PrefetchHooks Function()
+        > {
+  $$BackupConfigsTableTableManager(_$AppDatabase db, $BackupConfigsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $$BackupConfigsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$BackupConfigsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $$BackupConfigsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> folderUri = const Value.absent(),
+            Value<String> folderName = const Value.absent(),
+            Value<int> setUpAt = const Value.absent(),
+          }) => BackupConfigsCompanion(id: id, folderUri: folderUri, folderName: folderName, setUpAt: setUpAt),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String folderUri,
+            required String folderName,
+            required int setUpAt,
+          }) => BackupConfigsCompanion.insert(id: id, folderUri: folderUri, folderName: folderName, setUpAt: setUpAt),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$BackupConfigsTable, BackupConfig>(table),
+                  BaseReferences<_$AppDatabase, $BackupConfigsTable, BackupConfig>(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$BackupConfigsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $BackupConfigsTable,
+      BackupConfig,
+      $$BackupConfigsTableFilterComposer,
+      $$BackupConfigsTableOrderingComposer,
+      $$BackupConfigsTableAnnotationComposer,
+      $$BackupConfigsTableCreateCompanionBuilder,
+      $$BackupConfigsTableUpdateCompanionBuilder,
+      (BackupConfig, BaseReferences<_$AppDatabase, $BackupConfigsTable, BackupConfig>),
+      BackupConfig,
+      PrefetchHooks Function()
+    >;
+typedef $$BackupRunsTableCreateCompanionBuilder = BackupRunsCompanion Function({
+  required String id,
+  required String folderUri,
+  required int startedAt,
+  required String status,
+  Value<String> files,
+  Value<int> totalBytes,
+  Value<int?> finishedAt,
+  Value<int> rowid,
+});
+typedef $$BackupRunsTableUpdateCompanionBuilder = BackupRunsCompanion Function({
+  Value<String> id,
+  Value<String> folderUri,
+  Value<int> startedAt,
+  Value<String> status,
+  Value<String> files,
+  Value<int> totalBytes,
+  Value<int?> finishedAt,
+  Value<int> rowid,
+});
+
+class $$BackupRunsTableFilterComposer extends Composer<_$AppDatabase, $BackupRunsTable> {
+  $$BackupRunsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get folderUri =>
+      $composableBuilder(column: $table.folderUri, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get startedAt =>
+      $composableBuilder(column: $table.startedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get files =>
+      $composableBuilder(column: $table.files, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get totalBytes =>
+      $composableBuilder(column: $table.totalBytes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get finishedAt =>
+      $composableBuilder(column: $table.finishedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$BackupRunsTableOrderingComposer extends Composer<_$AppDatabase, $BackupRunsTable> {
+  $$BackupRunsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get folderUri =>
+      $composableBuilder(column: $table.folderUri, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get startedAt =>
+      $composableBuilder(column: $table.startedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get files =>
+      $composableBuilder(column: $table.files, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get totalBytes =>
+      $composableBuilder(column: $table.totalBytes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get finishedAt =>
+      $composableBuilder(column: $table.finishedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$BackupRunsTableAnnotationComposer extends Composer<_$AppDatabase, $BackupRunsTable> {
+  $$BackupRunsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id => $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get folderUri => $composableBuilder(column: $table.folderUri, builder: (column) => column);
+
+  GeneratedColumn<int> get startedAt => $composableBuilder(column: $table.startedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get status => $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get files => $composableBuilder(column: $table.files, builder: (column) => column);
+
+  GeneratedColumn<int> get totalBytes => $composableBuilder(column: $table.totalBytes, builder: (column) => column);
+
+  GeneratedColumn<int> get finishedAt => $composableBuilder(column: $table.finishedAt, builder: (column) => column);
+}
+
+class $$BackupRunsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $BackupRunsTable,
+          BackupRun,
+          $$BackupRunsTableFilterComposer,
+          $$BackupRunsTableOrderingComposer,
+          $$BackupRunsTableAnnotationComposer,
+          $$BackupRunsTableCreateCompanionBuilder,
+          $$BackupRunsTableUpdateCompanionBuilder,
+          (BackupRun, BaseReferences<_$AppDatabase, $BackupRunsTable, BackupRun>),
+          BackupRun,
+          PrefetchHooks Function()
+        > {
+  $$BackupRunsTableTableManager(_$AppDatabase db, $BackupRunsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $$BackupRunsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$BackupRunsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $$BackupRunsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> folderUri = const Value.absent(),
+                Value<int> startedAt = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String> files = const Value.absent(),
+                Value<int> totalBytes = const Value.absent(),
+                Value<int?> finishedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => BackupRunsCompanion(
+                id: id,
+                folderUri: folderUri,
+                startedAt: startedAt,
+                status: status,
+                files: files,
+                totalBytes: totalBytes,
+                finishedAt: finishedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String folderUri,
+                required int startedAt,
+                required String status,
+                Value<String> files = const Value.absent(),
+                Value<int> totalBytes = const Value.absent(),
+                Value<int?> finishedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => BackupRunsCompanion.insert(
+                id: id,
+                folderUri: folderUri,
+                startedAt: startedAt,
+                status: status,
+                files: files,
+                totalBytes: totalBytes,
+                finishedAt: finishedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$BackupRunsTable, BackupRun>(table),
+                  BaseReferences<_$AppDatabase, $BackupRunsTable, BackupRun>(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$BackupRunsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $BackupRunsTable,
+      BackupRun,
+      $$BackupRunsTableFilterComposer,
+      $$BackupRunsTableOrderingComposer,
+      $$BackupRunsTableAnnotationComposer,
+      $$BackupRunsTableCreateCompanionBuilder,
+      $$BackupRunsTableUpdateCompanionBuilder,
+      (BackupRun, BaseReferences<_$AppDatabase, $BackupRunsTable, BackupRun>),
+      BackupRun,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -5536,6 +6516,8 @@ class $AppDatabaseManager {
       $$TransactionRevisionsTableTableManager(_db, _db.transactionRevisions);
   $$BalanceCheckpointsTableTableManager get balanceCheckpoints =>
       $$BalanceCheckpointsTableTableManager(_db, _db.balanceCheckpoints);
+  $$BackupConfigsTableTableManager get backupConfigs => $$BackupConfigsTableTableManager(_db, _db.backupConfigs);
+  $$BackupRunsTableTableManager get backupRuns => $$BackupRunsTableTableManager(_db, _db.backupRuns);
 }
 
 // **************************************************************************

@@ -182,6 +182,44 @@ class BackupFormatTest {
     }
 
     @Test
+    fun checksTheCurrentPassphrase() {
+        keys.setUp(passphrase)
+        assertTrue(keys.checkPassphrase(passphrase))
+        assertFalse(keys.checkPassphrase("not the passphrase at all".toByteArray()))
+    }
+
+    @Test
+    fun aResetPassphraseOpensNewBackupsWhileOlderOnesKeepTheOldOne() {
+        keys.setUp(passphrase)
+        val before = write(listOf(SourceEntry("database", source("a.db", 10_000, 8), emptyMap())), run = "before")
+        val fresh = "a brand new passphrase".toByteArray()
+        keys.rewrap(fresh)
+        val after = write(listOf(SourceEntry("database", source("b.db", 10_000, 9), emptyMap())), run = "after")
+
+        val reader = BackupReader(folder)
+        BackupReader(folder).verify(after.indexName, BackupKeys.open(reader.header(after.indexName), fresh))
+        BackupReader(folder).verify(before.indexName, BackupKeys.open(reader.header(before.indexName), passphrase))
+        try {
+            BackupKeys.open(reader.header(after.indexName), passphrase)
+            fail("the old passphrase must not open a newer backup")
+        } catch (e: BackupException) {
+            assertEquals(BackupFailure.WRONG_PASSPHRASE, e.failure)
+        }
+        assertArrayEquals("the same key: the phone still writes with it", reader.header(before.indexName).keyId, reader.header(after.indexName).keyId)
+    }
+
+    @Test
+    fun aChangedPassphraseMakesANewKey() {
+        keys.setUp(passphrase)
+        val before = write(listOf(SourceEntry("database", source("a.db", 10_000, 10), emptyMap())), run = "before")
+        keys.setUp("a changed passphrase".toByteArray())
+        val after = write(listOf(SourceEntry("database", source("b.db", 10_000, 11), emptyMap())), run = "after")
+        val reader = BackupReader(folder)
+        assertFalse(reader.header(before.indexName).keyId.contentEquals(reader.header(after.indexName).keyId))
+        BackupReader(folder).verify(before.indexName, BackupKeys.open(reader.header(before.indexName), passphrase))
+    }
+
+    @Test
     fun aFileThatIsNotABackupIsSaidSo() {
         File(folderDir.apply { mkdirs() }, "notes.lpdb").writeText("hello")
         try {

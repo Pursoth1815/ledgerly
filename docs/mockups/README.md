@@ -226,6 +226,13 @@ Built from screens 4, 4b and 4c, with these additions the mockups do not show:
 - **Capture button:** steps aside while any sheet or dialog is open, on every tab (owner, 18 Nov 2026).
 - **Toasts** ("Added Savings", "Cash in hand is now ₹2,350") slide down at the top of the screen, under the status bar, over pages and sheets alike (owner, 18 Nov 2026). The Review mockup's toast with Undo sits at the bottom; when the Review Inbox is built (Phase 3) it moves to the top too.
 
+## Phase 2, part 6c: the passphrase (20 Nov 2026)
+
+Built from screens 10k and 10l, one sheet with two views, opened from Change on the Passphrase row of Backup & restore:
+
+- **Change passphrase (10k):** current passphrase, Forgot it? (on the left, under the box), new passphrase and Type it again with the two green checks. A wrong current passphrase shows "That isn't your current passphrase." in the red error box. **Change and back up** makes a new backup key with the new passphrase and, as soon as the sheet closes, a fresh backup with it (ADR 0011). Older backups still need the old passphrase.
+- **Forgot your passphrase (10l):** the back arrow, or the phone's back, returns to Change. "Confirm it's you" with **Check** opens the phone's own fingerprint, face or PIN prompt; the new passphrase boxes appear only after it passes. **Save new passphrase** wraps the same backup key with the new passphrase, so new backups use it; backups made before still need the old one. The check counts for two minutes and for one reset only.
+
 ## Phase 2, part 6b: restore (20 Nov 2026)
 
 Built from screen 10j, opened from Restore from a backup file on the Backup & restore sheet:

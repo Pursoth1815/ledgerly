@@ -51,6 +51,15 @@ abstract interface class BackupPlatform {
 
   /// Starts Loopd again.
   Future<void> restartApp();
+
+  /// A new backup key with [next], after checking [current].
+  Future<void> changePassphrase({required String current, required String next});
+
+  /// Fingerprint, face or the phone's PIN; true once confirmed.
+  Future<bool> confirmOwner({required String title, required String subtitle});
+
+  /// The same backup key wrapped with [next]; only right after [confirmOwner].
+  Future<void> resetPassphrase(String next);
 }
 
 /// [BackupPlatform] over the Pigeon [BackupApi].
@@ -141,6 +150,17 @@ class PigeonBackupPlatform implements BackupPlatform {
 
   @override
   Future<void> restartApp() => _call(_api.restartApp);
+
+  @override
+  Future<void> changePassphrase({required String current, required String next}) =>
+      _call(() => _api.changePassphrase(current, next));
+
+  @override
+  Future<bool> confirmOwner({required String title, required String subtitle}) =>
+      _call(() => _api.confirmOwner(title, subtitle));
+
+  @override
+  Future<void> resetPassphrase(String next) => _call(() => _api.resetPassphrase(next));
 }
 
 /// The native backup bridge; replaced in tests.

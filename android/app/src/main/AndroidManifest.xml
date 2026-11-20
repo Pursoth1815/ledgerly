@@ -7,6 +7,9 @@
     -->
     <!-- WorkManager asks for this for network constraints, which Loopd never uses. -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove" />
+    <!-- Fingerprint, face or PIN before a forgotten backup passphrase is reset
+         (ADR 0011). A normal permission: no prompt, no network. -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <application
         android:label="Loopd"
         android:name="${applicationName}"

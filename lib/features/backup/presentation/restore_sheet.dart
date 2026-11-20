@@ -45,7 +45,6 @@ class _RestoreSheetState extends ConsumerState<RestoreSheet> {
   late BackupFolder? _folder = widget.folder;
   List<FoundBackup>? _backups;
   FoundBackup? _chosen;
-  bool _shown = false;
   bool _loading = false;
   _Phase _phase = _Phase.choosing;
   RestoreStep? _step;
@@ -166,8 +165,6 @@ class _RestoreSheetState extends ConsumerState<RestoreSheet> {
               label: 'Passphrase of this backup',
               hint: 'The one you set for it',
               controller: _passphrase,
-              shown: _shown,
-              onToggle: () => setState(() => _shown = !_shown),
               wrong: _error != null && _passphrase.text.isNotEmpty,
             ),
           ],

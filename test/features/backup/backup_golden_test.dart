@@ -15,6 +15,7 @@ import 'package:loopd/core/database/app_database.dart';
 import 'package:loopd/design_system/loopd_theme.dart';
 import 'package:loopd/features/backup/backup.dart';
 import 'package:loopd/features/backup/presentation/backup_setup_sheet.dart';
+import 'package:loopd/features/backup/presentation/passphrase_sheet.dart';
 import 'package:loopd/features/backup/presentation/restore_sheet.dart';
 
 import '../../support/fake_backup_platform.dart';
@@ -107,6 +108,28 @@ void main() {
     testWidgets('Restore from a backup, done, $name', (tester) async {
       await openRestore(tester, 'a long made up phrase');
       await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/restore_done_$name.png'));
+    });
+
+    testWidgets('Change passphrase, $name', (tester) async {
+      await pump(tester, brightness, backedUpAt: now.subtract(const Duration(days: 9)));
+      await tester.tap(find.bySemanticsLabel('Change').last);
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.descendant(of: find.byKey(PassphraseSheet.newKey), matching: find.byType(TextField)),
+        'a brand new phrase',
+      );
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpAndSettle();
+      await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/passphrase_change_$name.png'));
+    });
+
+    testWidgets('Forgot passphrase, $name', (tester) async {
+      await pump(tester, brightness, backedUpAt: now.subtract(const Duration(days: 9)));
+      await tester.tap(find.bySemanticsLabel('Change').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Forgot it?'));
+      await tester.pumpAndSettle();
+      await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/passphrase_forgot_$name.png'));
     });
 
     testWidgets('Set up backup, filled in, $name', (tester) async {

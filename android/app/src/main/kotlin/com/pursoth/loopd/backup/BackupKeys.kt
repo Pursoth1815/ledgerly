@@ -84,6 +84,39 @@ class BackupKeys(
         writeAtomically(passphraseFile, encode(wrap))
     }
 
+    /** Whether [passphrase] opens the backup key (about a second: Argon2id). */
+    @Synchronized
+    fun checkPassphrase(passphrase: ByteArray): Boolean =
+        try {
+            open(passphraseWrap(), passphrase)
+            true
+        } catch (e: BackupException) {
+            if (e.failure != BackupFailure.WRONG_PASSPHRASE) throw e
+            false
+        }
+
+    /**
+     * A forgotten passphrase (owner's decision, 17 Nov 2026): the same backup
+     * key, wrapped again by [passphrase], so new backups use it. Older backup
+     * files keep the old wrap and still need the old passphrase. The caller
+     * checks the phone's owner first.
+     */
+    @Synchronized
+    fun rewrap(passphrase: ByteArray) {
+        if (passphrase.size < Passphrase.MIN_LENGTH) {
+            throw BackupException(BackupFailure.WRITE_FAILED, "The passphrase is too short")
+        }
+        if (!isSetUp()) throw BackupException(BackupFailure.NOT_SET_UP, "Backup is not set up")
+        val blob = keysetFile.readBytes()
+        val keyId = blob.copyOfRange(1, 1 + 16)
+        val handle = keystore {
+            TinkProtoKeysetFormat.parseEncryptedKeyset(blob.copyOfRange(1 + 16, blob.size), keystoreAead(), LOCAL_AD)
+        }
+        val wrap = wrapWithPassphrase(handle, passphrase, keyId)
+        open(wrap, passphrase)
+        writeAtomically(passphraseFile, encode(wrap))
+    }
+
     /** The backup key, unwrapped by the Keystore, for writing and checking backups. */
     @Synchronized
     fun streamingAead(): StreamingAead {

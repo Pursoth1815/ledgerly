@@ -15,6 +15,7 @@ import '../../../design_system/loopd_spacing.dart';
 import '../../../design_system/loopd_typography.dart';
 import 'backup_messages.dart';
 import 'backup_setup_sheet.dart';
+import 'passphrase_sheet.dart';
 import 'providers/backup_providers.dart';
 import 'restore_sheet.dart';
 
@@ -31,8 +32,7 @@ Future<void> showBackupSheet(BuildContext context, {DateTime Function() clock = 
 /// The status card with Back up now, where backups go, the passphrase, what
 /// is inside, and Restore. Before setup, the card offers Set up backup.
 ///
-/// Built in Phase 2, parts 6a and 6b. Changing the passphrase (6c) and the
-/// weekly backup (Phase 7) say when they come.
+/// Built in Phase 2, part 6. The weekly backup (Phase 7) says when it comes.
 class BackupSheet extends ConsumerStatefulWidget {
   const BackupSheet({this.clock = DateTime.now, super.key});
 
@@ -65,6 +65,15 @@ class _BackupSheetState extends ConsumerState<BackupSheet> {
       if (mounted) setState(() => _error = backupFailureText(e.failure));
     } finally {
       if (mounted) setState(() => _stage = null);
+    }
+  }
+
+  /// A changed passphrase means a new backup key, so back up at once.
+  Future<void> _changePassphrase() async {
+    final outcome = await showPassphraseSheet(context);
+    if (outcome == PassphraseOutcome.changed && mounted) {
+      showLoopdToast(context, 'Passphrase changed. Backing up with it now');
+      await _backUp();
     }
   }
 
@@ -120,7 +129,12 @@ class _BackupSheetState extends ConsumerState<BackupSheet> {
                 if (_error != null) ...[const SizedBox(height: LoopdSpace.md), LoopdErrorNote(_error!)],
                 if (status.isSetUp) ...[
                   const SizedBox(height: LoopdSpace.xl),
-                  _Settings(status: status, busy: _stage != null, onChangeFolder: _changeFolder),
+                  _Settings(
+                    status: status,
+                    busy: _stage != null,
+                    onChangeFolder: _changeFolder,
+                    onChangePassphrase: _changePassphrase,
+                  ),
                   if (status.lastBackupBytes != null) ...[
                     const SizedBox(height: LoopdSpace.xl),
                     _Inside(bytes: status.lastBackupBytes!),
@@ -328,11 +342,17 @@ class _StatusCard extends StatelessWidget {
 }
 
 class _Settings extends StatelessWidget {
-  const _Settings({required this.status, required this.busy, required this.onChangeFolder});
+  const _Settings({
+    required this.status,
+    required this.busy,
+    required this.onChangeFolder,
+    required this.onChangePassphrase,
+  });
 
   final BackupStatus status;
   final bool busy;
   final VoidCallback onChangeFolder;
+  final VoidCallback onChangePassphrase;
 
   @override
   Widget build(BuildContext context) {
@@ -388,10 +408,7 @@ class _Settings extends StatelessWidget {
           row(
             title: 'Passphrase',
             sub: 'Set · needed to open a backup',
-            trailing: SmallOutlineButton(
-              label: 'Change',
-              onTap: () => showLoopdToast(context, 'Changing the passphrase comes in the next update'),
-            ),
+            trailing: SmallOutlineButton(label: 'Change', onTap: busy ? null : onChangePassphrase),
           ),
         ],
       ),

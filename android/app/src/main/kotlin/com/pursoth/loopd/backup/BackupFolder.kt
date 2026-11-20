@@ -22,6 +22,9 @@ interface BackupFolder {
 
     /** The names of the files in the folder. */
     fun names(): List<String>
+
+    /** Each file's size in bytes, by name. */
+    fun sizes(): Map<String, Long>
 }
 
 class DirectoryFolder(private val dir: File) : BackupFolder {
@@ -37,6 +40,8 @@ class DirectoryFolder(private val dir: File) : BackupFolder {
     override fun delete(name: String): Boolean = File(dir, name).let { !it.exists() || it.delete() }
 
     override fun names(): List<String> = dir.list()?.toList() ?: emptyList()
+
+    override fun sizes(): Map<String, Long> = dir.listFiles()?.associate { it.name to it.length() } ?: emptyMap()
 }
 
 /**
@@ -64,18 +69,27 @@ class DocumentTreeFolder(private val context: Context, treeUri: Uri) : BackupFol
         return DocumentsContract.deleteDocument(resolver, doc)
     }
 
-    override fun names(): List<String> = children().map { it.first }
+    override fun names(): List<String> = children().map { it.name }
 
-    private fun find(name: String): Uri? = children().firstOrNull { it.first == name }?.second
+    override fun sizes(): Map<String, Long> = children().associate { it.name to it.size }
 
-    private fun children(): List<Pair<String, Uri>> {
+    private fun find(name: String): Uri? = children().firstOrNull { it.name == name }?.uri
+
+    private class Child(val name: String, val uri: Uri, val size: Long)
+
+    private fun children(): List<Child> {
         val childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(tree, DocumentsContract.getDocumentId(folder))
-        val projection = arrayOf(DocumentsContract.Document.COLUMN_DISPLAY_NAME, DocumentsContract.Document.COLUMN_DOCUMENT_ID)
-        val out = mutableListOf<Pair<String, Uri>>()
+        val projection = arrayOf(
+            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+            DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+            DocumentsContract.Document.COLUMN_SIZE,
+        )
+        val out = mutableListOf<Child>()
         resolver.query(childrenUri, projection, null, null, null)?.use { cursor ->
             while (cursor.moveToNext()) {
                 val name = cursor.getString(0) ?: continue
-                out += name to DocumentsContract.buildDocumentUriUsingTree(tree, cursor.getString(1))
+                val size = if (cursor.isNull(2)) 0L else cursor.getLong(2)
+                out += Child(name, DocumentsContract.buildDocumentUriUsingTree(tree, cursor.getString(1)), size)
             }
         } ?: throw FileNotFoundException("The folder cannot be read")
         return out

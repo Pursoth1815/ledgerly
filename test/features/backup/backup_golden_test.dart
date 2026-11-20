@@ -3,6 +3,7 @@ library;
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:drift/drift.dart' show DatabaseConnection, driftRuntimeOptions;
 import 'package:drift/native.dart';
@@ -14,6 +15,7 @@ import 'package:loopd/core/database/app_database.dart';
 import 'package:loopd/design_system/loopd_theme.dart';
 import 'package:loopd/features/backup/backup.dart';
 import 'package:loopd/features/backup/presentation/backup_setup_sheet.dart';
+import 'package:loopd/features/backup/presentation/restore_sheet.dart';
 
 import '../../support/fake_backup_platform.dart';
 import '../../support/golden_fonts.dart';
@@ -33,7 +35,15 @@ void main() {
     final work = Directory.systemTemp.createTempSync('loopd_backup_golden');
     addTearDown(() => work.deleteSync(recursive: true));
     var clock = backedUpAt ?? now;
-    final engine = BackupEngine(database, FakeBackupPlatform(), workDir: () async => work, clock: () => clock);
+    final data = Directory('${work.path}/data')..createSync();
+    final engine = BackupEngine(
+      database,
+      FakeBackupPlatform(),
+      workDir: () async => work,
+      dataDir: () async => data,
+      phoneKey: () async => Uint8List(32),
+      clock: () => clock,
+    );
     if (backedUpAt != null) {
       await tester.runAsync(() async {
         await engine.setUp(passphrase: 'a long made up phrase', folder: folder);
@@ -72,6 +82,31 @@ void main() {
       await tester.tap(find.bySemanticsLabel('Back up now'));
       await tester.pumpAndSettle();
       await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/backup_done_$name.png'));
+    });
+
+    Future<void> openRestore(WidgetTester tester, String passphrase) async {
+      await pump(tester, brightness, backedUpAt: now.subtract(const Duration(days: 9)));
+      await tester.ensureVisible(find.text('Restore from a backup file'));
+      await tester.tap(find.text('Restore from a backup file'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.descendant(of: find.byKey(RestoreSheet.passphraseKey), matching: find.byType(TextField)),
+        passphrase,
+      );
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Replace with this backup'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('Restore from a backup, a wrong passphrase, $name', (tester) async {
+      await openRestore(tester, 'not the right one');
+      await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/restore_wrong_$name.png'));
+    });
+
+    testWidgets('Restore from a backup, done, $name', (tester) async {
+      await openRestore(tester, 'a long made up phrase');
+      await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/restore_done_$name.png'));
     });
 
     testWidgets('Set up backup, filled in, $name', (tester) async {

@@ -430,6 +430,117 @@ data class BackupWritten (
     return "BackupWritten(indexName=$indexName, files=$files, totalBytes=$totalBytes)"
   }
 }
+
+/**
+ * A backup found in a folder, from its file names (no passphrase needed).
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class FoundBackupInfo (
+  val indexName: String,
+  /** Starts with the local date and time it was made: `20261115-020000-4f2a`. */
+  val runId: String,
+  val parts: Long,
+  val totalBytes: Long
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): FoundBackupInfo {
+      val indexName = pigeonVar_list[0] as String
+      val runId = pigeonVar_list[1] as String
+      val parts = pigeonVar_list[2] as Long
+      val totalBytes = pigeonVar_list[3] as Long
+      return FoundBackupInfo(indexName, runId, parts, totalBytes)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      indexName,
+      runId,
+      parts,
+      totalBytes,
+    )
+  }
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other.javaClass != javaClass) {
+      return false
+    }
+    if (this === other) {
+      return true
+    }
+    val other = other as FoundBackupInfo
+    return PlatformApiPigeonUtils.deepEquals(this.indexName, other.indexName) && PlatformApiPigeonUtils.deepEquals(this.runId, other.runId) && PlatformApiPigeonUtils.deepEquals(this.parts, other.parts) && PlatformApiPigeonUtils.deepEquals(this.totalBytes, other.totalBytes)
+  }
+
+  override fun hashCode(): Int {
+    var result = javaClass.hashCode()
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.indexName)
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.runId)
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.parts)
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.totalBytes)
+    return result
+  }
+  override fun toString(): String {
+    return "FoundBackupInfo(indexName=$indexName, runId=$runId, parts=$parts, totalBytes=$totalBytes)"
+  }
+}
+
+/**
+ * What an unlocked backup says about itself.
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class OpenedBackupInfo (
+  val runId: String,
+  val createdAt: Long,
+  val appVersion: String,
+  val schemaVersion: Long,
+  val parts: Long
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): OpenedBackupInfo {
+      val runId = pigeonVar_list[0] as String
+      val createdAt = pigeonVar_list[1] as Long
+      val appVersion = pigeonVar_list[2] as String
+      val schemaVersion = pigeonVar_list[3] as Long
+      val parts = pigeonVar_list[4] as Long
+      return OpenedBackupInfo(runId, createdAt, appVersion, schemaVersion, parts)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      runId,
+      createdAt,
+      appVersion,
+      schemaVersion,
+      parts,
+    )
+  }
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other.javaClass != javaClass) {
+      return false
+    }
+    if (this === other) {
+      return true
+    }
+    val other = other as OpenedBackupInfo
+    return PlatformApiPigeonUtils.deepEquals(this.runId, other.runId) && PlatformApiPigeonUtils.deepEquals(this.createdAt, other.createdAt) && PlatformApiPigeonUtils.deepEquals(this.appVersion, other.appVersion) && PlatformApiPigeonUtils.deepEquals(this.schemaVersion, other.schemaVersion) && PlatformApiPigeonUtils.deepEquals(this.parts, other.parts)
+  }
+
+  override fun hashCode(): Int {
+    var result = javaClass.hashCode()
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.runId)
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.createdAt)
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.appVersion)
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.schemaVersion)
+    result = 31 * result + PlatformApiPigeonUtils.deepHash(this.parts)
+    return result
+  }
+  override fun toString(): String {
+    return "OpenedBackupInfo(runId=$runId, createdAt=$createdAt, appVersion=$appVersion, schemaVersion=$schemaVersion, parts=$parts)"
+  }
+}
 private open class PlatformApiPigeonCodec : StandardMessageCodec() {
   override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
     return when (type) {
@@ -458,6 +569,16 @@ private open class PlatformApiPigeonCodec : StandardMessageCodec() {
           BackupWritten.fromList(it)
         }
       }
+      134.toByte() -> {
+        (readValue(buffer) as? List<Any?>)?.let {
+          FoundBackupInfo.fromList(it)
+        }
+      }
+      135.toByte() -> {
+        (readValue(buffer) as? List<Any?>)?.let {
+          OpenedBackupInfo.fromList(it)
+        }
+      }
       else -> super.readValueOfType(type, buffer)
     }
   }
@@ -481,6 +602,14 @@ private open class PlatformApiPigeonCodec : StandardMessageCodec() {
       }
       is BackupWritten -> {
         stream.write(133)
+        writeValue(stream, value.toList())
+      }
+      is FoundBackupInfo -> {
+        stream.write(134)
+        writeValue(stream, value.toList())
+      }
+      is OpenedBackupInfo -> {
+        stream.write(135)
         writeValue(stream, value.toList())
       }
       else -> super.writeValue(stream, value)
@@ -708,6 +837,23 @@ interface BackupApi {
   suspend fun verifyBackup(folderUri: String, indexName: String)
   /** Removes [names] from the folder; files already gone are fine. */
   suspend fun deleteFiles(folderUri: String, names: List<String>)
+  /** The backups in [folderUri], newest first. */
+  suspend fun listBackups(folderUri: String): List<FoundBackupInfo>
+  /**
+   * Unlocks [indexName] with [passphrase] (Argon2id, about a second) and
+   * reads its manifest. Fails with `wrong_passphrase` or `not_a_backup`.
+   * The unlocked backup is kept for the next two calls.
+   */
+  suspend fun openBackup(folderUri: String, indexName: String, passphrase: String): OpenedBackupInfo
+  /** Reads every part of the opened backup back and checks it. */
+  suspend fun verifyOpenedBackup()
+  /**
+   * Writes the opened backup's database copy to [targetPath] and returns
+   * that copy's key (hex). Forgets the unlocked backup afterwards.
+   */
+  suspend fun extractOpenedDatabase(targetPath: String): String
+  /** Starts Loopd again, so a restored database is switched in at start-up. */
+  fun restartApp()
 
   companion object {
     /** The codec used by BackupApi. */
@@ -843,6 +989,99 @@ interface BackupApi {
               }
               reply.reply(wrapped)
             }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.loopd.BackupApi.listBackups$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val folderUriArg = args[0] as String
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                listOf(api.listBackups(folderUriArg))
+              } catch (exception: Throwable) {
+                PlatformApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.loopd.BackupApi.openBackup$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val folderUriArg = args[0] as String
+            val indexNameArg = args[1] as String
+            val passphraseArg = args[2] as String
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                listOf(api.openBackup(folderUriArg, indexNameArg, passphraseArg))
+              } catch (exception: Throwable) {
+                PlatformApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.loopd.BackupApi.verifyOpenedBackup$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                api.verifyOpenedBackup()
+                listOf(null)
+              } catch (exception: Throwable) {
+                PlatformApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.loopd.BackupApi.extractOpenedDatabase$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val targetPathArg = args[0] as String
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                listOf(api.extractOpenedDatabase(targetPathArg))
+              } catch (exception: Throwable) {
+                PlatformApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.loopd.BackupApi.restartApp$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              api.restartApp()
+              listOf(null)
+            } catch (exception: Throwable) {
+              PlatformApiPigeonUtils.wrapError(exception)
+            }
+            reply.reply(wrapped)
           }
         } else {
           channel.setMessageHandler(null)

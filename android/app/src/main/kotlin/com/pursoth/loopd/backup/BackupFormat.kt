@@ -130,6 +130,22 @@ object BackupNames {
     }
 }
 
+/** One backup found in a folder, from its file names alone (no key needed). */
+data class FoundBackup(val indexName: String, val runId: String, val parts: Int, val totalBytes: Long)
+
+/** The backups in [folder], newest first: each index with its parts. Other files are ignored. */
+fun findBackups(folder: BackupFolder): List<FoundBackup> {
+    val sizes = folder.sizes()
+    return sizes.keys
+        .filter { it.startsWith("loopd-") && it.endsWith(".lpdb") }
+        .map { index ->
+            val runId = index.removePrefix("loopd-").removeSuffix(".lpdb")
+            val parts = sizes.keys.filter { it.startsWith("loopd-$runId-p") && it.endsWith(".lpdp") }
+            FoundBackup(index, runId, parts.size, sizes.getValue(index) + parts.sumOf { sizes.getValue(it) })
+        }
+        .sortedByDescending { it.runId }
+}
+
 /** A file to back up, under [name], with what is needed to open it. */
 data class SourceEntry(val name: String, val file: File, val meta: Map<String, String>)
 

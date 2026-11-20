@@ -16,6 +16,7 @@ import '../../../design_system/loopd_typography.dart';
 import 'backup_messages.dart';
 import 'backup_setup_sheet.dart';
 import 'providers/backup_providers.dart';
+import 'restore_sheet.dart';
 
 /// Opens Backup & restore (mockup `SettingsPage.dc.html`, page backup, screen
 /// 10f) as a tall sheet over the whole app, tab bar included, like Accounts
@@ -30,8 +31,8 @@ Future<void> showBackupSheet(BuildContext context, {DateTime Function() clock = 
 /// The status card with Back up now, where backups go, the passphrase, what
 /// is inside, and Restore. Before setup, the card offers Set up backup.
 ///
-/// Built in Phase 2, part 6a. Restore (6b), changing the passphrase (6c) and
-/// the weekly backup (Phase 7) say when they come.
+/// Built in Phase 2, parts 6a and 6b. Changing the passphrase (6c) and the
+/// weekly backup (Phase 7) say when they come.
 class BackupSheet extends ConsumerStatefulWidget {
   const BackupSheet({this.clock = DateTime.now, super.key});
 
@@ -129,7 +130,10 @@ class _BackupSheetState extends ConsumerState<BackupSheet> {
                 LoopdButton(
                   label: 'Restore from a backup file',
                   style: LoopdButtonStyle.outlined,
-                  onTap: () => showLoopdToast(context, 'Restore comes in the next update'),
+                  onTap: () => showRestoreSheet(
+                    context,
+                    folder: status.folderUri == null ? null : (uri: status.folderUri!, name: status.folderName ?? ''),
+                  ),
                 ),
                 const SizedBox(height: 10),
                 const BackupNote(

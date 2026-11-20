@@ -15,15 +15,82 @@ const databaseFileName = 'loopd.db';
 
 final _log = Logger('core.database');
 
+/// A restored database waiting to be switched in at the next start (ADR 0011).
+/// Restore leaves it here already checked and encrypted with this phone's key.
+const restoreFileName = 'loopd.db.restore';
+
+/// Where the old data waits while a restored database is opened for the
+/// first time; deleted once that works, moved back if it does not.
+const _beforeRestore = '.before-restore';
+
 /// Opens the encrypted database in [directory] (ADR 0004).
 ///
 /// A new key is created only when no database file exists yet. If the file
 /// exists but its key cannot be read, this fails instead of starting over,
 /// so existing data is never replaced. Nothing is deleted on failure.
 ///
+/// A restored database ([restoreFileName]) is switched in first: the old files
+/// are moved aside, and removed only after the restored one opens. If it does
+/// not open, the old data is moved back and opened instead.
+///
 /// Throws [KeyAccessException] or [DatabaseOpenException].
 Future<AppDatabase> openAppDatabase({required DatabaseKeyStore keys, required Directory directory}) async {
-  final file = File(p.join(directory.path, databaseFileName));
+  final switched = _switchInRestore(directory);
+  try {
+    final database = await _open(keys, directory);
+    if (switched) {
+      _removeBeforeRestore(directory);
+      _log.info('restore_switched_in');
+    }
+    return database;
+  } on AppException {
+    if (!switched) rethrow;
+    _log.severe('restore_open_failed rolled_back=true');
+    _rollBack(directory);
+    return _open(keys, directory);
+  }
+}
+
+String _main(Directory directory) => p.join(directory.path, databaseFileName);
+
+const _sidecars = ['', '-wal', '-shm'];
+
+/// Moves the current files aside and the restored file into place. True when
+/// old data now waits aside (also after a start that stopped half-way).
+bool _switchInRestore(Directory directory) {
+  final main = _main(directory);
+  final restored = File(p.join(directory.path, restoreFileName));
+  if (restored.existsSync()) {
+    for (final side in _sidecars) {
+      final aside = File('$main$_beforeRestore$side');
+      if (aside.existsSync()) aside.deleteSync();
+      final current = File('$main$side');
+      if (current.existsSync()) current.renameSync(aside.path);
+    }
+    restored.renameSync(main);
+  }
+  return File('$main$_beforeRestore').existsSync();
+}
+
+void _removeBeforeRestore(Directory directory) {
+  for (final side in _sidecars) {
+    final aside = File('${_main(directory)}$_beforeRestore$side');
+    if (aside.existsSync()) aside.deleteSync();
+  }
+}
+
+void _rollBack(Directory directory) {
+  final main = _main(directory);
+  for (final side in _sidecars) {
+    final failed = File('$main$side');
+    if (failed.existsSync()) failed.deleteSync();
+    final aside = File('$main$_beforeRestore$side');
+    if (aside.existsSync()) aside.renameSync('$main$side');
+  }
+}
+
+Future<AppDatabase> _open(DatabaseKeyStore keys, Directory directory) async {
+  final file = File(_main(directory));
   final isNew = !file.existsSync();
   final key = await keys.databaseKey(createIfMissing: isNew);
 

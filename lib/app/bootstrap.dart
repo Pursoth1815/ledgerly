@@ -13,6 +13,7 @@ import '../core/ledger/ledger_engine.dart';
 import '../core/logging/logging_setup.dart';
 import '../core/platform/platform_api.g.dart';
 import '../core/security/database_key_store.dart';
+import '../core/settings/app_lock_setting.dart';
 import '../core/settings/theme_setting.dart';
 import '../design_system/font_licenses.dart';
 import 'app.dart';
@@ -63,8 +64,10 @@ Future<void> bootstrap() async {
     BackgroundJobApi.setUp(JobRunner(appJobs(database)));
     await background.engineReady();
   }
-  // Read before the first frame, so the app never flashes the wrong theme.
+  // Read before the first frame, so the app never flashes the wrong theme,
+  // and a locked app never shows its content first.
   final themeMode = await ThemeSettingStore(database).load();
+  final appLock = await AppLockSettingStore(database).load();
 
   runApp(
     ProviderScope(
@@ -72,6 +75,7 @@ Future<void> bootstrap() async {
         appConfigProvider.overrideWithValue(config),
         appDatabaseProvider.overrideWithValue(database),
         initialThemeModeProvider.overrideWithValue(themeMode),
+        initialAppLockProvider.overrideWithValue(appLock),
       ],
       child: const LoopdApp(),
     ),

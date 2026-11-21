@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../errors/app_exception.dart';
 import '../platform/platform_api.g.dart';
+import '../security/device_auth.dart';
 
 part 'backup_platform.g.dart';
 
@@ -78,7 +79,8 @@ class PigeonBackupPlatform implements BackupPlatform {
 
   @override
   Future<BackupFolder?> pickFolder() => _call(() async {
-    final info = await _api.pickFolder();
+    // The picker is Loopd's own errand, not time away (App lock).
+    final info = await OutsideActivity.during(_api.pickFolder);
     return info == null ? null : (uri: info.uri, name: info.name);
   });
 
@@ -157,7 +159,7 @@ class PigeonBackupPlatform implements BackupPlatform {
 
   @override
   Future<bool> confirmOwner({required String title, required String subtitle}) =>
-      _call(() => _api.confirmOwner(title, subtitle));
+      _call(() => OutsideActivity.during(() => _api.confirmOwner(title, subtitle)));
 
   @override
   Future<void> resetPassphrase(String next) => _call(() => _api.resetPassphrase(next));

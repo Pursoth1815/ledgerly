@@ -226,3 +226,20 @@ abstract class BackupApi {
   @async
   void resetPassphrase(String next);
 }
+
+/// The phone's own owner check and the app's window (ADR 0009: these guard
+/// opening the app; they are not the encryption).
+@HostApi()
+abstract class DeviceApi {
+  /// Whether the phone has a fingerprint, face or screen lock Loopd can ask for.
+  bool canCheckOwner();
+
+  /// Asks for fingerprint, face or the phone's PIN. True once it passes;
+  /// false when cancelled or it fails.
+  @async
+  bool checkOwner(String title, String subtitle);
+
+  /// Hides Loopd in recent apps and blocks screenshots while [private] is
+  /// true (owner, 21 Nov 2026: only while App lock is on).
+  void setPrivateWindow(bool private);
+}

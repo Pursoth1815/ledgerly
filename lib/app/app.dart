@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/settings/theme_setting.dart';
 import '../design_system/loopd_theme.dart';
+import '../features/app_lock/app_lock.dart';
 import 'router/app_router.dart';
 
 /// The root widget: Loopd's own themes, dark and light (proposal section 18),
@@ -20,5 +21,7 @@ class LoopdApp extends ConsumerWidget {
     // The theme switch is instant, as in the mockups.
     themeAnimationDuration: Duration.zero,
     routerConfig: ref.watch(appRouterProvider),
+    // App lock covers everything, sheets and toasts included.
+    builder: (context, child) => AppLockGate(child: child ?? const SizedBox.shrink()),
   );
 }

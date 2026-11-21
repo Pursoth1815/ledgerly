@@ -3,9 +3,6 @@ package com.pursoth.loopd.bridge
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.hardware.biometrics.BiometricManager
-import android.hardware.biometrics.BiometricPrompt
-import android.os.CancellationSignal
 import android.os.SystemClock
 import android.net.Uri
 import android.provider.DocumentsContract
@@ -219,30 +216,7 @@ class BackupApiImpl private constructor(private val context: Context) : BackupAp
 
     override suspend fun confirmOwner(title: String, subtitle: String): Boolean {
         val host = activity ?: throw FlutterError("cancelled", "No screen to ask on")
-        val ok = suspendCancellableCoroutine { continuation ->
-            val prompt = BiometricPrompt.Builder(host)
-                .setTitle(title)
-                .setSubtitle(subtitle)
-                .setAllowedAuthenticators(
-                    BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL,
-                )
-                .build()
-            val cancel = CancellationSignal()
-            continuation.invokeOnCancellation { cancel.cancel() }
-            prompt.authenticate(
-                cancel,
-                host.mainExecutor,
-                object : BiometricPrompt.AuthenticationCallback() {
-                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                        if (continuation.isActive) continuation.resume(true)
-                    }
-
-                    override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                        if (continuation.isActive) continuation.resume(false)
-                    }
-                },
-            )
-        }
+        val ok = OwnerCheck.ask(host, title, subtitle)
         if (ok) confirmedAt = SystemClock.elapsedRealtime()
         Log.i(TAG, "owner_check passed=$ok")
         return ok

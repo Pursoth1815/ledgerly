@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Backup sheet</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 1000px; position: relative; overflow: hidden; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+
+<div aria-hidden="true" style="padding: 20px; display: flex; flex-direction: column; gap: 14px">
+<span style="width: 44px; height: 44px; border-radius: 22px; background: {{c.s2}}"></span>
+<span style="font-size: 30px; font-weight: 800">Backup &amp; restore</span>
+<span style="height: 150px; border-radius: 24px; background: {{c.blue}}"></span>
+</div>
+<div aria-hidden="true" style="position: absolute; inset: 0; background: {{c.scrim}}"></div>
+
+<section aria-label="{{title}}" style="position: absolute; left: 0; right: 0; bottom: 0; max-height: calc(100% - 72px); box-sizing: border-box; background: {{c.s1}}; border-radius: 30px 30px 0 0; padding: 10px 20px 28px; display: flex; flex-direction: column; gap: 16px">
+<span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: {{c.line}}"></span>
+<div style="display: flex; align-items: center; gap: 10px">
+<sc-if value="{{showBack}}" hint-placeholder-val="{{ false }}">
+<button onClick="{{back}}" aria-label="Back" style="width: 40px; height: 40px; flex-shrink: 0; border-radius: 20px; border: 0; background: {{c.s2}}; color: {{c.t1}}; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg>
+</button>
+</sc-if>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 8px">
+<h1 style="margin: 0; font-size: 22px; font-weight: 800">{{title}}</h1>
+<span style="font-size: 13px; color: {{c.t2}}">{{subtitle}}</span>
+</div>
+</div>
+
+<div style="flex: 0 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px">
+
+<sc-if value="{{showFile}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 20px; background: {{c.blueT}}">
+<span aria-hidden="true" style="width: 44px; height: 44px; flex-shrink: 0; border-radius: 14px; background: {{c.blue}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"></path><path d="M10 11V9.5a2 2 0 0 1 4 0V11M9 11h6v4H9z"></path></svg>
+</span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">loopd-20261115-0200.lpdb</span>
+<span style="font-size: 12px; color: {{c.t2}}">Backed up Sun 15 Nov, 02:00 · 43.6 MB · 3 parts</span>
+</span>
+<sc-if value="{{canChangeFile}}" hint-placeholder-val="{{ true }}"><button style="height: 36px; padding: 0 12px; border-radius: 18px; border: 1px solid {{c.line}}; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 13px; font-weight: 700">Change</button></sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{showVerify}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 20px; background: {{verify.bg}}">
+<span aria-hidden="true" style="width: 44px; height: 44px; flex-shrink: 0; border-radius: 14px; background: {{verify.icon}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11c0 3.5-1 6-2.5 8M8.5 6.5A6 6 0 0 1 18 11c0 2-.3 4-1 6M6 9a6 6 0 0 0-.5 2.5c0 2-.5 3.5-1.5 5M15 11c0 2.5-.5 5-1.5 7M12 8a3 3 0 0 0-3 3c0 1.5-.2 3-.8 4.5"></path></svg>
+</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 15px; font-weight: 700">{{verify.title}}</span>
+<span style="font-size: 12px; color: {{c.t2}}">{{verify.sub}}</span>
+</span>
+<sc-if value="{{verify.pending}}" hint-placeholder-val="{{ true }}"><button onClick="{{verify.run}}" style="height: 40px; padding: 0 14px; border-radius: 20px; border: 0; background: {{c.blue}}; color: #FFFFFF; font-family: inherit; font-size: 13px; font-weight: 800">Check</button></sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{showFields}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{fields}}" as="f" hint-placeholder-count="2">
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 12px; font-weight: 700; color: {{c.t3}}">{{f.label}}</span>
+<span style="display: flex; align-items: center; height: 52px; padding: 0 6px 0 16px; border-radius: 16px; background: {{c.s2}}; border: 1.5px solid {{f.border}}">
+<input type="{{inputType}}" value="{{f.value}}" onInput="{{f.input}}" placeholder="{{f.hint}}" autocomplete="off" style="flex: 1; min-width: 0; border: 0; outline: none; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 16px; font-weight: 700">
+<button onClick="{{toggleShow}}" aria-label="{{showLabel}}" style="width: 40px; height: 40px; border: 0; border-radius: 20px; background: transparent; color: {{c.t3}}; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+</button>
+</span>
+</label>
+</sc-for>
+<sc-if value="{{showForgotLink}}" hint-placeholder-val="{{ false }}"><button onClick="{{toForgot}}" style="align-self: flex-start; height: 36px; padding: 0; border: 0; background: transparent; color: {{c.blueText}}; font-family: inherit; font-size: 13px; font-weight: 700">Forgot it?</button></sc-if>
+<sc-if value="{{showRules}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 4px 2px">
+<sc-for list="{{rules}}" as="r" hint-placeholder-count="2">
+<span style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: {{r.color}}">
+<span aria-hidden="true" style="width: 18px; height: 18px; border-radius: 9px; background: {{r.dot}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>{{r.text}}</span>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{error}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; gap: 10px; padding: 12px 14px; border-radius: 16px; border: 1px solid {{c.red}}; background: {{c.redT}}">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{c.red}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg>
+<span style="font-size: 13px; line-height: 1.5; color: {{c.t1}}">{{error}}</span>
+</div>
+</sc-if>
+
+<sc-if value="{{showFolder}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 12px; font-weight: 700; color: {{c.t3}}">Save backups to</span>
+<sc-if value="{{folderChosen}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 0 6px 0 14px; border-radius: 16px; border: 1px solid {{c.line}}">
+<span aria-hidden="true" style="width: 34px; height: 34px; border-radius: 10px; background: {{c.blueT}}; color: {{c.blueText}}; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 700">Drive › Loopd backups</span><span style="font-size: 12px; color: {{c.t3}}">The Drive app uploads it; Loopd stays offline</span></span>
+<button onClick="{{pickFolder}}" style="height: 36px; padding: 0 12px; border-radius: 18px; border: 1px solid {{c.line}}; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 13px; font-weight: 700">Change</button>
+</div>
+</sc-if>
+<sc-if value="{{folderMissing}}" hint-placeholder-val="{{ true }}">
+<button onClick="{{pickFolder}}" style="height: 56px; border-radius: 16px; border: 1.5px dashed {{c.blueText}}; background: transparent; color: {{c.blueText}}; font-family: inherit; font-size: 14px; font-weight: 700">Choose a folder</button>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{note}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; gap: 10px; padding: 14px; border-radius: 18px; background: {{noteBg}}">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{noteFg}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px"><path d="M12 3l9.5 16.5h-19z"></path><path d="M12 10v4M12 17h.01"></path></svg>
+<span style="font-size: 13px; line-height: 1.5; color: {{c.t2}}">{{note}}</span>
+</div>
+</sc-if>
+
+<sc-if value="{{showSteps}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; border: 1px solid {{c.line}}; border-radius: 20px; padding: 6px 16px">
+<sc-for list="{{steps}}" as="st" hint-placeholder-count="5">
+<div style="display: flex; align-items: center; gap: 12px; min-height: 48px">
+<span aria-hidden="true" style="width: 22px; height: 22px; flex-shrink: 0; border-radius: 11px; background: {{st.dot}}; border: 1.5px solid {{st.ring}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>
+<span style="font-size: 14px; font-weight: 600; color: {{st.color}}">{{st.text}}</span>
+</div>
+</sc-for>
+</div>
+</sc-if>
+</div>
+
+<button onClick="{{primary.run}}" disabled="{{primary.off}}" style="height: 52px; flex-shrink: 0; border-radius: 26px; border: 0; background: {{primary.bg}}; color: {{c.onAccent}}; font-family: inherit; font-size: 16px; font-weight: 800; opacity: {{primary.opacity}}; transition: opacity 200ms ease">{{primary.label}}</button>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"mode":{"editor":"enum","options":["setup","restore","change","forgot"],"default":"setup"},"$preview":{"width":390,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { a: '', b: '', cur: '', show: false, folder: false, view: null, checked: false, phase: 'form', step: 0, error: '' };
+  }
+  pal(t) {
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',money:'#047857',moneyT:'#E1F4EA',blue:'#3B5BDB',blueT:'#E7ECFD',blueText:'#2F4AC0',warn:'#A14A06',warnT:'#FDF0D8',red:'#B91C1C',redT:'#FDE8E8',onAccent:'#FFFFFF',off:'#C3C8D2',scrim:'rgba(17,20,27,0.45)'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',blue:'#3B5BDB',blueT:'rgba(99,128,255,0.16)',blueText:'#8EA5FF',warn:'#FBBF24',warnT:'rgba(251,191,36,0.12)',red:'#FF7B7B',redT:'rgba(255,123,123,0.12)',onAccent:'#0D0F14',off:'#3A4050',scrim:'rgba(0,0,0,0.6)'};
+  }
+  componentWillUnmount() { clearTimeout(this.t); }
+  renderVals() {
+    const s = this.state || {};
+    const c = this.pal(this.props.theme);
+    const mode = s.view || this.props.mode || 'setup';
+    const set = (k) => (e) => this.setState({ [k]: e && e.target ? e.target.value : '', error: '' });
+    const long = s.a.length >= 12;
+    const same = s.a.length > 0 && s.a === s.b;
+    const rule = (ok, text) => ({ text, color: ok ? c.t1 : c.t3, dot: ok ? c.money : c.off });
+    const rules = [rule(long, 'At least 12 characters'), rule(same, 'Both match')];
+    const field = (label, key, hint, bad) => ({ label, value: s[key], input: set(key), hint, border: bad ? c.red : (s[key] ? c.blue : c.s2) });
+    const off = { bg: c.money, opacity: '0.4', off: true };
+    const on = (label, run, bg) => ({ label, run, bg: bg || c.money, opacity: '1', off: false });
+    let v = {
+      title: '', subtitle: '', showBack: false, showFile: false, canChangeFile: true, showVerify: false, showFields: true,
+      fields: [], showForgotLink: false, showRules: true, showFolder: false, note: '', noteBg: c.warnT, noteFg: c.warn,
+      showSteps: false, steps: [], error: s.error, primary: off
+    };
+
+    if (mode === 'setup') {
+      v.title = 'Set up backup';
+      v.subtitle = 'Encrypted with your passphrase. Nothing is sent anywhere by the app.';
+      v.fields = [field('Passphrase', 'a', 'At least 12 characters'), field('Type it again', 'b', 'The same again', s.b && !same)];
+      v.showFolder = true;
+      v.note = 'Keep it somewhere safe: Loopd never stores it. On this phone you can reset it with your fingerprint or PIN; on a new phone, a backup can’t be opened without it.';
+      if (s.phase === 'done') {
+        v.primary = { ...on('Backed up · Done', () => {}), opacity: '1' };
+      } else {
+        v.primary = long && same && s.folder ? on('Turn on and back up now', () => this.setState({ phase: 'done' })) : { ...off, label: 'Turn on and back up now' };
+      }
+    }
+
+    if (mode === 'restore') {
+      v.title = 'Restore from a backup';
+      v.subtitle = 'Choose a backup file Loopd made, then its passphrase.';
+      v.showFile = true;
+      v.showRules = false;
+      v.fields = [field('Passphrase of this backup', 'a', 'The one you set for it', !!s.error)];
+      const labels = ['Unlocked with your passphrase', 'Checked all 3 parts', 'Restored into a safe area', 'Checked your money and data', 'Switched over'];
+      if (s.phase === 'form') {
+        v.note = 'Restoring replaces everything on this phone: money, notes, tasks, tickets and documents. What is here now stays until the restore is checked and done.';
+        v.noteBg = c.redT;
+        v.noteFg = c.red;
+        v.primary = s.a.length > 0
+          ? on('Replace with this backup', () => {
+              if (s.a.toLowerCase().startsWith('wrong')) {
+                this.setState({ error: 'That passphrase doesn’t open this backup. Check it, or choose another backup file.' });
+                return;
+              }
+              this.setState({ phase: 'running', step: 0 });
+              const tick = (n) => { this.t = setTimeout(() => { this.setState({ step: n }); if (n < 5) tick(n + 1); else this.setState({ phase: 'done' }); }, 700); };
+              tick(1);
+            }, c.red)
+          : { ...off, bg: c.red, label: 'Replace with this backup' };
+      } else {
+        v.showFields = false;
+        v.canChangeFile = false;
+        v.showSteps = true;
+        const step = s.phase === 'done' ? 5 : s.step;
+        v.steps = labels.map((text, i) => ({ text, dot: i < step ? c.money : 'transparent', ring: i < step ? c.money : c.off, color: i <= step ? c.t1 : c.t3 }));
+        v.subtitle = s.phase === 'done' ? 'Everything is back. Loopd restarts to finish.' : 'Keep Loopd open. This takes a minute.';
+        v.primary = s.phase === 'done' ? on('Restart Loopd', () => {}) : { ...off, label: 'Restoring…' };
+      }
+    }
+
+    if (mode === 'change') {
+      v.title = 'Change passphrase';
+      v.subtitle = 'For new backups. Loopd makes a fresh one at once.';
+      v.fields = [field('Current passphrase', 'cur', 'The one you use now'), field('New passphrase', 'a', 'At least 12 characters'), field('Type it again', 'b', 'The same again', s.b && !same)];
+      v.showForgotLink = true;
+      v.note = 'Backups made before still need the old passphrase.';
+      v.primary = s.cur.length > 0 && long && same ? on('Change and back up', () => {}) : { ...off, label: 'Change and back up' };
+    }
+
+    if (mode === 'forgot') {
+      v.title = 'Forgot your passphrase';
+      v.subtitle = 'Set a new one on this phone after a quick check.';
+      v.showBack = !!s.view;
+      v.showVerify = true;
+      v.verify = s.checked
+        ? { title: 'It’s you', sub: 'Checked with your fingerprint', bg: c.moneyT, icon: c.money, pending: false }
+        : { title: 'Confirm it’s you', sub: 'Fingerprint, face or your phone’s PIN', bg: c.blueT, icon: c.blue, pending: true, run: () => this.setState({ checked: true }) };
+      v.showFields = s.checked;
+      v.fields = [field('New passphrase', 'a', 'At least 12 characters'), field('Type it again', 'b', 'The same again', s.b && !same)];
+      v.note = 'New backups use the new passphrase. Backups made before today still need the old one, so keep them only if you remember it.';
+      v.primary = s.checked && long && same ? on('Save new passphrase', () => {}) : { ...off, label: 'Save new passphrase' };
+    }
+
+    return {
+      c, ...v,
+      verify: v.verify || { title: '', sub: '', bg: c.s2, icon: c.blue, pending: false, run: () => {} },
+      inputType: s.show ? 'text' : 'password',
+      showLabel: s.show ? 'Hide passphrase' : 'Show passphrase',
+      toggleShow: () => this.setState({ show: !s.show }),
+      folderChosen: !!s.folder, folderMissing: !s.folder, pickFolder: () => this.setState({ folder: true }),
+      toForgot: () => this.setState({ view: 'forgot', a: '', b: '' }),
+      back: () => this.setState({ view: null, a: '', b: '', checked: false }),
+      error: v.error || ''
+    };
+  }
+}
+</script>
+</body>
+</html>

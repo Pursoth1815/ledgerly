@@ -20,6 +20,9 @@ The files in this folder are the source of that canvas, kept in git so every rev
 | 4b | Add bank account (sheet, searching "hd") | 4 | Type to search banks, pick one, nickname, last four digits, default; live preview |
 | 4c | Add credit card (sheet, bank chosen) | 4 | Same sheet for a card |
 | 5 | Lending: person page | 6 | |
+| 5a | Money tab: Expenses | 3, 4 | Day / Week / Month, filter by account or card, show all |
+| 5b | Show all categories (sheet) | 4 | View and account or card set in Tweaks |
+| 5c | Show all expenses (sheet) | 4 | The same sheet in its expenses view |
 | 6 | Travel list | 7 | All / Train / Bus filter |
 | 6b | Ticket details, train | 7 | |
 | 6c | Ticket details, bus | 7 | |
@@ -31,6 +34,13 @@ The files in this folder are the source of that canvas, kept in git so every rev
 | 9c | Add task sheet | 8 | Due, reminder, repeat and time |
 | 10 | More (last tab) | 3 | Opens the Vault, Screen time and Accounts and cards |
 | 10b | Document Vault (inside More) | 8 | |
+| 10i | Set up backup (sheet) | 11 | Passphrase checks, folder picker, Turn on and back up now |
+| 10j | Restore from a backup (sheet) | 11 | Passphrase, the replace warning, five steps, Restart Loopd; a passphrase starting "wrong" shows the error |
+| 10k | Change passphrase (sheet) | 11 | Current, new and again; Forgot it? |
+| 10l | Forgot passphrase (sheet) | 11 | Fingerprint, face or PIN check, then a new passphrase |
+| 10m | App lock (sheet) | 11 | Lock Loopd switch; Lock after Now, 1, 5 or 15 min |
+| 10n-b | Loopd is locked, floating icons (chosen) | 11 | Unlock; the icons rise |
+| 10n | Loopd is locked, glow (the option not chosen) | 11 | Unlock |
 | 11 | Digital Wellbeing | 9 | |
 | 12 | Capture sheet with the command line | 10 | |
 
@@ -208,6 +218,40 @@ Built from the mockups, with these additions for a phase where no features exist
 - **Capture sheet:** the input, the five shortcuts and the three questions are in place. Shortcuts and questions say which phase builds them. Typed text is not understood until the offline assistant (Phase 9).
 - **Icons:** Material icons stand in for the mockups' line icons, except the tab bar, which is drawn from the mockup paths.
 
+
+## Review round 9: app lock (21 Nov 2026)
+
+Designed for Phase 2, part 7 (screens 10m and 10n), one component, `AppLock.dc.html`, with a mode (settings or locked) and a background (glow or icons).
+
+- **App lock (10m)** is a sheet from More → App lock that fits its content: "Fingerprint, face or your phone's PIN to open Loopd.", a **Lock Loopd** switch whose line says what it does ("On · asks after 1 min away"), then **Lock again after Loopd is away for: Now · 1 min · 5 min · 15 min**, with 1 min the default. Turning it on asks for the fingerprint or PIN once, to be sure it works.
+- **Recent apps and screenshots** (owner, 21 Nov 2026): only while App lock is on, Loopd is hidden in the recent-apps view and screenshots are blocked; a blue note on the sheet says so. With App lock off, screenshots work.
+- **Loopd is locked (10n-b, chosen by the owner):** a paper-light background with a faint dot grid (deep charcoal in dark mode), and a dozen of Loopd's own line icons (₹, wallet, card, train ticket, note, task tick, shield, calendar), each in a soft tile in its module's colour, rising slowly and tilting a little, fading in at the bottom and out at the top, each at its own speed (16 to 26 seconds). On top: the floating blue lock tile, "Loopd is locked", "Unlock with your fingerprint, face or PIN." and a blue **Unlock** button; the phone's prompt also opens by itself. A failed try says "Not recognised. Try again, or use your PIN." Everything holds still when the phone asks for less motion. The first option (10n, blurred colour shapes and slow rings) stays on the canvas, not chosen.
+- It asks when Loopd starts fresh and when you come back after the chosen time; background work (reminders, SMS, backups) carries on while it is locked. The lock guards opening the app; it is not the encryption (ADR 0009).
+
+## Review round 8: backup sheets (18 Nov 2026)
+
+Designed for Phase 2, part 6 (screens 10i to 10l), around the Backup & restore page (10f, unchanged). All four are one component, `BackupSheet.dc.html`, with a mode: setup, restore, change or forgot. They are ordinary sheets that fit their content (no empty space; the keyboard lifts them), with 8 px between the title and the description, and no close button: swipe down or press back.
+
+- **Set up backup (10i):** passphrase and "Type it again", each with a show button; two live checks that turn green, "At least 12 characters" and "Both match"; **Choose a folder** opens the phone's folder picker and then shows the folder with Change; a note that the passphrase is never stored, can be reset on this phone with fingerprint or PIN, and is needed on a new phone; green **Turn on and back up now**, enabled only when both checks pass and a folder is chosen.
+- **Restore from a backup (10j):** the chosen file (name, date, size, parts) with Change; the backup's passphrase; a red note that restoring replaces everything, and that what is on the phone stays until the restore is checked; red **Replace with this backup**. It then ticks off five steps (unlocked, all parts checked, restored into a safe area, money and data checked, switched over) and ends with **Restart Loopd**. A wrong passphrase shows "That passphrase doesn't open this backup." in the red error box. Restore has no "Forgot" link: a backup always needs the passphrase it was made with.
+- **Change passphrase (10k):** opened from Change on the Passphrase row. Current, new and again, with the same checks; **Forgot it?**; a note that older backups still need the old passphrase; green **Change and back up** makes a fresh backup at once (a new backup key, ADR 0011).
+- **Forgot passphrase (10l):** opened from Forgot it?, on this phone only. "Confirm it's you" with Check (fingerprint, face or PIN), then the new passphrase; a note that older backups still need the old one. The backup key is re-wrapped, so new backups use the new passphrase (ADR 0011).
+- **Back up now reads the backup back before it says "Backed up", and only the last three backups are kept** (owner, 18 Nov 2026; moved from Phase 7 to Phase 2).
+- Built in three pull requests: 6a setup and Back up now, 6b restore, 6c change and forgotten passphrase.
+
+## Review round 7: the Money tab (18 Nov 2026)
+
+Designed for Phase 2, part 5 (screens 5a, 5b and 5c) and reviewed in two rounds. The numbers are the made-up November from Today (₹19,070 so far).
+
+- **Header:** the title "Money", a round wallet button that opens the Accounts and cards sheet, and the Expenses | Lending segments. The chosen segment fills with its module colour: Expenses in Money green, Lending in amber. Lending is designed and built in Phase 4; until then its segment says "Lending is built in Phase 4".
+- **Period:** Day | Week | Month pills (the chosen one in Money green) and ‹ › to step through earlier periods; › is faded on the current one.
+- **Total card:** "Spent in November", the total, then the UPI / Credit Card / Cash bar with each amount. A method with ₹0 is left out of both the bar and the amounts.
+- **Refunds always count in the purchase month** (owner, 18 Nov 2026, replacing the switch chosen on 17 Nov): a refund lowers the month its purchase was in, so totals never move between months. A failed payment reversed later by the bank is the same: once confirmed, the reversal cancels the original. In the list, a refund sits on the day it came back, in green ("+₹2,499"), tagged "Counts in Oct" when its purchase was in an earlier month.
+- **Spent from:** a row of mini cards in each bank's colour, one per account and card plus Cash, each with the period's total. Tapping one filters everything below it ("Spent in November from Kiwi", "Categories · Kiwi", "Expenses · Kiwi"); tapping it again or Show all clears it.
+- **Categories:** the top five with tile, amount, a bar and the share of the total; **Show all N** opens screen 5b.
+- **Expenses:** newest first, grouped by day with each day's total; each row has the category tile, the shop, a dot in the method colour with how it was paid ("UPI · Primary", "Kiwi · UPI QR", "Cash"), and the amount. Tapping one opens the expense sheet as **Edit expense**. The app loads more as you scroll; **Show all N** opens screen 5c.
+- **Show all (5b, 5c):** one tall sheet with two views, Categories and Expenses. The title, then "November 2026 · 6 categories", then the chosen account or card as a card (or "All accounts and cards"), then the full list. No close button, as on the category sheet: swipe it down or press back.
+- No hint texts ("tap one to filter", "tap one to edit") on the screen.
 
 ## Phase 2, part 2: Accounts and cards (18 Nov 2026)
 

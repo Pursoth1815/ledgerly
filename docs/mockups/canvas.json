@@ -507,6 +507,186 @@
       "w": 390,
       "x": 2350,
       "y": 2560
+    },
+    "Money.dc.html": {
+      "h": 2300,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "5a · Money tab: Expenses",
+      "w": 390,
+      "x": 13630,
+      "y": 0
+    },
+    "MoneyLight.dc.html": {
+      "h": 2300,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "5a · Money tab: Expenses (light)",
+      "w": 390,
+      "x": 13630,
+      "y": 2560
+    },
+    "MoneyAll.dc.html": {
+      "h": 1100,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "5b · Show all categories (Kiwi chosen)",
+      "w": 390,
+      "x": 14100,
+      "y": 0
+    },
+    "MoneyAllExpenses.dc.html": {
+      "h": 1100,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "5c · Show all expenses (Kiwi chosen)",
+      "w": 390,
+      "x": 14570,
+      "y": 0
+    },
+    "MoneyAllLight.dc.html": {
+      "h": 1100,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "5b · Show all categories (light)",
+      "w": 390,
+      "x": 14100,
+      "y": 2560
+    },
+    "MoneyAllExpensesLight.dc.html": {
+      "h": 1100,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "5c · Show all expenses (light)",
+      "w": 390,
+      "x": 14570,
+      "y": 2560
+    },
+    "BackupSheet.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10i · Set up backup",
+      "w": 390,
+      "x": 15040,
+      "y": 0
+    },
+    "BackupSheetLight.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10i · Set up backup (light)",
+      "w": 390,
+      "x": 15040,
+      "y": 2560
+    },
+    "BackupRestore.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10j · Restore from a backup",
+      "w": 390,
+      "x": 15510,
+      "y": 0
+    },
+    "BackupRestoreLight.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10j · Restore from a backup (light)",
+      "w": 390,
+      "x": 15510,
+      "y": 2560
+    },
+    "BackupChange.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10k · Change passphrase",
+      "w": 390,
+      "x": 15980,
+      "y": 0
+    },
+    "BackupChangeLight.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10k · Change passphrase (light)",
+      "w": 390,
+      "x": 15980,
+      "y": 2560
+    },
+    "BackupForgot.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10l · Forgot passphrase",
+      "w": 390,
+      "x": 16450,
+      "y": 0
+    },
+    "BackupForgotLight.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10l · Forgot passphrase (light)",
+      "w": 390,
+      "x": 16450,
+      "y": 2560
+    },
+    "AppLock.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10m · App lock",
+      "w": 390,
+      "x": 16920,
+      "y": 0
+    },
+    "AppLockLight.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10m · App lock (light)",
+      "w": 390,
+      "x": 16920,
+      "y": 2560
+    },
+    "AppLocked.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10n · Loopd is locked, glow (option)",
+      "w": 390,
+      "x": 17390,
+      "y": 0
+    },
+    "AppLockedLight.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10n · Loopd is locked (light)",
+      "w": 390,
+      "x": 17390,
+      "y": 2560
+    },
+    "AppLockedIcons.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10n-b · Loopd is locked, floating icons (option)",
+      "w": 390,
+      "x": 17860,
+      "y": 0
+    },
+    "AppLockedIconsLight.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10n-b · Floating icons (light)",
+      "w": 390,
+      "x": 17860,
+      "y": 2560
     }
   },
   "createdOnFiles": {
@@ -565,6 +745,16 @@
     "VaultCategoryNew.dc.html",
     "Wellbeing.dc.html",
     "Capture.dc.html",
+    "Money.dc.html",
+    "MoneyAll.dc.html",
+    "MoneyAllExpenses.dc.html",
+    "BackupSheet.dc.html",
+    "BackupRestore.dc.html",
+    "BackupChange.dc.html",
+    "BackupForgot.dc.html",
+    "AppLock.dc.html",
+    "AppLocked.dc.html",
+    "AppLockedIcons.dc.html",
     "TodayLight.dc.html",
     "ReviewLight.dc.html",
     "ReviewDetailLight.dc.html",
@@ -593,7 +783,17 @@
     "VaultLight.dc.html",
     "VaultCategoryNewLight.dc.html",
     "WellbeingLight.dc.html",
-    "CaptureLight.dc.html"
+    "CaptureLight.dc.html",
+    "MoneyLight.dc.html",
+    "MoneyAllLight.dc.html",
+    "MoneyAllExpensesLight.dc.html",
+    "BackupSheetLight.dc.html",
+    "BackupRestoreLight.dc.html",
+    "BackupChangeLight.dc.html",
+    "BackupForgotLight.dc.html",
+    "AppLockLight.dc.html",
+    "AppLockedLight.dc.html",
+    "AppLockedIconsLight.dc.html"
   ],
   "pages": [],
   "title": "Loopd Mockups"

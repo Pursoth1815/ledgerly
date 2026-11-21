@@ -200,6 +200,7 @@ So the flow is: Cash in hand starts at ₹0. Update cash sets it. An ATM withdra
 ### Tracking and correction
 
 - Totals by day, week and month, by category, by method, and separately for each bank account and each card.
+- The Money tab shows them (mockup screens 5a to 5c, 18 November 2026): Day, Week or Month with earlier periods; the total with its UPI, Credit Card and Cash split (a method with ₹0 is left out); a "Spent from" row of mini cards that filters the tab to one account or card; the top five categories; and the expenses by day, each opening Edit expense. "Show all" opens a sheet with every category or every expense for the chosen account or card.
 - Any saved expense can be edited: method, account or card, category, amount, date and merchant. This is the manual correction for a wrong automatic guess.
 - Categories come with a default set of thirteen (the twelve plus Misc), each with a colour, an icon and this month's spend. From More, a sheet lets you add one with a name, one of twenty-five colours and one of twenty-five icons, or rename and recolour an existing one. No two categories share a colour or an icon, so there are at most twenty-five. Categories you added can be deleted, several at once; their expenses move to Misc unless you choose another. The defaults always stay (owner, 18 Nov 2026).
 
@@ -716,7 +717,7 @@ It is required for expenses, refunds, loans and repayments, and empty for the ot
 - A refund always points to its original purchase (`refund_of` is required), and the total refunded can never exceed the original. A credit SMS with no known original stays in the Review Inbox as an unclear item.
 - The refund's `payment_method` and funding account describe where the money actually came back: the same card, a bank account, or cash.
 - Spending reports attribute a refund to the **original's** category, method and card. Balances use the **actual** destination. Example: a ₹1,299 card purchase refunded to Savings by UPI gives Savings +129900 and Shopping −129900. Shopping and the card's spending both fall to zero. The card still shows ₹1,299 owed, because that is still true, and the UPI total does not change.
-- Reports offer two modes. In purchase-month mode a refund counts in the month of the original. In cash-flow mode it counts in its own month. Over a range that covers both dates, the totals are the same. Purchase month is the default, with a switch in the Money tab (your decision, 17 November 2026).
+- A refund counts in the month of the original purchase, so a month's total never changes because of a later month. There is no cash-flow mode (your decision, 18 November 2026, replacing the switch chosen on 17 November). In the Money tab's list, a refund still appears on the day it came back.
 - A purchase with live refunds cannot be deleted directly. You see its refunds and choose to edit the purchase, or to delete it together with its refunds as an explicit action. Nothing is removed silently.
 
 **Many SMS, one transaction.** The capture inbox links drafts to transactions:
@@ -1034,7 +1035,7 @@ docs/architecture.md, docs/adr/
 | Item | Detail |
 | --- | --- |
 | Objective | A manual expense tracker you can use every day, with data that is safe |
-| Features | Bank accounts and cards with nickname, last four digits and default, added from a sheet with a searchable bank list and live preview; the shared expense form with UPI, Credit Card and Cash; Cash in hand with Update cash; categories with the category sheet; totals by period, category, method, account and card, in purchase-month and cash-flow modes; editing with history and undo; refunds linked to originals; settlement, transfer and income rules; optional opening balances and verified balances; encrypted backup and restore with its screen; app lock; app-switcher privacy |
+| Features | Bank accounts and cards with nickname, last four digits and default, added from a sheet with a searchable bank list and live preview; the shared expense form with UPI, Credit Card and Cash; Cash in hand with Update cash; categories with the category sheet; totals by period, category, method, account and card, with refunds in the purchase month; editing with history and undo; refunds linked to originals; settlement, transfer and income rules; optional opening balances and verified balances; encrypted backup and restore with its screen, read-back verification and keeping the last three backups; app lock; app-switcher privacy |
 | Technical dependencies | Phase 1 components. The ledger engine (section 13) and the first version of the backup engine are built here; Bouncy Castle is added for Argon2id |
 | Risks and platform restrictions | The backup format must carry a version from its first release |
 | Tested on Android | Everything, including restore onto a clean install |
@@ -1089,7 +1090,7 @@ docs/architecture.md, docs/adr/
 | Item | Detail |
 | --- | --- |
 | Objective | Keep personal documents encrypted, viewable and recoverable |
-| Features | Everything in section 8 for the vault, including category icons and the new category sheet; vault files added to the backup; the optional weekly automatic backup, resumable after interruption; read-back verification and retention; the full backup and restore round-trip test; document expiry reminders |
+| Features | Everything in section 8 for the vault, including category icons and the new category sheet; vault files added to the backup; the optional weekly automatic backup, resumable after interruption; the full backup and restore round-trip test; document expiry reminders (read-back verification and keeping the last three backups moved to Phase 2, owner, 18 November 2026) |
 | Technical dependencies | The encrypted file store from Phase 5; the app lock; the reminder engine |
 | Risks and platform restrictions | Memory use when decrypting large files. A forgotten backup passphrase cannot be recovered |
 | Tested on Android | Encryption round trips and a restore onto a clean install |
@@ -1271,7 +1272,7 @@ Your confirmed decisions are applied and are not reopened here. Each open point 
 - [x] **Architecture.** Approved on 16 November 2026 as described in section 13, with Kotlin and Tink for encryption. Phase 0A was finished on 17 November 2026.
 - [x] **The capture button.** Stays on every tab, confirmed after trying the sheet in Phase 1 (17 November 2026).
 - [x] **Other bank methods in the split.** Debit-card, net-banking and auto-debit payments count as UPI: Loopd has only UPI, Credit Card and Cash (17 November 2026).
-- [x] **Refund reporting.** Purchase month is the default: a refund reduces the month the purchase was made in. The Money tab can switch to cash-flow (17 November 2026).
+- [x] **Refund reporting.** Purchase month only: a refund reduces the month the purchase was made in. The cash-flow switch chosen on 17 November was dropped after the Money tab design (18 November 2026).
 - [x] **Backup retention.** The last three successful backups are kept; no older fourth one (17 November 2026).
 - [x] **Restore without the passphrase.** No: every restore asks for the backup passphrase, on this phone too (17 November 2026).
 - [x] **Resetting a forgotten passphrase.** Yes, on this phone after a fingerprint, face or PIN check. Older backups keep the old passphrase; new backups use the new one (17 November 2026).

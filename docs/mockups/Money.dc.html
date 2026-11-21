@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Money, Expenses</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 2300px; position: relative; overflow: hidden; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+<main style="padding: 24px 20px 120px; display: flex; flex-direction: column; gap: 18px">
+
+<header style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; justify-content: space-between">
+<h1 style="margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.5px; line-height: 44px">Money</h1>
+<a href="Accounts.dc.html" aria-label="Accounts and cards" style="width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t1}}">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"></rect><path d="M3 10h18M16 15h2"></path></svg>
+</a>
+</div>
+<div role="group" aria-label="Money" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 4px; border-radius: 16px; background: {{c.s2}}">
+<button aria-pressed="true" style="height: 40px; border: 0; border-radius: 12px; background: {{c.money}}; color: {{c.onAccent}}; font-family: inherit; font-size: 14px; font-weight: 800">Expenses</button>
+<a href="Lending.dc.html" style="height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: {{c.t3}}; font-size: 14px; font-weight: 600; text-decoration: none">Lending</a>
+</div>
+</header>
+
+<section aria-label="Period" style="display: flex; flex-direction: column; gap: 12px">
+<div role="group" aria-label="Show by" style="display: flex; gap: 8px">
+<sc-for list="{{periods}}" as="p" hint-placeholder-count="3">
+<button onClick="{{p.pick}}" aria-pressed="{{p.pressed}}" style="height: 36px; padding: 0 16px; border-radius: 18px; border: 1px solid {{p.border}}; background: {{p.bg}}; color: {{p.fg}}; font-family: inherit; font-size: 13px; font-weight: 700">{{p.label}}</button>
+</sc-for>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between">
+<button aria-label="Earlier" style="width: 44px; height: 44px; border-radius: 22px; border: 0; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t1}}">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg>
+</button>
+<span style="font-size: 16px; font-weight: 700">{{periodTitle}}</span>
+<button aria-label="Later" disabled style="width: 44px; height: 44px; border-radius: 22px; border: 0; display: flex; align-items: center; justify-content: center; background: {{c.s2}}; color: {{c.t3}}; opacity: 0.45">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+</button>
+</div>
+</section>
+
+<section aria-label="Total" style="background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 26px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 13px; font-weight: 700; color: {{c.money}}">{{totalLabel}}</span>
+<span style="font-size: 44px; font-weight: 800; letter-spacing: -1px; line-height: 52px">{{total}}</span>
+<sc-if value="{{refundNote}}" hint-placeholder-val="{{ true }}"><span style="font-size: 13px; color: {{c.t2}}">{{refundNote}}</span></sc-if>
+</div>
+<sc-if value="{{hasSpend}}" hint-placeholder-val="{{ true }}">
+<div role="img" aria-label="{{splitA11y}}" style="display: flex; gap: 2px; height: 10px">
+<sc-for list="{{methodList}}" as="m" hint-placeholder-count="3">
+<span style="flex: {{m.share}}; border-radius: 5px; background: {{m.color}}"></span>
+</sc-for>
+</div>
+<div style="display: flex; gap: 28px">
+<sc-for list="{{methodList}}" as="m" hint-placeholder-count="3">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: {{c.t3}}"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{m.color}}"></span>{{m.label}}</span><span style="font-size: 16px; font-weight: 800">{{m.amount}}</span></span>
+</sc-for>
+</div>
+</sc-if>
+</section>
+
+<section aria-label="Paid from" style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{c.t3}}">Spent from</h2>
+<sc-if value="{{filtered}}" hint-placeholder-val="{{ false }}"><button onClick="{{clearFilter}}" style="height: 32px; padding: 0 12px; border-radius: 16px; border: 0; background: {{c.s2}}; color: {{c.t1}}; font-family: inherit; font-size: 12px; font-weight: 700">Show all</button></sc-if>
+</div>
+<div style="display: flex; gap: 10px; overflow-x: auto; margin: 0 -20px; padding: 4px 20px 6px">
+<sc-for list="{{sources}}" as="s" hint-placeholder-count="5">
+<button onClick="{{s.pick}}" aria-pressed="{{s.pressed}}" aria-label="{{s.a11y}}" style="flex-shrink: 0; width: 128px; height: 84px; box-sizing: border-box; padding: 10px 12px; border-radius: 16px; border: 0; background: {{s.bg}}; color: {{s.fg}}; box-shadow: {{s.ring}}; opacity: {{s.opacity}}; font-family: inherit; text-align: left; display: flex; flex-direction: column; justify-content: space-between">
+<span style="display: flex; align-items: center; justify-content: space-between; width: 100%"><span style="font-size: 13px; font-weight: 800">{{s.nick}}</span><span style="font-size: 10px; font-weight: 700; opacity: 0.85">{{s.kind}}</span></span>
+<span style="font-size: 17px; font-weight: 800">{{s.spent}}</span>
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; opacity: 0.85">{{s.tail}}</span>
+</button>
+</sc-for>
+</div>
+</section>
+
+<section aria-label="Categories" style="display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{c.t3}}">{{categoryTitle}}</h2>
+<div style="display: flex; flex-direction: column; background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 22px; overflow: hidden">
+<sc-for list="{{cats}}" as="k" hint-placeholder-count="5">
+<div aria-label="{{k.a11y}}" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 16px; border-bottom: {{k.divider}}">
+<span aria-hidden="true" style="width: 36px; height: 36px; flex-shrink: 0; border-radius: 11px; background: {{k.color}}; color: #0D0F14; display: flex; align-items: center; justify-content: center">
+<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{k.icon}}"></path></svg>
+</span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 15px; font-weight: 700">{{k.name}}</span><span style="font-size: 15px; font-weight: 800">{{k.spent}}</span></span>
+<span style="display: flex; align-items: center; gap: 8px"><span style="flex: 1; height: 6px; border-radius: 3px; background: {{c.s2}}; display: flex"><span style="width: {{k.bar}}; border-radius: 3px; background: {{k.color}}"></span></span><span style="width: 34px; text-align: right; font-size: 11px; font-weight: 700; color: {{c.t3}}">{{k.pct}}</span></span>
+</span>
+</div>
+</sc-for>
+</div>
+<sc-if value="{{moreCats}}" hint-placeholder-val="{{ true }}"><a href="MoneyAll.dc.html" style="height: 44px; border-radius: 22px; border: 1px solid {{c.line}}; display: flex; align-items: center; justify-content: center; color: {{c.t1}}; font-size: 13px; font-weight: 700; text-decoration: none">{{moreCatsLabel}}</a></sc-if>
+</section>
+
+<section aria-label="Expenses" style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<h2 style="margin: 0; font-size: 13px; font-weight: 700; color: {{c.t3}}">{{expenseTitle}}</h2>
+<span style="font-size: 12px; font-weight: 600; color: {{c.t3}}">{{countLabel}}</span>
+</div>
+<div style="display: flex; flex-direction: column; background: {{c.s1}}; border: 1px solid {{c.line}}; border-radius: 22px; overflow: hidden">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+<sc-if value="{{r.isDay}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; justify-content: space-between; align-items: baseline; padding: 12px 16px 6px; background: {{c.s1}}; border-top: {{r.top}}">
+<span style="font-size: 12px; font-weight: 700; color: {{c.t3}}">{{r.day}}</span>
+<span style="font-size: 12px; font-weight: 700; color: {{c.t3}}">{{r.dayTotal}}</span>
+</div>
+</sc-if>
+<sc-if value="{{r.isRow}}" hint-placeholder-val="{{ true }}">
+<a href="AddExpense.dc.html" aria-label="{{r.a11y}}" style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 6px 16px; text-decoration: none; color: {{c.t1}}">
+<span aria-hidden="true" style="width: 36px; height: 36px; flex-shrink: 0; border-radius: 11px; background: {{r.tileBg}}; color: {{r.tileFg}}; display: flex; align-items: center; justify-content: center">
+<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{r.icon}}"></path></svg>
+</span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+<span style="font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.title}}</span>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: {{c.t3}}"><span style="width: 7px; height: 7px; flex-shrink: 0; border-radius: 4px; background: {{r.methodColor}}"></span><span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.sub}}</span></span>
+</span>
+<span style="display: flex; flex-direction: column; align-items: flex-end; gap: 3px">
+<span style="font-size: 15px; font-weight: 800; color: {{r.amountColor}}">{{r.amount}}</span>
+<sc-if value="{{r.tag}}" hint-placeholder-val="{{ false }}"><span style="padding: 1px 8px; border-radius: 999px; background: {{c.s2}}; color: {{c.t2}}; font-size: 11px; font-weight: 700">{{r.tag}}</span></sc-if>
+</span>
+</a>
+</sc-if>
+</sc-for>
+</div>
+<sc-if value="{{moreRows}}" hint-placeholder-val="{{ true }}"><a href="MoneyAllExpenses.dc.html" style="height: 44px; border-radius: 22px; border: 1px solid {{c.line}}; display: flex; align-items: center; justify-content: center; color: {{c.t1}}; font-size: 13px; font-weight: 700; text-decoration: none">{{moreRowsLabel}}</a></sc-if>
+</section>
+</main>
+
+<a href="Capture.dc.html" aria-label="Capture" style="position: absolute; right: 20px; bottom: 104px; width: 60px; height: 60px; border-radius: 30px; background: {{c.btn}}; color: {{c.btnT}}; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+</a>
+
+<nav aria-label="Main" style="position: absolute; left: 0; right: 0; bottom: 0; height: 84px; box-sizing: border-box; padding: 10px 8px 20px; display: flex; justify-content: space-around; align-items: flex-start; background: {{c.s1}}; border-top: 1px solid {{c.line}}">
+<a href="Main.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5L12 4l8 6.5V20H15v-5H9v5H4z"></path></svg>Today</a>
+<a href="Money.dc.html" aria-current="page" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 700; color: {{c.t1}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"></rect><path d="M3 10h18M16 15h2"></path></svg>Money</a>
+<a href="Travel.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"></path><path d="M14 7v10" stroke-dasharray="2 2"></path></svg>Travel</a>
+<a href="Notes.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h5"></path></svg>Planner</a>
+<a href="More.dc.html" style="width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{c.t3}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="2"></rect><rect x="13" y="4" width="7" height="7" rx="2"></rect><rect x="4" y="13" width="7" height="7" rx="2"></rect><rect x="13" y="13" width="7" height="7" rx="2"></rect></svg>More</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":2300}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { period: 'month', source: null };
+  }
+  pal(t) {
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',btn:'#11141B',btnT:'#FFFFFF',money:'#047857',moneyT:'#E1F4EA',card:'#6D28D9',cardT:'#EFE7FD',cash:'#0369A1',cashT:'#E0F2FE',onAccent:'#FFFFFF'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',btn:'#F3F5F9',btnT:'#0D0F14',money:'#34D399',moneyT:'rgba(52,211,153,0.14)',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)',cash:'#38BDF8',cashT:'rgba(56,189,248,0.14)',onAccent:'#0D0F14'};
+  }
+  rupees(n) {
+    const sign = n < 0 ? '−' : '';
+    return '₹' + sign + Math.abs(n).toLocaleString('en-IN');
+  }
+  renderVals() {
+    const s = this.state || {};
+    const c = this.pal(this.props.theme);
+    // Category look: colour and icon path, as in the category sheet.
+    const K = {
+      food: { name: 'Food', color: '#FF8A4C', icon: 'M7 3v8a2 2 0 0 0 2 2v8M7 3v4M10 3v4M7 7h3M17 3c-2 0-3 2-3 5s1 4 3 4v9' },
+      snacks: { name: 'Snacks', color: '#F472B6', icon: 'M5 8h12v5a5 5 0 0 1-5 5h-2a5 5 0 0 1-5-5zM17 10h1.5a2.5 2.5 0 0 1 0 5H17M8 3v2M12 3v2' },
+      groceries: { name: 'Groceries', color: '#EAB308', icon: 'M4 10h16l-1.5 9a2 2 0 0 1-2 1.7h-9a2 2 0 0 1-2-1.7zM8 10l3-6M16 10l-3-6M9 14v3M15 14v3' },
+      travel: { name: 'Travel', color: '#60A5FA', icon: 'M7 3h10a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3zM4 11h16M8 18v3M16 18v3' },
+      shopping: { name: 'Shopping', color: '#A78BFA', icon: 'M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2' },
+      bills: { name: 'Bills', color: '#22D3EE', icon: 'M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6M9 16h3' },
+      fuel: { name: 'Fuel', color: '#F97316', icon: 'M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M4 21h12M8 8h4M15 9l3 2v6a1.5 1.5 0 0 0 3 0V9l-3-3' },
+      subs: { name: 'Subscriptions', color: '#A3E635', icon: 'M17 2l3 3-3 3M4 11V9a4 4 0 0 1 4-4h12M7 22l-3-3 3-3M20 13v2a4 4 0 0 1-4 4H4' }
+    };
+    const refundIcon = 'M9 14L4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3';
+    // Where money comes from. Made-up names and digits, as in every mockup.
+    const S = {
+      primary: { nick: 'Primary', kind: 'UPI', method: 'upi', tail: '••2210', color: '#A16207' },
+      savings: { nick: 'Savings', kind: 'UPI', method: 'upi', tail: '••8124', color: '#1E3A8A' },
+      kiwi: { nick: 'Kiwi', kind: 'CARD', method: 'card', tail: '•••• 4417', color: '#1D4ED8' },
+      amazon: { nick: 'Amazon Pay', kind: 'CARD', method: 'card', tail: '•••• 7781', color: '#9A3412' },
+      swiggy: { nick: 'Swiggy', kind: 'CARD', method: 'card', tail: '•••• 2290', color: '#1E3A8A' },
+      rbl: { nick: 'RBL card', kind: 'CARD', method: 'card', tail: '•••• 5512', color: '#7C2D12' },
+      sbi: { nick: 'SBI card', kind: 'CARD', method: 'card', tail: '•••• 3306', color: '#155E75' },
+      cash: { nick: 'Cash', kind: 'IN HAND', method: 'cash', tail: 'Cash in hand', color: null }
+    };
+    const order = ['primary', 'savings', 'kiwi', 'amazon', 'swiggy', 'rbl', 'sbi', 'cash'];
+    // November so far (1 to 15 Nov): ₹19,070, as on Today.
+    const E = [
+      [15, 'Saravana Bhavan', 'food', 'primary', 320, ''],
+      [15, 'Uber', 'travel', 'kiwi', 350, 'UPI QR'],
+      [15, 'Tea and bun', 'snacks', 'cash', 97, ''],
+      [14, 'Chai Kings', 'snacks', 'primary', 210, ''],
+      [13, 'Zomato', 'food', 'kiwi', 1180, ''],
+      [13, 'Metro card top-up', 'travel', 'primary', 498, ''],
+      [12, 'Decathlon', 'shopping', 'kiwi', 2250, ''],
+      [12, 'Juice and snacks', 'snacks', 'cash', 210, ''],
+      [11, 'Swiggy', 'food', 'swiggy', 1250, ''],
+      [10, 'Big Basket', 'groceries', 'kiwi', 1160, ''],
+      [10, 'Stationery', 'shopping', 'savings', 318, ''],
+      [9, 'Indian Oil', 'fuel', 'kiwi', 1800, 'UPI QR'],
+      [8, 'Anjappar', 'food', 'primary', 490, ''],
+      [8, 'Sweets', 'snacks', 'cash', 343, ''],
+      [7, 'Amazon', 'shopping', 'amazon', 1299, ''],
+      [6, 'Bus tickets', 'travel', 'savings', 1042, ''],
+      [5, 'Electricity bill', 'bills', 'kiwi', 3120, ''],
+      [5, 'Netflix', 'subs', 'rbl', 649, ''],
+      [4, 'More supermarket', 'groceries', 'savings', 990, ''],
+      [4, 'YouTube Premium', 'subs', 'sbi', 299, ''],
+      [3, 'Myntra', 'shopping', 'rbl', 883, ''],
+      [2, 'Google One', 'subs', 'primary', 193, ''],
+      [1, 'Spotify', 'subs', 'primary', 119, '']
+    ].map(([day, title, cat, src, amt, via]) => ({ day, title, cat, src, amt, via, refund: false }));
+    // A ₹2,499 Ajio purchase from 28 Oct, refunded to Kiwi on 14 Nov.
+    const R = [{ day: 14, title: 'Refund · Ajio', cat: 'shopping', src: 'kiwi', amt: 2499, refund: true, bought: '28 Oct' }];
+
+    const period = s.period || 'month';
+    // A refund always lowers the month its purchase was in (owner,
+    // 18 Nov 2026): the totals never move between months.
+    const cashFlow = false;
+    const from = period === 'day' ? 15 : period === 'week' ? 9 : 1;
+    const inPeriod = (x) => x.day >= from && x.day <= 15;
+    const bySource = (x) => !s.source || x.src === s.source;
+    const spends = E.filter(inPeriod);
+    const refunds = R.filter(inPeriod);
+    // Purchase month: a refund lowers October, where the purchase was.
+    // Month refunded: it lowers the period it came back in.
+    const counted = [...spends.map((x) => ({ ...x, v: x.amt })), ...(cashFlow ? refunds.map((x) => ({ ...x, v: -x.amt })) : [])];
+    const shown = counted.filter(bySource);
+
+    const sum = (xs) => xs.reduce((a, x) => a + x.v, 0);
+    const total = sum(shown);
+    const byMethod = { upi: 0, card: 0, cash: 0 };
+    shown.forEach((x) => { byMethod[S[x.src].method] += x.v; });
+
+    const periodNames = { day: 'Day', week: 'Week', month: 'Month' };
+    const periods = ['day', 'week', 'month'].map((p) => {
+      const on = p === period;
+      return { label: periodNames[p], pressed: on ? 'true' : 'false', bg: on ? c.money : 'transparent', fg: on ? c.onAccent : c.t2, border: on ? c.money : c.line, pick: () => this.setState({ period: p }) };
+    });
+    const periodTitle = { day: 'Sunday, 15 November', week: '9 – 15 November', month: 'November 2026' }[period];
+    const where = s.source ? ' from ' + S[s.source].nick : '';
+    const totalLabel = { day: 'Spent today', week: 'Spent this week', month: 'Spent in November' }[period] + where;
+    // Only refunds of this period's purchases lower it; none here (the
+    // Ajio refund belongs to October).
+    const refundNote = '';
+
+    const sources = order.map((id) => {
+      const src = S[id];
+      const v = sum(counted.filter((x) => x.src === id));
+      const on = s.source === id;
+      const isCash = id === 'cash';
+      return {
+        nick: src.nick, kind: src.kind, tail: src.tail, spent: this.rupees(v),
+        a11y: src.nick + ', ' + this.rupees(v) + (on ? ', filtering' : ''),
+        pressed: on ? 'true' : 'false',
+        bg: isCash ? c.cashT : src.color,
+        fg: isCash ? c.t1 : '#FFFFFF',
+        ring: on ? '0 0 0 2px ' + c.bg + ', 0 0 0 4px ' + c.t1 : 'none',
+        opacity: s.source && !on ? '0.5' : '1',
+        pick: () => this.setState({ source: on ? null : id })
+      };
+    });
+
+    const catTotals = {};
+    shown.forEach((x) => { catTotals[x.cat] = (catTotals[x.cat] || 0) + x.v; });
+    const catList = Object.keys(catTotals).filter((k) => catTotals[k] !== 0).sort((a, b) => catTotals[b] - catTotals[a]);
+    const top = catList.length ? Math.max(...catList.map((k) => catTotals[k])) : 1;
+    const visibleCats = catList.slice(0, 5);
+    const cats = visibleCats.map((k, i) => {
+      const v = catTotals[k];
+      const pct = total > 0 ? Math.round((v / total) * 100) + '%' : '';
+      return {
+        name: K[k].name, color: K[k].color, icon: K[k].icon, spent: this.rupees(v), pct,
+        bar: Math.max(2, Math.round((Math.max(v, 0) / top) * 100)) + '%',
+        a11y: K[k].name + ', ' + this.rupees(v) + ', ' + pct + ' of the total',
+        divider: i < visibleCats.length - 1 ? '1px solid ' + c.line : '0'
+      };
+    });
+    const moreCats = catList.length > 5;
+    const moreCatsLabel = 'Show all ' + catList.length;
+
+    // The list: newest first, with each day's total. Refunds are always
+    // listed on the day they came back, whatever the totals count.
+    const listed = [...spends.map((x) => ({ ...x, v: x.amt })), ...refunds.map((x) => ({ ...x, v: -x.amt }))].filter(bySource);
+    const dayName = (d) => (d === 15 ? 'Today · ' : d === 14 ? 'Yesterday · ' : '') + ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][(d + 6) % 7] + ' ' + d + ' Nov';
+    const limit = 10;
+    const rows = [];
+    let shownRows = 0;
+    const days = [...new Set(listed.map((x) => x.day))].sort((a, b) => b - a);
+    for (const d of days) {
+      if (shownRows >= limit) break;
+      const items = listed.filter((x) => x.day === d).sort((a, b) => (a.refund ? 1 : 0) - (b.refund ? 1 : 0));
+      const dayTotal = items.filter((x) => !x.refund || cashFlow).reduce((a, x) => a + x.v, 0);
+      rows.push({ isDay: true, isRow: false, day: dayName(d), dayTotal: this.rupees(dayTotal), top: rows.length ? '1px solid ' + c.line : '0' });
+      for (const x of items) {
+        if (shownRows >= limit) break;
+        shownRows++;
+        const src = S[x.src];
+        const methodColor = { upi: c.money, card: c.card, cash: c.cash }[src.method];
+        const how = src.method === 'cash' ? 'Cash' : src.method === 'upi' ? 'UPI · ' + src.nick : src.nick + (x.via ? ' · ' + x.via : '');
+        rows.push({
+          isDay: false, isRow: true,
+          title: x.title,
+          sub: x.refund ? 'Shopping · back to ' + src.nick + ' · bought ' + x.bought : K[x.cat].name + ' · ' + how,
+          icon: x.refund ? refundIcon : K[x.cat].icon,
+          tileBg: x.refund ? c.moneyT : K[x.cat].color,
+          tileFg: x.refund ? c.money : '#0D0F14',
+          methodColor,
+          amount: x.refund ? '+' + this.rupees(x.amt) : this.rupees(x.amt),
+          amountColor: x.refund ? c.money : c.t1,
+          tag: x.refund && !cashFlow ? 'Counts in Oct' : '',
+          a11y: x.refund ? 'Refund, Ajio, ' + this.rupees(x.amt) + ' back to ' + src.nick : x.title + ', ' + this.rupees(x.amt) + ', ' + K[x.cat].name + ', ' + how + '. Edit'
+        });
+      }
+    }
+    const left = listed.length - shownRows;
+    // Only the methods with money in this view: a ₹0 method is left out.
+    const methodList = [['upi', 'UPI', c.money], ['card', 'Credit Card', c.card], ['cash', 'Cash', c.cash]]
+      .filter(([id]) => byMethod[id] > 0)
+      .map(([id, label, color]) => ({ label, color, share: byMethod[id], amount: this.rupees(byMethod[id]) }));
+    const n = listed.length;
+    return {
+      c, periods, periodTitle, totalLabel, total: this.rupees(total), refundNote,
+      hasSpend: methodList.length > 0, methodList,
+      splitA11y: methodList.map((m) => m.label + ' ' + m.amount).join(', '),
+      sources, filtered: !!s.source, clearFilter: () => this.setState({ source: null }),
+      categoryTitle: 'Categories' + (s.source ? ' · ' + S[s.source].nick : ''), cats, moreCats, moreCatsLabel,
+      expenseTitle: 'Expenses' + (s.source ? ' · ' + S[s.source].nick : ''),
+      rows, countLabel: n === 1 ? '1 entry' : n + ' entries',
+      moreRows: left > 0, moreRowsLabel: 'Show all ' + n
+    };
+  }
+}
+</script>
+</body>
+</html>

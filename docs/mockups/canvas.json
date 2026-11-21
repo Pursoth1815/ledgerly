@@ -633,6 +633,60 @@
       "w": 390,
       "x": 16450,
       "y": 2560
+    },
+    "AppLock.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10m · App lock",
+      "w": 390,
+      "x": 16920,
+      "y": 0
+    },
+    "AppLockLight.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10m · App lock (light)",
+      "w": 390,
+      "x": 16920,
+      "y": 2560
+    },
+    "AppLocked.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10n · Loopd is locked, glow (option)",
+      "w": 390,
+      "x": 17390,
+      "y": 0
+    },
+    "AppLockedLight.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10n · Loopd is locked (light)",
+      "w": 390,
+      "x": 17390,
+      "y": 2560
+    },
+    "AppLockedIcons.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10n-b · Loopd is locked, floating icons (option)",
+      "w": 390,
+      "x": 17860,
+      "y": 0
+    },
+    "AppLockedIconsLight.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "10n-b · Floating icons (light)",
+      "w": 390,
+      "x": 17860,
+      "y": 2560
     }
   },
   "createdOnFiles": {
@@ -698,6 +752,9 @@
     "BackupRestore.dc.html",
     "BackupChange.dc.html",
     "BackupForgot.dc.html",
+    "AppLock.dc.html",
+    "AppLocked.dc.html",
+    "AppLockedIcons.dc.html",
     "TodayLight.dc.html",
     "ReviewLight.dc.html",
     "ReviewDetailLight.dc.html",
@@ -733,7 +790,10 @@
     "BackupSheetLight.dc.html",
     "BackupRestoreLight.dc.html",
     "BackupChangeLight.dc.html",
-    "BackupForgotLight.dc.html"
+    "BackupForgotLight.dc.html",
+    "AppLockLight.dc.html",
+    "AppLockedLight.dc.html",
+    "AppLockedIconsLight.dc.html"
   ],
   "pages": [],
   "title": "Loopd Mockups"

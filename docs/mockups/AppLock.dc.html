@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>App lock</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
+<style>
+body{margin:0}
+@keyframes lpDriftA{0%{transform:translate(0,0) scale(1)}50%{transform:translate(28px,-36px) scale(1.08)}100%{transform:translate(0,0) scale(1)}}
+@keyframes lpDriftB{0%{transform:translate(0,0) scale(1)}50%{transform:translate(-34px,24px) scale(0.94)}100%{transform:translate(0,0) scale(1)}}
+@keyframes lpDriftC{0%{transform:translate(0,0)}50%{transform:translate(18px,30px)}100%{transform:translate(0,0)}}
+@keyframes lpSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes lpSpinBack{from{transform:rotate(360deg)}to{transform:rotate(0deg)}}
+@keyframes lpFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.lp-a{animation:lpDriftA 18s ease-in-out infinite}
+.lp-b{animation:lpDriftB 22s ease-in-out infinite}
+.lp-c{animation:lpDriftC 16s ease-in-out infinite}
+.lp-spin{transform-origin:center;animation:lpSpin 60s linear infinite}
+.lp-spin-back{transform-origin:center;animation:lpSpinBack 80s linear infinite}
+.lp-float{animation:lpFloat 4s ease-in-out infinite}
+@keyframes lpRise{0%{transform:translateY(0) rotate(0deg);opacity:0}12%{opacity:1}88%{opacity:1}100%{transform:translateY(-920px) rotate(24deg);opacity:0}}
+.lp-rise{animation:lpRise linear infinite}
+@media (prefers-reduced-motion: reduce){.lp-a,.lp-b,.lp-c,.lp-spin,.lp-spin-back,.lp-float,.lp-rise{animation:none}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.bg}}; color: {{c.t1}}">
+
+<sc-if value="{{isSettings}}" hint-placeholder-val="{{ true }}">
+<div aria-hidden="true" style="padding: 28px 20px; display: flex; flex-direction: column; gap: 14px">
+<span style="font-size: 34px; font-weight: 800">More</span>
+<span style="font-size: 14px; color: {{c.t2}}">Everything stays on this phone.</span>
+<span style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<span style="height: 150px; border-radius: 22px; background: {{c.blue}}"></span>
+<span style="height: 150px; border-radius: 22px; background: #0F766E"></span>
+</span>
+</div>
+<div aria-hidden="true" style="position: absolute; inset: 0; background: {{c.scrim}}"></div>
+
+<section aria-label="App lock" style="position: absolute; left: 0; right: 0; bottom: 0; max-height: calc(100% - 72px); box-sizing: border-box; background: {{c.s1}}; border-radius: 30px 30px 0 0; padding: 10px 20px 28px; display: flex; flex-direction: column; gap: 16px">
+<span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: {{c.line}}"></span>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h1 style="margin: 0; font-size: 22px; font-weight: 800">App lock</h1>
+<span style="font-size: 13px; color: {{c.t2}}">Fingerprint, face or your phone’s PIN to open Loopd.</span>
+</div>
+
+<div style="display: flex; flex-direction: column; border: 1px solid {{c.line}}; border-radius: 22px; padding: 2px 16px">
+<div style="display: flex; align-items: center; gap: 12px; min-height: 68px">
+<span aria-hidden="true" style="width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px; background: {{c.blueT}}; color: {{c.blueText}}; display: flex; align-items: center; justify-content: center">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 15px; font-weight: 700">Lock Loopd</span>
+<span style="font-size: 12px; color: {{c.t3}}">{{lockSub}}</span>
+</span>
+<button onClick="{{toggle}}" role="switch" aria-checked="{{checked}}" aria-label="Lock Loopd" style="position: relative; width: 52px; height: 32px; flex-shrink: 0; border-radius: 16px; border: 0; padding: 0; background: {{track}}; transition: background 220ms ease">
+<span style="position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 13px; background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.3); transform: translateX({{knobX}}); transition: transform 260ms cubic-bezier(.3,1.4,.5,1)"></span>
+</button>
+</div>
+</div>
+
+<sc-if value="{{on}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 12px; font-weight: 700; color: {{c.t3}}">Lock again after Loopd is away for</span>
+<div role="group" aria-label="Lock after" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{times}}" as="t" hint-placeholder-count="4">
+<button onClick="{{t.pick}}" aria-pressed="{{t.pressed}}" style="height: 44px; border-radius: 22px; border: 1px solid {{t.border}}; background: {{t.bg}}; color: {{t.fg}}; font-family: inherit; font-size: 13px; font-weight: 700">{{t.label}}</button>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; gap: 10px; padding: 14px; border-radius: 18px; background: {{c.blueT}}">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{c.blueText}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"></path><path d="M4 4l16 16"></path></svg>
+<span style="font-size: 13px; line-height: 1.5; color: {{c.t2}}">While App lock is on, Loopd is hidden in recent apps and screenshots are blocked.</span>
+</div>
+</sc-if>
+
+<sc-if value="{{off}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; gap: 10px; padding: 14px; border-radius: 18px; background: {{c.warnT}}">
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{c.warn}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px"><path d="M12 3l9.5 16.5h-19z"></path><path d="M12 10v4M12 17h.01"></path></svg>
+<span style="font-size: 13px; line-height: 1.5; color: {{c.t2}}">Turning it on asks for your fingerprint or PIN once, to be sure it works. Your data stays encrypted either way.</span>
+</div>
+</sc-if>
+</section>
+</sc-if>
+
+<sc-if value="{{isLocked}}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{isIcons}}" hint-placeholder-val="{{ false }}">
+<div aria-hidden="true" style="position: absolute; inset: 0; overflow: hidden; background: {{c.paper}}; background-image: radial-gradient({{c.dot}} 1.2px, transparent 1.3px); background-size: 22px 22px">
+<sc-for list="{{floaters}}" as="f" hint-placeholder-count="12">
+<span class="lp-rise" style="position: absolute; left: {{f.left}}; top: 860px; width: {{f.size}}; height: {{f.size}}; border-radius: 30%; background: {{f.tint}}; color: {{f.color}}; display: flex; align-items: center; justify-content: center; animation-duration: {{f.duration}}; animation-delay: {{f.delay}}">
+<svg width="58%" height="58%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{f.icon}}"></path></svg>
+</span>
+</sc-for>
+<span style="position: absolute; left: 0; right: 0; top: 0; height: 160px; background: linear-gradient({{c.paper}}, transparent)"></span>
+<span style="position: absolute; left: 0; right: 0; bottom: 0; height: 160px; background: linear-gradient(transparent, {{c.paper}})"></span>
+</div>
+</sc-if>
+<sc-if value="{{isGlow}}" hint-placeholder-val="{{ true }}">
+<div aria-hidden="true" style="position: absolute; inset: 0; overflow: hidden; background: {{c.lockBg}}">
+<span class="lp-a" style="position: absolute; left: -90px; top: 40px; width: 300px; height: 300px; border-radius: 50%; background: {{c.blobBlue}}; filter: blur(40px)"></span>
+<span class="lp-b" style="position: absolute; right: -110px; top: 260px; width: 320px; height: 320px; border-radius: 50%; background: {{c.blobViolet}}; filter: blur(44px)"></span>
+<span class="lp-c" style="position: absolute; left: 10px; bottom: -80px; width: 280px; height: 280px; border-radius: 50%; background: {{c.blobGreen}}; filter: blur(42px)"></span>
+<span class="lp-a" style="position: absolute; right: 40px; bottom: 90px; width: 140px; height: 140px; border-radius: 50%; background: {{c.blobAmber}}; filter: blur(34px)"></span>
+<svg class="lp-spin" width="520" height="520" viewBox="0 0 520 520" fill="none" style="position: absolute; left: -65px; top: 160px; opacity: {{c.ringOpacity}}">
+<circle cx="260" cy="260" r="250" stroke="{{c.ring}}" stroke-width="1.5" stroke-dasharray="2 10"></circle>
+<circle cx="260" cy="260" r="200" stroke="{{c.ring}}" stroke-width="1.5"></circle>
+<circle cx="260" cy="60" r="7" fill="{{c.ring}}"></circle>
+<circle cx="460" cy="260" r="5" fill="{{c.ring}}"></circle>
+</svg>
+<svg class="lp-spin-back" width="380" height="380" viewBox="0 0 380 380" fill="none" style="position: absolute; left: 5px; top: 230px; opacity: {{c.ringOpacity}}">
+<circle cx="190" cy="190" r="150" stroke="{{c.ring}}" stroke-width="1.5" stroke-dasharray="40 14"></circle>
+<circle cx="40" cy="190" r="6" fill="{{c.ring}}"></circle>
+</svg>
+<svg width="390" height="844" viewBox="0 0 390 844" fill="none" style="position: absolute; inset: 0; opacity: {{c.ringOpacity}}">
+<path d="M-20 140 C 80 90, 160 190, 260 140 S 420 90, 420 140" stroke="{{c.ring}}" stroke-width="1.2"></path>
+<path d="M-20 720 C 90 670, 170 770, 270 720 S 420 680, 420 720" stroke="{{c.ring}}" stroke-width="1.2"></path>
+</svg>
+</div>
+</sc-if>
+<section aria-label="Loopd is locked" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 40px 32px">
+<span aria-hidden="true" class="lp-float" style="width: 88px; height: 88px; border-radius: 28px; background: {{c.blue}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 18px 40px {{c.tileShadow}}">
+<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+</span>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center">
+<h1 style="margin: 0; font-size: 28px; font-weight: 800">Loopd is locked</h1>
+<span style="font-size: 14px; color: {{c.t2}}">{{lockedSub}}</span>
+</div>
+<button onClick="{{unlock}}" style="height: 52px; padding: 0 28px; border-radius: 26px; border: 0; background: {{c.blue}}; color: #FFFFFF; font-family: inherit; font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 10px">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11c0 3.5-1 6-2.5 8M8.5 6.5A6 6 0 0 1 18 11c0 2-.3 4-1 6M6 9a6 6 0 0 0-.5 2.5c0 2-.5 3.5-1.5 5M15 11c0 2.5-.5 5-1.5 7M12 8a3 3 0 0 0-3 3c0 1.5-.2 3-.8 4.5"></path></svg>
+Unlock
+</button>
+</section>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"mode":{"editor":"enum","options":["settings","locked"],"default":"settings"},"background":{"editor":"enum","options":["glow","icons"],"default":"glow"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { on: true, after: 1, tries: 0 };
+  }
+  pal(t) {
+    if (t === 'light') return {bg:'#F3F4F8',s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',money:'#047857',blue:'#3B5BDB',blueT:'#E7ECFD',blueText:'#2F4AC0',warn:'#A14A06',warnT:'#FDF0D8',off:'#C3C8D2',onAccent:'#FFFFFF',scrim:'rgba(17,20,27,0.45)',lockBg:'#F6F7FB',blobBlue:'rgba(124,155,255,0.55)',blobViolet:'rgba(196,165,255,0.5)',blobGreen:'rgba(52,211,153,0.4)',blobAmber:'rgba(251,191,36,0.35)',ring:'#3B5BDB',ringOpacity:'0.16',tileShadow:'rgba(59,91,219,0.35)',paper:'#FAFAF7',dot:'rgba(17,20,27,0.08)',mint:'#047857',mintT:'#E1F4EA',violet:'#6D28D9',violetT:'#EFE7FD',indigo:'#4338CA',indigoT:'#E8E9FD',sand:'#735E3B',sandT:'#F3ECE0',amber:'#A14A06',amberT:'#FDF0D8',sky:'#0369A1',skyT:'#E0F2FE'};
+    return {bg:'#0D0F14',s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',money:'#34D399',blue:'#3B5BDB',blueT:'rgba(99,128,255,0.16)',blueText:'#8EA5FF',warn:'#FBBF24',warnT:'rgba(251,191,36,0.12)',off:'#3A4050',onAccent:'#0D0F14',scrim:'rgba(0,0,0,0.6)',lockBg:'#0D0F14',blobBlue:'rgba(59,91,219,0.45)',blobViolet:'rgba(139,92,246,0.32)',blobGreen:'rgba(52,211,153,0.22)',blobAmber:'rgba(251,191,36,0.18)',ring:'#8EA5FF',ringOpacity:'0.18',tileShadow:'rgba(59,91,219,0.45)',paper:'#101319',dot:'rgba(243,245,249,0.07)',mint:'#34D399',mintT:'rgba(52,211,153,0.14)',violet:'#C4A5FF',violetT:'rgba(196,165,255,0.15)',indigo:'#8F98FF',indigoT:'rgba(143,152,255,0.16)',sand:'#E6CDA3',sandT:'rgba(230,205,163,0.13)',amber:'#FBBF24',amberT:'rgba(251,191,36,0.13)',sky:'#38BDF8',skyT:'rgba(56,189,248,0.14)'};
+  }
+  renderVals() {
+    const s = this.state || {};
+    const c = this.pal(this.props.theme);
+    const mode = this.props.mode === 'locked' ? 'locked' : 'settings';
+    const bg = this.props.background === 'icons' ? 'icons' : 'glow';
+    // Loopd's own line icons, each in its module's colour, rising slowly.
+    const I = {
+      rupee: 'M7 4h10M7 8h10M7 4c5 0 7 2 7 4s-2 4-7 4l8 8',
+      card: 'M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 10h18M7 15h3',
+      ticket: 'M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4zM14 7v10',
+      note: 'M6 3h9l4 4v14H6zM9 12h7M9 16h5',
+      check: 'M4 12.5l5 5L20 6.5',
+      shield: 'M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z',
+      calendar: 'M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zM4 10h16M8 2v4M16 2v4',
+      wallet: 'M3 7a2 2 0 0 1 2-2h13v4M3 7v11a2 2 0 0 0 2 2h15V9H5a2 2 0 0 1-2-2zM16 14h1'
+    };
+    const spec = [
+      ['rupee', 'mint', 24, 46, 21, 0], ['ticket', 'indigo', 70, 40, 26, -4], ['note', 'sand', 150, 34, 19, -9],
+      ['card', 'violet', 230, 48, 24, -2], ['check', 'mint', 300, 36, 18, -12], ['shield', 'indigo', 330, 42, 23, -7],
+      ['calendar', 'amber', 110, 38, 22, -15], ['wallet', 'sky', 270, 40, 20, -17], ['rupee', 'sky', 180, 30, 17, -6],
+      ['ticket', 'violet', 20, 34, 25, -19], ['note', 'amber', 320, 30, 21, -14], ['check', 'sand', 200, 28, 16, -10]
+    ];
+    const floaters = spec.map(([icon, tone, left, size, dur, delay]) => ({
+      icon: I[icon], color: c[tone], tint: c[tone + 'T'], left: left + 'px', size: size + 'px', duration: dur + 's', delay: delay + 's'
+    }));
+    const labels = [[0, 'Now'], [1, '1 min'], [5, '5 min'], [15, '15 min']];
+    const times = labels.map(([v, label]) => {
+      const on = s.after === v;
+      return { label, pressed: on ? 'true' : 'false', bg: on ? c.blue : 'transparent', fg: on ? '#FFFFFF' : c.t2, border: on ? c.blue : c.line, pick: () => this.setState({ after: v }) };
+    });
+    const afterText = s.after === 0 ? 'every time you come back' : 'after ' + s.after + ' min away';
+    return {
+      c, times,
+      isSettings: mode === 'settings', isLocked: mode === 'locked',
+      isIcons: bg === 'icons', isGlow: bg === 'glow', floaters,
+      on: s.on, off: !s.on,
+      checked: s.on ? 'true' : 'false', track: s.on ? c.blue : c.off, knobX: s.on ? '20px' : '0px',
+      toggle: () => this.setState({ on: !s.on }),
+      lockSub: s.on ? 'On · asks ' + afterText : 'Off',
+      lockedSub: s.tries > 0 ? 'Not recognised. Try again, or use your PIN.' : 'Unlock with your fingerprint, face or PIN.',
+      unlock: () => this.setState({ tries: s.tries + 1 })
+    };
+  }
+}
+</script>
+</body>
+</html>

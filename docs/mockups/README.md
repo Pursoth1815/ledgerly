@@ -38,6 +38,9 @@ The files in this folder are the source of that canvas, kept in git so every rev
 | 10j | Restore from a backup (sheet) | 11 | Passphrase, the replace warning, five steps, Restart Loopd; a passphrase starting "wrong" shows the error |
 | 10k | Change passphrase (sheet) | 11 | Current, new and again; Forgot it? |
 | 10l | Forgot passphrase (sheet) | 11 | Fingerprint, face or PIN check, then a new passphrase |
+| 10m | App lock (sheet) | 11 | Lock Loopd switch; Lock after Now, 1, 5 or 15 min |
+| 10n-b | Loopd is locked, floating icons (chosen) | 11 | Unlock; the icons rise |
+| 10n | Loopd is locked, glow (the option not chosen) | 11 | Unlock |
 | 11 | Digital Wellbeing | 9 | |
 | 12 | Capture sheet with the command line | 10 | |
 
@@ -215,6 +218,15 @@ Built from the mockups, with these additions for a phase where no features exist
 - **Capture sheet:** the input, the five shortcuts and the three questions are in place. Shortcuts and questions say which phase builds them. Typed text is not understood until the offline assistant (Phase 9).
 - **Icons:** Material icons stand in for the mockups' line icons, except the tab bar, which is drawn from the mockup paths.
 
+
+## Review round 9: app lock (21 Nov 2026)
+
+Designed for Phase 2, part 7 (screens 10m and 10n), one component, `AppLock.dc.html`, with a mode (settings or locked) and a background (glow or icons).
+
+- **App lock (10m)** is a sheet from More → App lock that fits its content: "Fingerprint, face or your phone's PIN to open Loopd.", a **Lock Loopd** switch whose line says what it does ("On · asks after 1 min away"), then **Lock again after Loopd is away for: Now · 1 min · 5 min · 15 min**, with 1 min the default. Turning it on asks for the fingerprint or PIN once, to be sure it works.
+- **Recent apps and screenshots** (owner, 21 Nov 2026): only while App lock is on, Loopd is hidden in the recent-apps view and screenshots are blocked; a blue note on the sheet says so. With App lock off, screenshots work.
+- **Loopd is locked (10n-b, chosen by the owner):** a paper-light background with a faint dot grid (deep charcoal in dark mode), and a dozen of Loopd's own line icons (₹, wallet, card, train ticket, note, task tick, shield, calendar), each in a soft tile in its module's colour, rising slowly and tilting a little, fading in at the bottom and out at the top, each at its own speed (16 to 26 seconds). On top: the floating blue lock tile, "Loopd is locked", "Unlock with your fingerprint, face or PIN." and a blue **Unlock** button; the phone's prompt also opens by itself. A failed try says "Not recognised. Try again, or use your PIN." Everything holds still when the phone asks for less motion. The first option (10n, blurred colour shapes and slow rings) stays on the canvas, not chosen.
+- It asks when Loopd starts fresh and when you come back after the chosen time; background work (reminders, SMS, backups) carries on while it is locked. The lock guards opening the app; it is not the encryption (ADR 0009).
 
 ## Review round 8: backup sheets (18 Nov 2026)
 

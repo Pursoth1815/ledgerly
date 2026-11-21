@@ -7,6 +7,8 @@ import com.pursoth.loopd.bridge.AppBackgroundHostApi
 import com.pursoth.loopd.bridge.BackgroundHostApi
 import com.pursoth.loopd.bridge.BackupApi
 import com.pursoth.loopd.bridge.BackupApiImpl
+import com.pursoth.loopd.bridge.DeviceApi
+import com.pursoth.loopd.bridge.DeviceApiImpl
 import com.pursoth.loopd.bridge.KeyStoreApi
 import com.pursoth.loopd.bridge.KeyStoreApiImpl
 import io.flutter.embedding.android.FlutterActivity
@@ -21,6 +23,8 @@ class MainActivity : FlutterActivity() {
         KeyStoreApi.setUp(messenger, KeyStoreApiImpl.shared(applicationContext))
         // Backups need this activity for the system folder picker.
         BackupApi.setUp(messenger, BackupApiImpl.shared(applicationContext).also { it.attach(this) })
+        // App lock: the owner check and the private window (no recents preview, no screenshots).
+        DeviceApi.setUp(messenger, DeviceApiImpl.shared(applicationContext).also { it.attach(this) })
 
         // The app's engine is a database writer: background jobs run in it
         // while it exists (ADR 0013).
@@ -42,6 +46,7 @@ class MainActivity : FlutterActivity() {
 
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
         BackupApiImpl.shared(applicationContext).attach(null)
+        DeviceApiImpl.shared(applicationContext).attach(null)
         connection?.close()
         connection = null
         BackgroundRuntime.get(applicationContext).gate.releaseApp(engineId(flutterEngine))

@@ -1166,3 +1166,88 @@ interface BackupApi {
     }
   }
 }
+/**
+ * The phone's own owner check and the app's window (ADR 0009: these guard
+ * opening the app; they are not the encryption).
+ *
+ * Generated interface from Pigeon that represents a handler of messages from Flutter.
+ */
+interface DeviceApi {
+  /** Whether the phone has a fingerprint, face or screen lock Loopd can ask for. */
+  fun canCheckOwner(): Boolean
+  /**
+   * Asks for fingerprint, face or the phone's PIN. True once it passes;
+   * false when cancelled or it fails.
+   */
+  suspend fun checkOwner(title: String, subtitle: String): Boolean
+  /**
+   * Hides Loopd in recent apps and blocks screenshots while [private] is
+   * true (owner, 21 Nov 2026: only while App lock is on).
+   */
+  fun setPrivateWindow(private: Boolean)
+
+  companion object {
+    /** The codec used by DeviceApi. */
+    val codec: MessageCodec<Any?> by lazy {
+      PlatformApiPigeonCodec()
+    }
+    /** Sets up an instance of `DeviceApi` to handle messages through the `binaryMessenger`. */
+    @JvmOverloads
+    fun setUp(binaryMessenger: BinaryMessenger, api: DeviceApi?, messageChannelSuffix: String = "") {
+      val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.loopd.DeviceApi.canCheckOwner$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              listOf(api.canCheckOwner())
+            } catch (exception: Throwable) {
+              PlatformApiPigeonUtils.wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.loopd.DeviceApi.checkOwner$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val titleArg = args[0] as String
+            val subtitleArg = args[1] as String
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                listOf(api.checkOwner(titleArg, subtitleArg))
+              } catch (exception: Throwable) {
+                PlatformApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.loopd.DeviceApi.setPrivateWindow$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val privateArg = args[0] as Boolean
+            val wrapped: List<Any?> = try {
+              api.setPrivateWindow(privateArg)
+              listOf(null)
+            } catch (exception: Throwable) {
+              PlatformApiPigeonUtils.wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+    }
+  }
+}

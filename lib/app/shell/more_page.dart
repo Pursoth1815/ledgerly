@@ -13,6 +13,7 @@ import '../../design_system/loopd_colors.dart';
 import '../../design_system/loopd_spacing.dart';
 import '../../design_system/loopd_typography.dart';
 import '../../features/accounts/accounts.dart';
+import '../../features/app_lock/app_lock.dart';
 import '../../features/backup/backup.dart';
 import '../../features/expenses/expenses.dart';
 import '../config/app_config.dart';
@@ -119,10 +120,10 @@ class MorePage extends ConsumerWidget {
               rows: [
                 _LinkRow(
                   label: 'App lock',
-                  value: 'Phase 2',
+                  value: ref.watch(appLockProvider.select((s) => s.settings.enabled)) ? 'On' : 'Off',
                   dot: c.vault,
                   tint: c.vaultTint,
-                  onTap: () => soon('App lock', 'in Phase 2'),
+                  onTap: () => showAppLockSheet(context),
                 ),
                 _LinkRow(
                   label: 'Backup & restore',

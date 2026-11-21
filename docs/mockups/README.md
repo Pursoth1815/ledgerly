@@ -226,6 +226,16 @@ Built from screens 4, 4b and 4c, with these additions the mockups do not show:
 - **Capture button:** steps aside while any sheet or dialog is open, on every tab (owner, 18 Nov 2026).
 - **Toasts** ("Added Savings", "Cash in hand is now ₹2,350") slide down at the top of the screen, under the status bar, over pages and sheets alike (owner, 18 Nov 2026). The Review mockup's toast with Undo sits at the bottom; when the Review Inbox is built (Phase 3) it moves to the top too.
 
+## Phase 2, part 7: app lock (21 Nov 2026)
+
+Built from screens 10m and 10n-b (`AppLock.dc.html`, round 9):
+
+- **More → App lock** shows On or Off and opens the sheet. Turning it on first checks that the phone has a fingerprint, face or screen lock ("Your phone has no screen lock yet…" otherwise) and asks for it once; a cancelled check leaves it off.
+- **Loopd is locked** covers the whole app, sheets and toasts included; nothing underneath can be touched or read aloud. The check opens by itself when Loopd starts locked; after that, Unlock asks again.
+- **When it asks:** on a fresh start, and on coming back after the chosen time away (Now, 1, 5 or 15 minutes). Screens Loopd opens itself (the folder picker, the fingerprint prompt) do not count as time away, so picking a backup folder never locks you out.
+- **Recent apps and screenshots:** hidden and blocked only while App lock is on (Android's `FLAG_SECURE`, and no recents screenshot).
+- **The lock screen** is built from vectors and Flutter animation: the dot-grid paper, the rising module icons and the bobbing tile. A soft halo of the paper sits behind the words, so a passing icon never makes them hard to read. Everything holds still when the phone asks for less motion.
+
 ## Phase 2, part 6c: the passphrase (20 Nov 2026)
 
 Built from screens 10k and 10l, one sheet with two views, opened from Change on the Passphrase row of Backup & restore:

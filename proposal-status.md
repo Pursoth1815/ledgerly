@@ -44,6 +44,7 @@ As of 2026-11-17. Stage reached: revision 3.2 of the proposal (architecture agre
 - SMS capture (17 Nov 2026): the SMS receiver is the fast path. Each time Loopd runs, it also reads the inbox for any messages it missed, because HiOS hides new-SMS signals from a frozen Loopd (ADR 0007).
 - Screen time (17 Nov 2026): counted from apps' foreground events, which matched Digital Wellbeing to within a few minutes for the top apps. Android's daily `totalTimeVisible` was off by up to 2.5 times, so it is not used. App names need a launcher `<queries>` entry in the manifest (Phase 8). The home screen is left out of the totals.
 - Phase 2 decisions (17 Nov 2026): debit-card, net-banking and auto-debit payments count as UPI (only UPI, Credit Card and Cash exist); refunds are reported in the purchase month, with no cash-flow switch (owner, 18 Nov 2026, replacing the switch chosen on 17 Nov); the last three backups are kept; every restore asks for the passphrase; a forgotten passphrase can be reset on this phone after a fingerprint, face or PIN check; the passphrase is at least 12 characters.
+- Phase 3 decisions (21 Nov 2026): a card bill or own transfer pairs its two SMS when they arrive within ±3 days of each other; the original SMS text is deleted once you confirm the transaction, and only the details read from it are kept.
 - Reminder alarms (17 Nov 2026): task reminders, travel stages and the final ticket use alarm-clock alarms (`setAlarmClock`). In Phase 0B they were the only kind that HiOS let through on time while Loopd was frozen; exact and normal alarms were held back until Loopd woke. Android shows the ⏰ icon and lists Loopd's next reminder as the next alarm.
 - Workflow: once coding starts, Claude does not commit, push or open a pull request until the owner has checked the changes and approved them (see CLAUDE.md).
 
@@ -68,7 +69,7 @@ Approved by the owner. Details in section 13 of the proposal, `docs/architecture
 ## Open points awaiting the user
 
 1. Text tools in section 10 have no screen: commands in the capture line (default), or drop them.
-2. Architecture choices still pending (listed in section 19 of the proposal): the pairing window; weekly backup conditions; an in-app test restore (new scope); exact alarms in the personal build; keeping the original SMS text; iOS compile check frequency; a separate store application id; what to do if the Keystore proves unreliable.
+2. Architecture choices still pending (listed in section 19 of the proposal): weekly backup conditions; an in-app test restore (new scope); exact alarms in the personal build; iOS compile check frequency; a separate store application id; what to do if the Keystore proves unreliable.
 3. How the personal build is installed (found in Phase 0B, 17 Nov 2026): Google Play Protect blocks installing it from a file (Files app, browser, messaging app) because it asks for SMS permissions. In India this is Google's anti-fraud rule for sideloaded apps. Installing from the Mac over USB (`adb`) works. Options: install and update over USB, or turn Play Protect scanning off while installing.
 
 ## Next steps
@@ -78,4 +79,6 @@ Phase 0B was tested on the owner's phone (Android 16, HiOS 16.3) on 17 Nov 2026.
 Phase 1 is built in three parts, each on its own branch and pull request, merged one at a time (owner's choice, 17 Nov 2026): design tokens and themes; shared components with a gallery; then the five-tab shell, Today, More and the capture sheet shell.
 
 Phase 1 was finished on 17 Nov 2026 (PRs #26, #27, #28). Phase 2 is built in seven parts, each on its own branch and pull request, merged one at a time: the ledger engine; accounts and cards with Cash in hand; the expense form with editing and undo; categories; the Money tab with totals and refunds (its screen is designed on the canvas first); encrypted backup and restore; app lock and app-switcher privacy.
+
+Parts 1 to 7 were merged by 21 Nov 2026 (PRs #29 to #38). Before Phase 2 closes, an eighth part builds the Phase 2 screens that were planned but not yet made (owner, 21 Nov 2026): Today's Spending card, entering a transfer, income, card bill payment or refund by hand, and opening and verified balances on accounts. Its screens are designed on the canvas first.
 

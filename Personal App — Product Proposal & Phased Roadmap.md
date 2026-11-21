@@ -768,7 +768,7 @@ CREATE UNIQUE INDEX transaction_sources_one_role
   - Cash in hand has no bank to compare with, so Update cash simply sets it; nothing is recorded as an adjustment.
   - A bank or card difference is shown. You add the missing transaction, record a labelled adjustment outside spending, or leave it.
   - Editing anything dated before a checkpoint marks that checkpoint for a recheck.
-- Unmatched card-bill halves stay in the Review Inbox. They pair on the same amount within a time window still to be confirmed (proposed ±3 days).
+- Unmatched card-bill halves stay in the Review Inbox. They pair on the same amount when the two messages arrive within ±3 days of each other (owner, 21 November 2026).
 
 **Guards.**
 
@@ -1277,6 +1277,9 @@ Your confirmed decisions are applied and are not reopened here. Each open point 
 - [x] **Restore without the passphrase.** No: every restore asks for the backup passphrase, on this phone too (17 November 2026).
 - [x] **Resetting a forgotten passphrase.** Yes, on this phone after a fingerprint, face or PIN check. Older backups keep the old passphrase; new backups use the new one (17 November 2026).
 - [x] **Minimum passphrase length.** 12 characters (17 November 2026).
+- [x] **Pairing window.** ±3 days between the two SMS of a card bill or own transfer (21 November 2026).
+- [x] **The original SMS text.** Deleted once you confirm the transaction; only the details read from it are kept (21 November 2026).
+- [x] **The missing Phase 2 screens.** Today's Spending card, entering a transfer, income, card bill payment or refund by hand, and opening and verified balances are built now, as part 8 of Phase 2, before Phase 3 starts (21 November 2026).
 
 ### Still open
 
@@ -1285,11 +1288,9 @@ Your confirmed decisions are applied and are not reopened here. Each open point 
 
 Architecture choices still pending. Nothing that depends on them is built until you decide:
 
-- [ ] **Pairing window.** The time allowed between the two SMS of a card bill or own transfer (proposed ±3 days). Needed in Phase 3.
 - [ ] **Weekly backup conditions.** Battery not low only, or also while charging. Needed in Phase 7.
 - [ ] **An in-app "Test restore"** that restores into a staging area and discards it. This would be new scope. Needed in Phase 7 if wanted.
 - [ ] **Exact alarms in the personal build:** keep the permission prompt, or use the install-time permission that only sideloaded apps may use. Needed in Phase 5.
-- [ ] **The original SMS text** after a transaction is confirmed: keep it (encrypted) or delete it. Needed in Phase 3.
 - [ ] **The iOS compile check:** how often it runs in CI. Until you decide, it runs only when started by hand.
 - [ ] **Application ids.** Both flavours use `com.pursoth.loopd` for now. Should the store build get its own id, so both can be installed side by side?
 - [ ] **If the Keystore proves unreliable** on your phone in Phase 0B: refuse to run, or ask for a passphrase at app start.

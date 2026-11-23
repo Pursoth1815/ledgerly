@@ -14,7 +14,7 @@ import 'spending_period.dart';
 // The parts the Money tab and its Show all sheet share (mockups
 // `Money.dc.html` and `MoneyAll.dc.html`).
 
-/// Where money is spent from: a bank account, a card or Cash in hand, as the
+/// Where money is spent from: a bank account, a card or Cash, as the
 /// "Spent from" row and the sheet's top card show it.
 class SpendSource {
   const SpendSource({required this.id, required this.name, required this.kind, required this.tail, this.bankName});
@@ -23,7 +23,7 @@ class SpendSource {
   final String name;
   final AccountKind kind;
 
-  /// "••2210" for a bank account, "•••• 4417" for a card, "Cash in hand".
+  /// "••2210" for a bank account, "•••• 4417" for a card, "Paid in cash".
   final String tail;
   final String? bankName;
 
@@ -37,7 +37,7 @@ class SpendSource {
   Color background(LoopdColors c) => kind == AccountKind.cash ? c.cashTint : bankColour(bankName, c);
   Color foreground(LoopdColors c) => kind == AccountKind.cash ? c.textPrimary : const Color(0xFFFFFFFF);
 
-  /// Bank accounts, then cards, then Cash in hand; then any removed account
+  /// Bank accounts, then cards, then Cash; then any removed account
   /// that still has spending in [report], under the name it was saved with.
   static List<SpendSource> all({
     required List<LedgerAccount> banks,
@@ -56,7 +56,7 @@ class SpendSource {
     final sources = [
       ...banks.map(of),
       ...cards.map(of),
-      const SpendSource(id: SystemAccounts.cash, name: 'Cash', kind: AccountKind.cash, tail: 'Cash in hand'),
+      const SpendSource(id: SystemAccounts.cash, name: 'Cash', kind: AccountKind.cash, tail: 'Paid in cash'),
     ];
     final known = {for (final s in sources) s.id};
     for (final e in report.entries) {
@@ -195,7 +195,7 @@ class SpendingBox extends StatelessWidget {
 }
 
 /// Expenses and refunds by day, newest first, each day with its total.
-/// Tapping a purchase calls [onEdit]; a refund is shown, not edited here.
+/// Tapping a purchase or a refund calls [onEdit].
 class SpendingList extends StatelessWidget {
   const SpendingList({
     required this.entries,
@@ -309,7 +309,7 @@ class _EntryRow extends StatelessWidget {
       final bought = e.originalDate == null ? null : DateTime.parse(e.originalDate!);
       final back = DateTime.parse(e.localDate);
       sub = [
-        'Back to ${e.method == PaymentMethod.cash ? 'Cash in hand' : e.accountName}',
+        'Back to ${e.method == PaymentMethod.cash ? 'Cash' : e.accountName}',
         if (bought != null) 'bought ${bought.day} ${monthNames[bought.month - 1].substring(0, 3)}',
       ].join(' · ');
       amount = '+${formatRupees(e.amountPaise)}';
@@ -400,14 +400,13 @@ class _EntryRow extends StatelessWidget {
       ),
     );
     final label = e.isRefund
-        ? '$title, $amount, $sub${tag == null ? '' : ', ${tag.toLowerCase()}'}'
+        ? '$title, $amount, $sub${tag == null ? '' : ', ${tag.toLowerCase()}'}. Edit'
         : '$title, $amount, $sub${tag == null ? '' : ', $tag'}. Edit';
-    if (e.isRefund) return Semantics(container: true, label: label, excludeSemantics: true, child: row);
     return LoopdPressable(onTap: onEdit, label: label, pressedScale: 1, child: row);
   }
 }
 
-/// The big card of one account, card or Cash in hand, or of them all, on top
+/// The big card of one account, card or Cash, or of them all, on top
 /// of the Show all sheet.
 class SpendSourceCard extends StatelessWidget {
   const SpendSourceCard({required this.source, required this.paise, required this.caption, super.key});

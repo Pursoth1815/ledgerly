@@ -128,4 +128,30 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Restore from a backup'), findsOneWidget, reason: 'the restore sheet opens');
   });
+
+  testWidgets('opened from Today, it backs up at once', (tester) async {
+    final database = AppDatabase(DatabaseConnection(NativeDatabase.memory(), closeStreamsSynchronously: true));
+    addTearDown(database.close);
+    final work = Directory.systemTemp.createTempSync('loopd_backup_start');
+    addTearDown(() => work.deleteSync(recursive: true));
+    final engine = BackupEngine(database, FakeBackupPlatform(), workDir: () async => work, clock: () => now);
+    await tester.runAsync(
+      () => engine.setUp(
+        passphrase: 'a long made up phrase',
+        folder: (uri: 'content://tree/loopd', name: 'Phone › Loopd'),
+      ),
+    );
+    tester.view.physicalSize = const Size(1080, 2340);
+    tester.view.devicePixelRatio = 2.75;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [appDatabaseProvider.overrideWithValue(database), backupEngineProvider.overrideWithValue(engine)],
+        child: MaterialApp(theme: loopdTheme(Brightness.dark), home: const Scaffold()),
+      ),
+    );
+    unawaited(showBackupSheet(tester.element(find.byType(Scaffold)), startNow: true, clock: () => now));
+    await tester.pumpAndSettle();
+    expect(find.text('Backed up just now'), findsOneWidget, reason: 'no tap on Back up now was needed');
+  });
 }

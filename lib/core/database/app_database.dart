@@ -35,7 +35,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.executor);
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -95,6 +95,10 @@ class AppDatabase extends _$AppDatabase {
       from7To8: (migrator, schema) async {
         await migrator.createTable(schema.backupConfigs);
         await migrator.createTable(schema.backupRuns);
+      },
+      // Phase 2, part 8b: the day each credit card's bill is due.
+      from8To9: (migrator, schema) async {
+        await migrator.addColumn(schema.accounts, schema.accounts.billDueDay);
       },
     ),
     beforeOpen: (details) async {

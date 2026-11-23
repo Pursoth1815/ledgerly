@@ -726,4 +726,82 @@ void main() {
       throwsA(anything),
     );
   });
+
+  group('refunds in the spend-only wallet (part 8)', () {
+    test('a refund changes in place, and still never adds up to more than the purchase', () async {
+      final shoes = await spend(250000, from: kiwi, method: PaymentMethod.creditCard, category: shopping);
+      final first = await ledger.recordRefund(
+        originalId: shoes,
+        amountPaise: 100000,
+        method: PaymentMethod.creditCard,
+        destinationAccountId: kiwi,
+        occurredAt: nov,
+      );
+      await ledger.recordRefund(
+        originalId: shoes,
+        amountPaise: 50000,
+        method: PaymentMethod.creditCard,
+        destinationAccountId: kiwi,
+        occurredAt: nov,
+      );
+      expect(await ledger.refundedPaise(shoes), 150000);
+      expect(await ledger.refundedPaise(shoes, excluding: first), 50000);
+      await ledger.editRefund(
+        first,
+        amountPaise: 200000,
+        method: PaymentMethod.creditCard,
+        destinationAccountId: kiwi,
+        occurredAt: nov,
+      );
+      expect((await ledger.getRefund(first))!.amountPaise, 200000);
+      await expectLater(
+        ledger.editRefund(
+          first,
+          amountPaise: 200001,
+          method: PaymentMethod.creditCard,
+          destinationAccountId: kiwi,
+          occurredAt: nov,
+        ),
+        fails(LedgerFailure.refundExceedsOriginal),
+      );
+      expect(await ledger.getRefund(shoes), isNull, reason: 'a purchase is not a refund');
+    });
+
+    test('a refund may return to the card its purchase used, even after the card is removed', () async {
+      final shoes = await spend(250000, from: kiwi, method: PaymentMethod.creditCard, category: shopping);
+      await ledger.removeAccount(kiwi);
+      await ledger.recordRefund(
+        originalId: shoes,
+        amountPaise: 100000,
+        method: PaymentMethod.creditCard,
+        destinationAccountId: kiwi,
+        occurredAt: nov,
+      );
+      expect(await ledger.refundedPaise(shoes), 100000);
+    });
+
+    test('a purchase deleted with its refunds comes back with them on undo', () async {
+      final shoes = await spend(250000, from: kiwi, method: PaymentMethod.creditCard, category: shopping);
+      for (final paise in [100000, 50000]) {
+        await ledger.recordRefund(
+          originalId: shoes,
+          amountPaise: paise,
+          method: PaymentMethod.creditCard,
+          destinationAccountId: kiwi,
+          occurredAt: nov,
+        );
+      }
+      expect(await ledger.refundsOf(shoes), hasLength(2));
+      final revision = (await ledger.getExpense(shoes))!.revision;
+
+      await ledger.delete(shoes, withRefunds: true);
+      expect(await ledger.getExpense(shoes), isNull);
+      expect(await ledger.refundsOf(shoes), isEmpty);
+
+      await ledger.undo(shoes, expectedRevision: revision + 1);
+      expect((await ledger.getExpense(shoes))!.amountPaise, 250000);
+      expect(await ledger.refundsOf(shoes), hasLength(2));
+      expect(await ledger.refundedPaise(shoes), 150000);
+    });
+  });
 }

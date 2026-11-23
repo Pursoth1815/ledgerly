@@ -8,13 +8,23 @@ import '../../../design_system/components/loopd_toast.dart';
 import '../../../design_system/loopd_colors.dart';
 import '../../../design_system/loopd_spacing.dart';
 import '../../../design_system/loopd_typography.dart';
+import 'backup_card.dart';
+import 'providers/today_providers.dart';
+import 'spending_card.dart';
 import 'today_date.dart';
 
-/// Today shows only what needs attention (proposal section 3). Until the
-/// modules that feed it are built (Phases 2 to 8), nothing does, so it shows
-/// its empty state.
+/// Opens Backup & restore; passed in by `app/` (architecture rule 3).
+typedef OpenBackup = Future<void> Function(BuildContext context);
+
+/// Today shows only what needs attention (proposal section 3), and hides a
+/// card that has nothing to say. So far Spending and Backup feed it; the other
+/// cards arrive with their modules (Phases 3 to 8). With nothing to show it
+/// is all clear.
 class TodayScreen extends ConsumerWidget {
-  const TodayScreen({this.clock = DateTime.now, super.key});
+  const TodayScreen({required this.onBackUp, this.clock = DateTime.now, super.key});
+
+  /// The Backup card opens Backup & restore and starts a backup.
+  final OpenBackup onBackUp;
 
   /// The current time; replaced in tests.
   final DateTime Function() clock;
@@ -23,6 +33,15 @@ class TodayScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final now = clock();
+    final month = ref.watch(todayMonthSpendingProvider(DateTime(now.year, now.month))).value;
+    final backupAsync = ref.watch(todayBackupStatusProvider);
+    final backup = backupAsync.value;
+    // Nothing until all are read, so All clear never flashes before a card.
+    // A backup status that cannot be read shows no nudge.
+    final ready = month != null && (backup != null || backupAsync.hasError);
+    final spending = ready && SpendingCard.hasSomething(month);
+    final backupDue = ready && backup != null && BackupCard.isDue(backup, now);
     return Scaffold(
       body: SafeArea(
         bottom: false,
@@ -31,7 +50,7 @@ class TodayScreen extends ConsumerWidget {
           padding: const EdgeInsets.fromLTRB(LoopdSpace.gutter, 28, LoopdSpace.gutter, 120),
           children: [
             Text(
-              todayDateLabel(clock()),
+              todayDateLabel(now),
               style: LoopdType.small.copyWith(color: colors.textMuted, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: LoopdSpace.xxs),
@@ -61,7 +80,10 @@ class TodayScreen extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: LoopdSpace.xl),
-            const _AllClear(),
+            // In the order of proposal section 3.
+            if (spending) ...[SpendingCard(month: month, now: now), const SizedBox(height: LoopdSpace.lg)],
+            if (backupDue) BackupCard(status: backup, now: now, onBackUp: () => onBackUp(context)),
+            if (ready && !spending && !backupDue) const _AllClear(),
           ],
         ),
       ),

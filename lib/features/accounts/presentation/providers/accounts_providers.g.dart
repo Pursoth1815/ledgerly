@@ -88,52 +88,49 @@ final class AccountsOfKindFamily extends $Family
   String toString() => r'accountsOfKindProvider';
 }
 
-/// What each account, card and Cash in hand spent in [month]'s calendar
-/// month: account id → paise.
+/// This calendar month's spending, for the wallet's totals on each card.
 
-@ProviderFor(monthSpending)
-final monthSpendingProvider = MonthSpendingFamily._();
+@ProviderFor(walletSpending)
+final walletSpendingProvider = WalletSpendingFamily._();
 
-/// What each account, card and Cash in hand spent in [month]'s calendar
-/// month: account id → paise.
+/// This calendar month's spending, for the wallet's totals on each card.
 
-final class MonthSpendingProvider
-    extends $FunctionalProvider<AsyncValue<Map<String, int>>, Map<String, int>, Stream<Map<String, int>>>
-    with $FutureModifier<Map<String, int>>, $StreamProvider<Map<String, int>> {
-  /// What each account, card and Cash in hand spent in [month]'s calendar
-  /// month: account id → paise.
-  MonthSpendingProvider._({required MonthSpendingFamily super.from, required DateTime super.argument})
+final class WalletSpendingProvider
+    extends $FunctionalProvider<AsyncValue<SpendingReport>, SpendingReport, Stream<SpendingReport>>
+    with $FutureModifier<SpendingReport>, $StreamProvider<SpendingReport> {
+  /// This calendar month's spending, for the wallet's totals on each card.
+  WalletSpendingProvider._({required WalletSpendingFamily super.from, required DateTime super.argument})
     : super(
         retry: null,
-        name: r'monthSpendingProvider',
+        name: r'walletSpendingProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$monthSpendingHash();
+  String debugGetCreateSourceHash() => _$walletSpendingHash();
 
   @override
   String toString() {
-    return r'monthSpendingProvider'
+    return r'walletSpendingProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  $StreamProviderElement<Map<String, int>> $createElement($ProviderPointer pointer) => $StreamProviderElement(pointer);
+  $StreamProviderElement<SpendingReport> $createElement($ProviderPointer pointer) => $StreamProviderElement(pointer);
 
   @override
-  Stream<Map<String, int>> create(Ref ref) {
+  Stream<SpendingReport> create(Ref ref) {
     final argument = this.argument as DateTime;
-    return monthSpending(ref, argument);
+    return walletSpending(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is MonthSpendingProvider && other.argument == argument;
+    return other is WalletSpendingProvider && other.argument == argument;
   }
 
   @override
@@ -142,62 +139,24 @@ final class MonthSpendingProvider
   }
 }
 
-String _$monthSpendingHash() => r'1d3c72d150a97ac9eae6c530f9bd30e0b315f1db';
+String _$walletSpendingHash() => r'6e778615e1f903307f7f79328a259920097840de';
 
-/// What each account, card and Cash in hand spent in [month]'s calendar
-/// month: account id → paise.
+/// This calendar month's spending, for the wallet's totals on each card.
 
-final class MonthSpendingFamily extends $Family with $FunctionalFamilyOverride<Stream<Map<String, int>>, DateTime> {
-  MonthSpendingFamily._()
+final class WalletSpendingFamily extends $Family with $FunctionalFamilyOverride<Stream<SpendingReport>, DateTime> {
+  WalletSpendingFamily._()
     : super(
         retry: null,
-        name: r'monthSpendingProvider',
+        name: r'walletSpendingProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  /// What each account, card and Cash in hand spent in [month]'s calendar
-  /// month: account id → paise.
+  /// This calendar month's spending, for the wallet's totals on each card.
 
-  MonthSpendingProvider call(DateTime month) => MonthSpendingProvider._(argument: month, from: this);
+  WalletSpendingProvider call(DateTime month) => WalletSpendingProvider._(argument: month, from: this);
 
   @override
-  String toString() => r'monthSpendingProvider';
+  String toString() => r'walletSpendingProvider';
 }
-
-/// Cash in hand: the balance, the last count and the last money moved in.
-
-@ProviderFor(cashInHand)
-final cashInHandProvider = CashInHandProvider._();
-
-/// Cash in hand: the balance, the last count and the last money moved in.
-
-final class CashInHandProvider extends $FunctionalProvider<AsyncValue<CashInHand>, CashInHand, Stream<CashInHand>>
-    with $FutureModifier<CashInHand>, $StreamProvider<CashInHand> {
-  /// Cash in hand: the balance, the last count and the last money moved in.
-  CashInHandProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'cashInHandProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$cashInHandHash();
-
-  @$internal
-  @override
-  $StreamProviderElement<CashInHand> $createElement($ProviderPointer pointer) => $StreamProviderElement(pointer);
-
-  @override
-  Stream<CashInHand> create(Ref ref) {
-    return cashInHand(ref);
-  }
-}
-
-String _$cashInHandHash() => r'dec65f17971b993110fbd6c9de550a621116db4e';

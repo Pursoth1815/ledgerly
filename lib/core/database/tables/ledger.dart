@@ -43,6 +43,10 @@ class Accounts extends Table {
 
   /// Last four digits of the account or card number.
   TextColumn get last4 => text().nullable()();
+
+  /// The day of the month a credit card's bill is due, 1 to 31; a shorter
+  /// month uses its last day (owner, 23 Nov 2026). Null when not set.
+  IntColumn get billDueDay => integer().nullable().check(billDueDay.isBetweenValues(1, 31))();
   BoolColumn get isDefault => boolean().withDefault(const Constant(false))();
   IntColumn get createdAt => integer()();
 

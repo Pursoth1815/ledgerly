@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,19 +25,25 @@ import 'restore_sheet.dart';
 /// 10f) as a tall sheet over the whole app, tab bar included, like Accounts
 /// and cards (owner, 19 Nov 2026; the mockup draws a page). No close button,
 /// as on the other sheets: swipe it down or press back.
-Future<void> showBackupSheet(BuildContext context, {DateTime Function() clock = DateTime.now}) => showLoopdSheet<void>(
-  context: context,
-  tall: true,
-  builder: (_) => BackupSheet(clock: clock),
-);
+///
+/// With [startNow], as from the Backup card on Today, it backs up at once, or
+/// opens Set up backup when backups are off.
+Future<void> showBackupSheet(BuildContext context, {bool startNow = false, DateTime Function() clock = DateTime.now}) =>
+    showLoopdSheet<void>(
+      context: context,
+      tall: true,
+      builder: (_) => BackupSheet(startNow: startNow, clock: clock),
+    );
 
 /// The status card with Back up now, where backups go, the passphrase, what
 /// is inside, and Restore. Before setup, the card offers Set up backup.
 ///
 /// Built in Phase 2, part 6. The weekly backup (Phase 7) says when it comes.
 class BackupSheet extends ConsumerStatefulWidget {
-  const BackupSheet({this.clock = DateTime.now, super.key});
+  const BackupSheet({this.startNow = false, this.clock = DateTime.now, super.key});
 
+  /// Back up (or set up) as soon as the status is read.
+  final bool startNow;
   final DateTime Function() clock;
 
   @override
@@ -46,6 +54,7 @@ class _BackupSheetState extends ConsumerState<BackupSheet> {
   BackupStage? _stage;
   bool _justDone = false;
   String? _error;
+  late bool _startPending = widget.startNow;
 
   Future<void> _setUp() async {
     final done = await showBackupSetupSheet(context);
@@ -97,6 +106,12 @@ class _BackupSheetState extends ConsumerState<BackupSheet> {
     final c = context.colors;
     final statusAsync = ref.watch(backupStatusProvider);
     final status = statusAsync.value;
+    if (_startPending && status != null) {
+      _startPending = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) unawaited(status.isSetUp ? _backUp() : _setUp());
+      });
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

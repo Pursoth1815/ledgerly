@@ -23,7 +23,8 @@ void main() {
   setUpAll(loadGoldenFonts);
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
 
-  Future<void> seed(LedgerEngine ledger) async {
+  /// Returns the ids of Primary, Savings, Salary and Kiwi.
+  Future<List<String>> seed(LedgerEngine ledger) async {
     Future<String> add(
       AccountKind kind,
       String name,
@@ -41,7 +42,7 @@ void main() {
     );
     final primary = await add(AccountKind.bank, 'Primary', 'Federal Bank', 'FEDBNK', '2210', makeDefault: true);
     final savings = await add(AccountKind.bank, 'Savings', 'HDFC Bank', 'HDFCBK', '8124');
-    await add(AccountKind.bank, 'Salary', 'ICICI Bank', 'ICICIT', '5530');
+    final salary = await add(AccountKind.bank, 'Salary', 'ICICI Bank', 'ICICIT', '5530');
     final kiwi = await add(AccountKind.creditCard, 'Kiwi', 'YES BANK', 'YESBNK', '4417', makeDefault: true);
     await add(AccountKind.creditCard, 'Amazon Pay', 'ICICI Bank', 'ICICIT', '7781');
     Future<void> spend(int rupees, String from, PaymentMethod method) => ledger.recordExpense(
@@ -55,13 +56,7 @@ void main() {
     await spend(2350, savings, PaymentMethod.upi);
     await spend(9860, kiwi, PaymentMethod.creditCard);
     await spend(650, SystemAccounts.cash, PaymentMethod.cash);
-    await ledger.countCash(100000);
-    await ledger.recordTransfer(
-      amountPaise: 200000,
-      fromAccountId: savings,
-      toAccountId: SystemAccounts.cash,
-      occurredAt: DateTime(2026, 11, 12, 10),
-    );
+    return [primary, savings, salary, kiwi];
   }
 
   Future<void> pump(WidgetTester tester, Brightness brightness, {bool withData = true}) async {
@@ -69,7 +64,8 @@ void main() {
     addTearDown(database.close);
     final ledger = LedgerEngine(database, clock: () => DateTime(2026, 11, 1, 9));
     await ledger.ensureDefaults();
-    if (withData) await seed(ledger);
+    final ids = withData ? await seed(ledger) : const <String>[];
+    if (withData) await ledger.saveAccountDetails(ids[3], nickname: 'Kiwi', isDefault: true, billDueDay: 5);
     tester.view.physicalSize = const Size(1080, 2340);
     tester.view.devicePixelRatio = 2.75;
     addTearDown(tester.view.reset);
@@ -91,6 +87,26 @@ void main() {
       await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/accounts_$name.png'));
     });
 
+    testWidgets('A credit card opened, its details and bill due date, $name', (tester) async {
+      await pump(tester, brightness);
+      await tester.tapAt(tester.getTopLeft(find.bySemanticsLabel(RegExp(r'^Kiwi, ₹'))) + const Offset(120, 24));
+      await tester.pumpAndSettle();
+      await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/wallet_card_$name.png'));
+      await tester.tap(find.text('Card details'));
+      await tester.pumpAndSettle();
+      await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/card_details_$name.png'));
+      await tester.tap(find.text('5th of every month ›'));
+      await tester.pumpAndSettle();
+      await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/bill_due_$name.png'));
+    });
+
+    testWidgets('A bank account opened, $name', (tester) async {
+      await pump(tester, brightness);
+      await tester.tapAt(tester.getTopLeft(find.bySemanticsLabel(RegExp(r'^Primary, ₹'))) + const Offset(120, 24));
+      await tester.pumpAndSettle();
+      await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/wallet_bank_$name.png'));
+    });
+
     testWidgets('Accounts and cards, empty, $name', (tester) async {
       await pump(tester, brightness, withData: false);
       await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/accounts_empty_$name.png'));
@@ -98,7 +114,7 @@ void main() {
 
     testWidgets('Add bank account, searching, $name', (tester) async {
       await pump(tester, brightness, withData: false);
-      await tester.tap(find.text('+ Add bank account'));
+      await tester.tap(find.text('+ Add account or card'));
       await tester.pumpAndSettle();
       await tester.enterText(find.byKey(AddAccountSheet.bankFieldKey), 'hd');
       await tester.pumpAndSettle();
@@ -107,7 +123,7 @@ void main() {
 
     testWidgets('Add bank account, a bank not in the list, $name', (tester) async {
       await pump(tester, brightness, withData: false);
-      await tester.tap(find.text('+ Add bank account'));
+      await tester.tap(find.text('+ Add account or card'));
       await tester.pumpAndSettle();
       await tester.enterText(find.byKey(AddAccountSheet.bankFieldKey), 'Zeta Bank');
       await tester.pumpAndSettle();
@@ -119,11 +135,11 @@ void main() {
 
     testWidgets('Add bank account, digits already saved, $name', (tester) async {
       await pump(tester, brightness);
-      await tester.tap(find.text('+ Add bank account'));
+      await tester.tap(find.text('+ Add account or card'));
       await tester.pumpAndSettle();
       await tester.enterText(find.byKey(AddAccountSheet.bankFieldKey), 'hd');
       await tester.pumpAndSettle();
-      await tester.tap(find.text('HDFC Bank'));
+      await tester.tap(find.text('HDFC Bank').last);
       await tester.pumpAndSettle();
       await tester.enterText(find.byKey(AddAccountSheet.last4FieldKey), '2210');
       FocusManager.instance.primaryFocus?.unfocus();
@@ -135,8 +151,9 @@ void main() {
 
     testWidgets('Add credit card, filled in, $name', (tester) async {
       await pump(tester, brightness, withData: false);
-      await tester.ensureVisible(find.text('+ Add credit card'));
-      await tester.tap(find.text('+ Add credit card'));
+      await tester.tap(find.text('+ Add account or card'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Credit card'));
       await tester.pumpAndSettle();
       await tester.enterText(find.byKey(AddAccountSheet.bankFieldKey), 'yes');
       await tester.pumpAndSettle();

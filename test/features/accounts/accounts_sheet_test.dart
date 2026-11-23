@@ -12,15 +12,19 @@ import 'package:loopd/design_system/components/loopd_button.dart';
 import 'package:loopd/design_system/components/loopd_switch.dart';
 import 'package:loopd/design_system/loopd_theme.dart';
 import 'package:loopd/features/accounts/accounts.dart';
+import 'package:loopd/features/accounts/presentation/account_details_sheet.dart';
 import 'package:loopd/features/accounts/presentation/add_account_sheet.dart';
-import 'package:loopd/features/accounts/presentation/update_count_sheet.dart';
 
 /// The Accounts and cards sheet on a phone-sized screen, over an in-memory database.
 /// Names and digits are made up.
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
 
-  Future<LedgerEngine> pumpAccounts(WidgetTester tester, {Future<void> Function(LedgerEngine ledger)? seed}) async {
+  Future<LedgerEngine> pumpAccounts(
+    WidgetTester tester, {
+    Future<void> Function(LedgerEngine ledger)? seed,
+    ViewAccountExpenses? onViewExpenses,
+  }) async {
     final database = AppDatabase(DatabaseConnection(NativeDatabase.memory(), closeStreamsSynchronously: true));
     addTearDown(database.close);
     final ledger = LedgerEngine(database);
@@ -35,7 +39,13 @@ void main() {
         child: MaterialApp(theme: loopdTheme(Brightness.dark), home: const Scaffold()),
       ),
     );
-    unawaited(showAccountsSheet(tester.element(find.byType(Scaffold)), clock: () => DateTime(2026, 11, 17, 9)));
+    unawaited(
+      showAccountsSheet(
+        tester.element(find.byType(Scaffold)),
+        onViewExpenses: onViewExpenses,
+        clock: () => DateTime(2026, 11, 17, 9),
+      ),
+    );
     await tester.pumpAndSettle();
     return ledger;
   }
@@ -50,19 +60,18 @@ void main() {
   LoopdButton button(WidgetTester tester, String label) =>
       tester.widget<LoopdButton>(find.byWidgetPredicate((w) => w is LoopdButton && w.label == label));
 
-  testWidgets('starts with Cash in hand not counted and nothing added', (tester) async {
+  testWidgets('starts with Cash alone, and offers to add an account or card', (tester) async {
     await pumpAccounts(tester);
-    expect(find.text('Accounts and cards'), findsOneWidget);
-    expect(find.text('₹0'), findsOneWidget, reason: 'Cash in hand starts at ₹0');
-    expect(find.text('Count your wallet to set it'), findsOneWidget);
-    expect(find.text('₹0 in Nov'), findsOneWidget, reason: 'cash spending this month');
-    expect(find.text('+ Add bank account'), findsOneWidget);
-    expect(find.text('+ Add credit card'), findsOneWidget);
+    expect(find.bySemanticsLabel('Accounts and cards, ₹0 spent in November'), findsOneWidget);
+    expect(find.bySemanticsLabel(RegExp(r'^Cash, ₹0 spent')), findsOneWidget);
+    expect(find.text('Update cash'), findsNothing);
+    expect(find.text('Cash in hand'), findsNothing);
+    expect(find.text('+ Add account or card'), findsOneWidget);
   });
 
   testWidgets('adds a bank account picked from the searchable list', (tester) async {
     await pumpAccounts(tester);
-    await tapText(tester, '+ Add bank account');
+    await tapText(tester, '+ Add account or card');
     expect(find.text('Add bank account'), findsOneWidget);
     expect(button(tester, 'Add account').onTap, isNull, reason: 'no bank or digits yet');
 
@@ -82,13 +91,13 @@ void main() {
 
     expect(find.text('Added Savings'), findsOneWidget);
     expect(find.text('Savings'), findsOneWidget);
-    expect(find.text('HDFC Bank ••8124'), findsOneWidget);
+    expect(find.text('A/C •• 8124'), findsOneWidget);
     expect(find.text('Default'), findsNothing, reason: 'only when the switch is turned on');
   });
 
   testWidgets('finds SBI by its short name', (tester) async {
     await pumpAccounts(tester);
-    await tapText(tester, '+ Add bank account');
+    await tapText(tester, '+ Add account or card');
     await tester.enterText(find.byKey(AddAccountSheet.bankFieldKey), 'sbi');
     await tester.pumpAndSettle();
     expect(find.text('State Bank of India (SBI)'), findsOneWidget);
@@ -96,7 +105,7 @@ void main() {
 
   testWidgets('the arrow and a tap outside a field put the keyboard away', (tester) async {
     await pumpAccounts(tester);
-    await tapText(tester, '+ Add bank account');
+    await tapText(tester, '+ Add account or card');
     bool focused(Key key) => tester
         .widget<EditableText>(find.descendant(of: find.byKey(key), matching: find.byType(EditableText)))
         .focusNode
@@ -118,8 +127,8 @@ void main() {
   });
 
   testWidgets('the default switch starts off, even for the first account', (tester) async {
-    await pumpAccounts(tester);
-    await tapText(tester, '+ Add bank account');
+    final ledger = await pumpAccounts(tester);
+    await tapText(tester, '+ Add account or card');
     await tester.enterText(find.byKey(AddAccountSheet.bankFieldKey), 'hd');
     await tester.pumpAndSettle();
     await tester.tap(find.text('HDFC Bank'));
@@ -128,12 +137,15 @@ void main() {
     await tester.tap(find.byType(LoopdSwitch));
     await tester.pumpAndSettle();
     await tapText(tester, 'Add account');
-    expect(find.text('Default'), findsOneWidget, reason: 'turned on by hand');
+    final saved = (await tester.runAsync(() => ledger.watchAccounts(AccountKind.bank).first))!.single;
+    expect(saved.isDefault, isTrue, reason: 'turned on by hand');
   });
 
   testWidgets('adds a credit card from a bank typed by hand; the nickname falls back to it', (tester) async {
     await pumpAccounts(tester);
-    await tapText(tester, '+ Add credit card');
+    await tapText(tester, '+ Add account or card');
+    await tester.tap(find.text('Credit card'));
+    await tester.pumpAndSettle();
     expect(find.text('Add credit card'), findsWidgets);
 
     await tester.enterText(find.byKey(AddAccountSheet.bankFieldKey), 'Zeta Bank');
@@ -153,7 +165,7 @@ void main() {
 
   testWidgets('the type switch turns the sheet into the other kind', (tester) async {
     await pumpAccounts(tester);
-    await tapText(tester, '+ Add bank account');
+    await tapText(tester, '+ Add account or card');
     await tester.tap(find.text('Credit card'));
     await tester.pumpAndSettle();
     expect(find.text('Add credit card'), findsOneWidget);
@@ -171,7 +183,7 @@ void main() {
         last4: '2210',
       ),
     );
-    await tapText(tester, '+ Add bank account');
+    await tapText(tester, '+ Add account or card');
     await tester.enterText(find.byKey(AddAccountSheet.bankFieldKey), 'hd');
     await tester.pumpAndSettle();
     await tester.tap(find.text('HDFC Bank'));
@@ -194,86 +206,184 @@ void main() {
     expect(button(tester, 'Add card').onTap, isNotNull);
   });
 
+  Future<void> seedWallet(LedgerEngine ledger) async {
+    final primary = await ledger.addAccount(
+      kind: AccountKind.bank,
+      name: 'Primary',
+      bankName: 'Federal Bank',
+      bankCode: 'FEDBNK',
+      last4: '2210',
+      makeDefault: true,
+    );
+    final kiwi = await ledger.addAccount(
+      kind: AccountKind.creditCard,
+      name: 'Kiwi',
+      bankName: 'YES BANK',
+      bankCode: 'YESBNK',
+      last4: '4417',
+      billDueDay: 5,
+      makeDefault: true,
+    );
+    Future<void> spend(int rupees, String from, PaymentMethod method) => ledger.recordExpense(
+      amountPaise: rupees * 100,
+      method: method,
+      fundingAccountId: from,
+      categoryId: 'category-food',
+      occurredAt: DateTime(2026, 11, 10, 13),
+    );
+    await spend(1500, primary, PaymentMethod.upi);
+    await spend(6000, kiwi, PaymentMethod.creditCard);
+    await spend(2000, kiwi, PaymentMethod.creditCard);
+    await spend(500, SystemAccounts.cash, PaymentMethod.cash);
+  }
+
+  Finder card(String name) => find.bySemanticsLabel(RegExp('^$name, ₹'));
+
+  Future<void> openCard(WidgetTester tester, String name) async {
+    // Near the top: the rest of a stacked card is under the next one.
+    await tester.tapAt(tester.getTopLeft(card(name)) + const Offset(120, 24));
+    await tester.pumpAndSettle();
+  }
+
   testWidgets('a toast shows at the top of the screen', (tester) async {
     await pumpAccounts(tester);
-    await tapText(tester, 'Update cash');
-    await tester.enterText(find.byKey(UpdateCountSheet.amountFieldKey), '500');
+    await tapText(tester, '+ Add account or card');
+    await tester.enterText(find.byKey(AddAccountSheet.bankFieldKey), 'hd');
     await tester.pumpAndSettle();
-    await tapText(tester, 'Save');
-    final toast = find.text('Cash in hand is now ₹500');
-    expect(toast, findsOneWidget);
+    await tester.tap(find.text('HDFC Bank'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(AddAccountSheet.last4FieldKey), '8124');
+    await tester.pumpAndSettle();
+    await tapText(tester, 'Add account');
+    final toast = find.text('Added HDFC Bank');
     expect(tester.getTopLeft(toast).dy, lessThan(120), reason: 'under the status bar, not by the tab bar');
     await tester.pump(const Duration(seconds: 3));
     await tester.pumpAndSettle();
     expect(toast, findsNothing, reason: 'it leaves by itself');
   });
 
-  testWidgets('Update cash sets Cash in hand, and a new count replaces it', (tester) async {
-    await pumpAccounts(tester);
-    await tapText(tester, 'Update cash');
-    expect(find.text('Loopd has ₹0 now. Your count replaces it.'), findsOneWidget);
-    await tester.enterText(find.byKey(UpdateCountSheet.amountFieldKey), '2,350');
-    await tester.pumpAndSettle();
-    await tapText(tester, 'Save');
-    expect(find.text('Cash in hand is now ₹2,350'), findsOneWidget);
-    expect(find.text('₹2,350'), findsOneWidget);
-
-    await tapText(tester, 'Update cash');
-    await tester.enterText(find.byKey(UpdateCountSheet.amountFieldKey), '2200');
-    await tester.pumpAndSettle();
-    expect(
-      find.text('₹150 less than Loopd has. Your count replaces it; the difference is not spending.'),
-      findsOneWidget,
-    );
-    await tapText(tester, 'Save');
-    expect(find.text('₹2,200'), findsOneWidget);
-    expect(find.text('₹0 in Nov'), findsOneWidget, reason: 'a count is not spending');
+  testWidgets('the wallet shows the month, and what each card, account and Cash spent', (tester) async {
+    await pumpAccounts(tester, seed: seedWallet);
+    expect(find.bySemanticsLabel('Accounts and cards, ₹10,000 spent in November'), findsOneWidget);
+    expect(find.bySemanticsLabel('Kiwi, ₹8,000 spent this month, bill due 5 Dec'), findsOneWidget);
+    expect(find.bySemanticsLabel('Primary, ₹1,500 spent this month'), findsOneWidget);
+    expect(find.bySemanticsLabel('Cash, ₹500 spent this month'), findsOneWidget);
+    expect(find.textContaining('balance'), findsNothing);
   });
 
-  testWidgets('shows this month\'s spending for each account and section', (tester) async {
-    await pumpAccounts(
-      tester,
-      seed: (ledger) async {
-        final primary = await ledger.addAccount(kind: AccountKind.bank, name: 'Primary', last4: '2210');
-        await ledger.recordExpense(
-          amountPaise: 183000,
-          method: PaymentMethod.upi,
-          fundingAccountId: primary,
-          categoryId: 'category-food',
-          occurredAt: DateTime(2026, 11, 10, 13),
-        );
-      },
-    );
-    expect(find.text('₹1,830 in Nov'), findsOneWidget);
-    expect(find.text('₹1,830'), findsOneWidget);
+  testWidgets('a card opens with its details and no other card; Back returns the stack', (tester) async {
+    await pumpAccounts(tester, seed: seedWallet);
+    await openCard(tester, 'Kiwi');
+    expect(find.bySemanticsLabel('Spent in November, ₹8,000, 2 expenses, 80% of your spending'), findsOneWidget);
+    expect(find.bySemanticsLabel('Bill due 5 Dec, 18 days left'), findsOneWidget);
+    expect(find.text('View expenses'), findsOneWidget);
+    expect(find.text('Card details'), findsOneWidget);
+    expect(card('Primary'), findsNothing, reason: 'the others have gone');
+    expect(card('Cash'), findsNothing);
+    expect(find.text('+ Add account or card').hitTestable(), findsNothing);
+    final top = tester.getTopLeft(card('Kiwi')).dy;
+    expect(tester.getTopLeft(find.bySemanticsLabel(RegExp('^Spent in'))).dy, greaterThan(top + 176));
+
+    await tester.tap(find.bySemanticsLabel('Back to all accounts and cards'));
+    await tester.pumpAndSettle();
+    expect(find.text('View expenses'), findsNothing);
+    expect(card('Primary'), findsOneWidget);
+    expect(card('Cash'), findsOneWidget);
   });
 
-  testWidgets('an account can become the default, or be removed', (tester) async {
-    await pumpAccounts(
-      tester,
-      seed: (ledger) async {
-        await ledger.addAccount(
-          kind: AccountKind.bank,
-          name: 'Primary',
-          bankName: 'Federal Bank',
-          last4: '2210',
-          makeDefault: true,
-        );
-        await ledger.addAccount(kind: AccountKind.bank, name: 'Savings', bankName: 'HDFC Bank', last4: '8124');
-      },
-    );
-    await tapText(tester, 'Savings');
-    expect(find.text('Default'), findsOneWidget, reason: 'only Primary so far');
-    await tapText(tester, 'Make default for UPI');
-    expect(find.text('Savings is now the default for UPI'), findsOneWidget);
+  testWidgets('the phone\'s back closes the open card first, then the sheet', (tester) async {
+    await pumpAccounts(tester, seed: seedWallet);
+    await openCard(tester, 'Primary');
+    expect(find.text('Account details'), findsOneWidget);
+    final navigator = tester.state<NavigatorState>(find.byType(Navigator).first);
+    await navigator.maybePop();
+    await tester.pumpAndSettle();
+    expect(find.byType(AccountsSheet), findsOneWidget);
+    expect(card('Kiwi'), findsOneWidget, reason: 'back at the stack');
 
-    await tapText(tester, 'Primary');
-    expect(find.text('Make default for UPI'), findsOneWidget);
-    await tapText(tester, 'Remove');
+    await navigator.maybePop();
+    await tester.pumpAndSettle();
+    expect(find.byType(AccountsSheet), findsNothing);
+  });
+
+  testWidgets('Cash has View expenses and no details, and View expenses names the account', (tester) async {
+    final viewed = <String>[];
+    await pumpAccounts(tester, seed: seedWallet, onViewExpenses: (_, id) async => viewed.add(id));
+    await openCard(tester, 'Cash');
+    expect(find.text('Account details'), findsNothing);
+    expect(find.text('Card details'), findsNothing);
+    await tester.tap(find.text('View expenses'));
+    await tester.pumpAndSettle();
+    expect(viewed, [SystemAccounts.cash]);
+  });
+
+  testWidgets('Details change the nickname, due date and default; the bank and digits stay', (tester) async {
+    final ledger = await pumpAccounts(tester, seed: seedWallet);
+    await openCard(tester, 'Kiwi');
+    await tester.tap(find.text('Card details'));
+    await tester.pumpAndSettle();
+    expect(find.text('YES BANK'), findsWidgets);
+    expect(button(tester, 'Save changes').onTap, isNull, reason: 'nothing changed yet');
+
+    await tester.enterText(find.byKey(AccountDetailsSheet.nicknameKey), 'My Kiwi');
+    await tester.pumpAndSettle();
+    await tapText(tester, '5th of every month ›');
+    await tester.tap(find.bySemanticsLabel('Day 20'));
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsLabel('Next bill due 20 Nov'), findsOneWidget);
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    expect(find.text('20th of every month ›'), findsOneWidget);
+    await tester.tap(find.byType(LoopdSwitch));
+    await tester.pumpAndSettle();
+    await tapText(tester, 'Save changes');
+    expect(find.text('Saved changes'), findsOneWidget);
+
+    final saved = (await tester.runAsync(() => ledger.watchAccounts(AccountKind.creditCard).first))!.single;
+    expect((saved.nickname, saved.billDueDay, saved.isDefault, saved.last4), ('My Kiwi', 20, false, '4417'));
+    expect(find.bySemanticsLabel('Bill due 20 Nov, 3 days left'), findsOneWidget, reason: 'the open card follows');
+  });
+
+  testWidgets('removing the open account asks once, then returns to the stack', (tester) async {
+    final ledger = await pumpAccounts(tester, seed: seedWallet);
+    await openCard(tester, 'Primary');
+    await tester.tap(find.text('Account details'));
+    await tester.pumpAndSettle();
+    await tapText(tester, 'Remove account');
     expect(find.text('Remove Primary?'), findsOneWidget);
+    await tapText(tester, 'Keep');
+    await tapText(tester, 'Remove account');
     await tapText(tester, 'Remove');
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 40)));
+    await tester.pumpAndSettle();
     expect(find.text('Removed Primary'), findsOneWidget);
-    expect(find.text('Federal Bank ••2210'), findsNothing);
-    expect(find.text('Savings'), findsOneWidget);
+    expect(find.text('View expenses'), findsNothing);
+    expect(card('Primary'), findsNothing);
+    expect(card('Kiwi'), findsOneWidget);
+    expect((await tester.runAsync(() => ledger.watchAccounts(AccountKind.bank).first))!, isEmpty);
+  });
+
+  testWidgets('a new credit card can have a due date; a bank account does not offer one', (tester) async {
+    final ledger = await pumpAccounts(tester);
+    await tapText(tester, '+ Add account or card');
+    expect(find.text('Bill due date'), findsNothing);
+    await tester.tap(find.text('Credit card'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(AddAccountSheet.bankFieldKey), 'YES');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('YES BANK').last);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(AddAccountSheet.nicknameFieldKey), 'Kiwi');
+    await tester.enterText(find.byKey(AddAccountSheet.last4FieldKey), '4417');
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pumpAndSettle();
+    await tapText(tester, 'Optional ›');
+    await tester.tap(find.bySemanticsLabel('Day 5'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    await tapText(tester, 'Add card');
+    final saved = (await tester.runAsync(() => ledger.watchAccounts(AccountKind.creditCard).first))!.single;
+    expect(saved.billDueDay, 5);
   });
 }

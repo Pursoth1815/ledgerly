@@ -18,6 +18,7 @@ import '../../../design_system/loopd_motion.dart';
 import '../../../design_system/loopd_spacing.dart';
 import '../../../design_system/loopd_typography.dart';
 import 'account_look.dart';
+import 'bill_due_sheet.dart';
 import 'providers/accounts_providers.dart';
 
 /// Opens the Add bank account or Add credit card sheet (mockup
@@ -58,6 +59,7 @@ class _AddAccountSheetState extends ConsumerState<AddAccountSheet> {
   String? _typedBank;
   bool _open = false;
   bool _makeDefault = false;
+  int? _dueDay;
   bool _saving = false;
   String? _error;
 
@@ -116,6 +118,12 @@ class _AddAccountSheetState extends ConsumerState<AddAccountSheet> {
     });
   }
 
+  Future<void> _pickDueDay() async {
+    FocusScope.of(context).unfocus();
+    final picked = await showBillDueSheet(context, card: null, day: _dueDay);
+    if (picked != null && mounted) setState(() => _dueDay = picked.day);
+  }
+
   /// The arrow opens or closes the list, and always puts the keyboard away.
   void _toggleList() {
     _bankFocus.unfocus();
@@ -136,6 +144,7 @@ class _AddAccountSheetState extends ConsumerState<AddAccountSheet> {
             bankName: bankName,
             bankCode: _chosen?.code,
             last4: last4,
+            billDueDay: _isCard ? _dueDay : null,
             makeDefault: _makeDefault,
           );
       if (mounted) Navigator.of(context).pop(nickname);
@@ -248,6 +257,7 @@ class _AddAccountSheetState extends ConsumerState<AddAccountSheet> {
             isDefault: _makeDefault,
             accent: accent,
             onDefault: (value) => setState(() => _makeDefault = value),
+            dueRow: _isCard ? BillDueRow(day: _dueDay, onTap: _pickDueDay, bordered: false) : null,
           ),
           if (error != null) ...[const SizedBox(height: LoopdSpace.sm), LoopdErrorNote(error)],
           const SizedBox(height: LoopdSpace.xl),
@@ -653,7 +663,11 @@ class _Fields extends StatelessWidget {
     required this.isDefault,
     required this.accent,
     required this.onDefault,
+    this.dueRow,
   });
+
+  /// Bill due date, on a credit card only.
+  final Widget? dueRow;
 
   final TextEditingController nickname;
   final TextEditingController last4;
@@ -736,6 +750,7 @@ class _Fields extends StatelessWidget {
             ),
           ),
           Divider(height: 1, thickness: 1, color: c.line),
+          if (dueRow != null) ...[dueRow!, Divider(height: 1, thickness: 1, color: c.line)],
           row(
             Row(
               children: [

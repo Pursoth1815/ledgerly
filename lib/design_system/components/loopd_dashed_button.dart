@@ -33,7 +33,7 @@ class LoopdDashedButton extends StatelessWidget {
     onTap: onTap,
     label: label,
     child: CustomPaint(
-      painter: _DashedPillPainter(color, radius),
+      painter: LoopdDashedBorder(color, radius),
       child: SizedBox(
         height: height,
         child: Center(
@@ -44,8 +44,10 @@ class LoopdDashedButton extends StatelessWidget {
   );
 }
 
-class _DashedPillPainter extends CustomPainter {
-  _DashedPillPainter(this.color, this.radius);
+/// The 1.5 px dashed outline of [LoopdDashedButton], also used around
+/// quiet cards such as Today's Backup nudge. A full pill when [radius] is null.
+class LoopdDashedBorder extends CustomPainter {
+  const LoopdDashedBorder(this.color, this.radius);
 
   final Color color;
   final double? radius;
@@ -70,5 +72,5 @@ class _DashedPillPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_DashedPillPainter oldDelegate) => oldDelegate.color != color || oldDelegate.radius != radius;
+  bool shouldRepaint(LoopdDashedBorder oldDelegate) => oldDelegate.color != color || oldDelegate.radius != radius;
 }

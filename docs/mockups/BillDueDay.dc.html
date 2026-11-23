@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Bill due date</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.scrim}}; color: {{c.t1}}">
+<section aria-label="Bill due date" style="position: absolute; left: 0; right: 0; bottom: 0; box-sizing: border-box; padding: 10px 20px 28px; border-radius: 28px 28px 0 0; background: {{c.s1}}; display: flex; flex-direction: column; gap: 16px">
+<span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: {{c.line}}"></span>
+<header style="display: flex; flex-direction: column; gap: 8px">
+<h1 style="margin: 0; font-size: 22px; font-weight: 800">Bill due date</h1>
+<p style="margin: 0; font-size: 13px; font-weight: 500; color: {{c.t2}}">The day your Kiwi bill is due every month.</p>
+</header>
+<div role="group" aria-label="Day of the month" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{days}}" as="d" hint-placeholder-count="31">
+<button onClick="{{d.pick}}" aria-pressed="{{d.pressed}}" aria-label="{{d.label}}" style="height: 44px; padding: 0; border-radius: 14px; border: 0; background: {{d.bg}}; color: {{d.fg}}; font-family: inherit; font-size: 15px; font-weight: 700">{{d.n}}</button>
+</sc-for>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; min-height: 54px; padding: 0 16px; border-radius: 18px; background: {{c.cardT}}">
+<span style="font-size: 14px; font-weight: 600; color: {{c.t2}}">Next bill due</span>
+<span style="font-size: 16px; font-weight: 800; color: {{c.card}}">{{nextDue}}</span>
+</div>
+<p style="margin: 0; font-size: 12px; line-height: 1.5; color: {{c.t3}}">In a shorter month, Loopd uses its last day. Loopd reminds you on the due date.</p>
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 10px">
+<button onClick="{{clear}}" style="height: 56px; border-radius: 28px; border: 1.5px solid {{c.line}}; background: transparent; color: {{c.t1}}; font-family: inherit; font-size: 15px; font-weight: 700">Clear</button>
+<a href="AccountDetailsCard.dc.html" style="height: 56px; border-radius: 28px; background: {{c.money}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 800; text-decoration: none">Save</a>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { day: 5 };
+  }
+  pal(t) {
+    if (t === 'light') return {s1:'#FFFFFF',s2:'#ECEEF3',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',money:'#047857',card:'#6D28D9',cardT:'#EFE7FD',onAccent:'#FFFFFF',scrim:'#9CA3AF'};
+    return {s1:'#161922',s2:'#1F2330',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',money:'#34D399',card:'#C4A5FF',cardT:'rgba(196,165,255,0.15)',onAccent:'#0D0F14',scrim:'#05060A'};
+  }
+  next(d) {
+    const last = (m) => new Date(2026, m + 1, 0).getDate();
+    let month = 10;
+    let day = Math.min(d, last(month));
+    if (day < 15) {
+      month = 11;
+      day = Math.min(d, last(month));
+    }
+    return day + ' ' + (month === 10 ? 'Nov' : 'Dec');
+  }
+  renderVals() {
+    const c = this.pal(this.props.theme);
+    const s = this.state || {};
+    const days = Array.from({ length: 31 }, (_, i) => {
+      const n = i + 1;
+      const on = s.day === n;
+      return {
+        n,
+        label: 'Day ' + n,
+        pick: () => this.setState({ day: n }),
+        pressed: on ? 'true' : 'false',
+        bg: on ? c.card : c.s2,
+        fg: on ? c.onAccent : c.t1
+      };
+    });
+    return {
+      c,
+      days,
+      nextDue: s.day ? this.next(s.day) : 'Not set',
+      clear: () => this.setState({ day: null })
+    };
+  }
+}
+</script>
+</body>
+</html>

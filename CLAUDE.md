@@ -52,7 +52,7 @@ The owner reviews and merges everything. Claude never merges its own work.
 - **No network.** The app ships without the internet permission. Do not add packages that need it at runtime.
 - **No AI services** of any kind: no cloud APIs, no proxy, no keys. The assistant is rule-based and never called AI in the UI.
 - **Nothing detected is saved silently.** Every detected item goes to the Review Inbox for the owner to confirm.
-- **Money rules** go only through the ledger engine. Lending is a transfer, not an expense or income. Card bill payments are settlements. An ATM withdrawal is a transfer from a bank account to Cash in hand.
+- **Money rules** go only through the ledger engine. Loopd records spending only: no bank balances, no Cash in hand, and no income, own-transfer, ATM or card bill entries (owner, 23 Nov 2026). Those SMS come to the Review Inbox to dismiss or correct. Lending is never an expense or income.
 - **Removed features** (listed in `TO-DO.md`) must not come back under another name. **Postponed features** stay in `TO-DO.md` until the owner schedules them.
 - **Do not add scope.** Suggest ideas instead, and add them to `TO-DO.md` only if the owner agrees.
 
@@ -66,7 +66,7 @@ The repository is private, but treat it as if it might become public later.
 
 ## Current stage
 
-- The plan is at revision 3.2. The architecture was agreed on 16 Nov 2026 (proposal section 13, `docs/adr/`), Phase 0A, the project foundations, was finished on 17 Nov 2026, and Phase 0B, the native spikes, was tested on the owner's phone and merged on 17 Nov 2026. Phase 1, the design system and Today shell, was finished on 17 Nov 2026. Phase 2, expenses with UPI, Credit Card and Cash, is in progress: one branch and pull request per part, merged one at a time.
+- The plan is at revision 3.3. The architecture was agreed on 16 Nov 2026 (proposal section 13, `docs/adr/`), Phase 0A, the project foundations, was finished on 17 Nov 2026, and Phase 0B, the native spikes, was tested on the owner's phone and merged on 17 Nov 2026. Phase 1, the design system and Today shell, was finished on 17 Nov 2026. Phase 2, expenses with UPI, Credit Card and Cash, is in progress: one branch and pull request per part, merged one at a time.
 - **Follow `docs/architecture.md`.** Run `dart run tool/check_architecture.dart` before handing anything over; it enforces the import rules and bans unsafe key APIs.
 - Do not build anything that depends on a pending decision (proposal section 19); mark it pending instead.
 - The owner's phone is a Tecno Pova Curve 5G on Android 16 with HiOS 16.3. HiOS freezes Loopd about 10 s after it leaves the screen: reminders use alarm clocks, and SMS capture also reads the inbox when Loopd wakes (ADRs 0007, 0008 and 0013).
@@ -82,6 +82,6 @@ The repository is private, but treat it as if it might become public later.
 - Detected items are never saved silently. Unclear ones get one orange Review button, not half-filled pickers.
 - A credit card paid by UPI QR is a Credit Card expense. SMS senders are matched on the six-letter bank code.
 - Lending has no due dates. Notes have no folders. Accounts have no archived state.
-- Payment methods are UPI, Credit Card and Cash. Cash spends from one Cash in hand balance.
+- Payment methods are UPI, Credit Card and Cash. Cash records a spend and keeps no balance.
 - Travel reminders are counted from departure and have no time setting. Only task reminders use times the owner picks, and quiet hours apply to tasks only.
 - Mockups and the repo use made-up names and digits only.

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Delete an expense with refunds</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; background: {{c.scrim}}; color: {{c.t1}}">
+<section aria-label="Delete this expense?" style="position: absolute; left: 0; right: 0; bottom: 0; box-sizing: border-box; padding: 10px 20px 28px; border-radius: 28px 28px 0 0; background: {{c.s1}}; display: flex; flex-direction: column; gap: 16px">
+<span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: {{c.line}}"></span>
+<header style="display: flex; flex-direction: column; gap: 8px">
+<h1 style="margin: 0; font-size: 22px; font-weight: 800">Delete this expense?</h1>
+<p style="margin: 0; font-size: 13px; font-weight: 500; color: {{c.t2}}">Decathlon, ₹1,500, has 2 refunds. They will be deleted with it.</p>
+</header>
+<div style="display: flex; flex-direction: column; border-radius: 22px; border: 1px solid {{c.line}}; overflow: hidden">
+<div style="display: flex; align-items: center; justify-content: space-between; min-height: 60px; padding: 0 16px; border-bottom: 1px solid {{c.line}}"><span style="font-size: 14px; font-weight: 700">Refund</span><span style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px"><span style="font-size: 15px; font-weight: 800; color: {{c.money}}">+₹300</span><span style="font-size: 12px; color: {{c.t3}}">14 Nov, 4:10 pm</span></span></div>
+<div style="display: flex; align-items: center; justify-content: space-between; min-height: 60px; padding: 0 16px"><span style="font-size: 14px; font-weight: 700">Refund</span><span style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px"><span style="font-size: 15px; font-weight: 800; color: {{c.money}}">+₹200</span><span style="font-size: 12px; color: {{c.t3}}">15 Nov, 9:30 am</span></span></div>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
+<a href="ExpenseEditRefund.dc.html" style="display: flex; align-items: center; justify-content: center; height: 52px; border-radius: 26px; border: 1.5px solid {{c.line}}; box-sizing: border-box; color: {{c.t1}}; font-size: 15px; font-weight: 700; text-decoration: none">Keep</a>
+<a href="Money.dc.html" style="display: flex; align-items: center; justify-content: center; height: 52px; border-radius: 26px; background: {{c.red}}; color: {{c.onRed}}; font-size: 15px; font-weight: 800; text-decoration: none">Delete all</a>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  pal(t) {
+    if (t === 'light') return {s1:'#FFFFFF',line:'#DDE1E9',t1:'#11141B',t2:'#434A58',t3:'#5D6474',money:'#047857',red:'#B91C1C',onRed:'#FFFFFF',scrim:'#9CA3AF'};
+    return {s1:'#161922',line:'#2B3040',t1:'#F3F5F9',t2:'#B6BCC9',t3:'#8F96A6',money:'#34D399',red:'#FF7B7B',onRed:'#0D0F14',scrim:'#05060A'};
+  }
+  renderVals() {
+    return { c: this.pal(this.props.theme) };
+  }
+}
+</script>
+</body>
+</html>

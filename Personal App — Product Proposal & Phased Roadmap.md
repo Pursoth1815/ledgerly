@@ -1,14 +1,14 @@
 # Personal App — Product Proposal & Phased Roadmap
 
-Nov 16, 2026 · @Pursoth · Revision 3.2
+Nov 16, 2026 · @Pursoth · Revision 3.3
 
 ## Summary
 
-This is revision 3.2 of the proposal. It keeps revision 2's scope, folds in every decision from six rounds of design review on the mockups ([docs/mockups](docs/mockups/README.md)), adds your answers of 16 November (cash, reminder times, the capture sheet and your phone), and records the architecture agreed in Phase 0A (section 13). It describes an Android-first, fully offline personal app built on capture, confirm, remember, with nine core modules and no paid or cloud dependency of any kind.
+This is revision 3.3 of the proposal. It keeps revision 2's scope, folds in every decision from six rounds of design review on the mockups ([docs/mockups](docs/mockups/README.md)), adds your answers of 16 November (cash, reminder times, the capture sheet and your phone), and records the architecture agreed in Phase 0A (section 13). It describes an Android-first, fully offline personal app built on capture, confirm, remember, with nine core modules and no paid or cloud dependency of any kind.
 
 - **Modules.** Today, Expenses, Lending, Travel, Notes, Tasks, Document Vault, Digital Wellbeing and an offline assistant. Notes, Tasks and the Vault are core, not deferred.
 - **Navigation.** Five tabs: Today, Money, Travel, Planner (Notes and Tasks) and More (Vault, Screen time and settings).
-- **Expenses.** Three payment methods: UPI, Credit Card and Cash. A credit card paid by UPI QR counts as Credit Card. Cash comes from one Cash in hand balance, filled by ATM withdrawals you confirm. Accounts and cards are added from a sheet with a searchable bank list.
+- **Expenses.** Three payment methods: UPI, Credit Card and Cash. A credit card paid by UPI QR counts as Credit Card. Loopd records spending only: it keeps no bank balances and no Cash in hand (owner, 23 November 2026). Accounts and cards are added from a sheet with a searchable bank list.
 - **SMS detection.** Feasible on Android in a build you install yourself. Every detected payment becomes a card you confirm, and nothing is saved until you do. Unclear items get a single Review button instead of half-filled choices. Google Play approval is not assumed, and iOS has no equivalent.
 - **Lending.** Money lent to friends, with no due dates or overdue state.
 - **Travel.** A trip list with train and bus filters, ticket details that match the real railway and bus SMS, and four reminder stages counted from departure, ending with a lock-screen ticket 15 minutes before departure that stays until you press Done.
@@ -21,6 +21,16 @@ This is revision 3.2 of the proposal. It keeps revision 2's scope, folds in ever
 - **From you.** Open points in section 19: the text tools and the architecture choices still pending.
 
 ## 1. What changed
+
+### Revision 3.3: spend only
+
+| Area | Revision 3.2 | Revision 3.3 (owner, 23 November 2026) |
+| --- | --- | --- |
+| Money tracked | Spending, income, transfers, card bills, bank balances and Cash in hand | **Spending only**, because bank balances would not stay in step with the real bank |
+| Cash | One Cash in hand balance with Update cash | A payment method for recording what you spent |
+| Other bank SMS | ATM, transfer, salary and card bill messages recorded as money | They come to the Review Inbox, where you dismiss them or correct them into an expense |
+| Accounts and cards | A list with balances planned | A wallet of cards with what each spent this month (screens A1 to A4) |
+| Card bills | Payments recorded | A due day on each card and a reminder on that day; payments are not recorded |
 
 ### Revision 3.2: the architecture agreed in Phase 0A
 
@@ -131,7 +141,7 @@ Today is the home screen and shows only what needs your attention, in this order
 | Trips this week | Each trip in the next seven days, with a train or bus icon. Trains show station codes, class, coach and berth, and chart status; buses show route, vehicle, platform and a call-conductor button | Travel |
 | Tasks | Due today and overdue, ticked in place with a small circle that fills green | Tasks |
 | Lent to friends | The total still out, each friend's balance and how much came back, and a suggested repayment when a matching bank credit arrives. No due dates | Lending |
-| Spending | Today and month so far, split into UPI, Credit Card and Cash, with a Cash in hand row that opens Accounts and cards | Expenses |
+| Spending | Today and month so far, split into UPI, Credit Card and Cash | Expenses |
 | Screen time | Today's total and the top three apps with their icons | Digital Wellbeing, Android only |
 | Backup | A nudge when the last backup is more than seven days old | Backup |
 
@@ -157,7 +167,7 @@ Adding an expense by hand:
 
 1. Enter the amount.
 2. Choose UPI, Credit Card or Cash.
-3. Choose the bank account (for UPI) or the card (for Credit Card). Your default, if you chose one, is already selected. Cash needs no choice: it is paid from Cash in hand, and the form shows what is left after this expense.
+3. Choose the bank account (for UPI) or the card (for Credit Card). Your default, if you chose one, is already selected. Cash needs no choice.
 4. Choose a category.
 5. Save with one green "Save ₹amount" button. Merchant, note and date are optional; the date defaults to today.
 
@@ -167,7 +177,9 @@ Adding an expense and reviewing a detected one use **one form**. In review mode 
 
 ### Accounts and cards
 
-You can add any number of each from the first build. Accounts and cards is a tall sheet, not a page (owner, 18 Nov 2026): More opens it, and Today's Cash in hand row and the Money tab will open the same sheet.
+You can add any number of each from the first build. Accounts and cards is a tall sheet, not a page (owner, 18 Nov 2026): More and the Money tab open it.
+
+The sheet is a wallet (screens A1 to A4, owner, 23 November 2026). Credit cards, bank accounts and Cash sit in one stack, each with what it spent this month. Tapping one moves it to the top while the others slide down and fade, then shows its spending, its bill due date for a card, View expenses and Details. Back plays the same motion in reverse.
 
 | Field | Bank account, used for UPI | Credit card |
 | --- | --- | --- |
@@ -182,20 +194,16 @@ The last four digits are how an SMS is tied to the right account or card. There 
 
 A card used by family members still counts fully in your spending. There is no shared-card state.
 
-### Cash in hand
+### Cash
 
-Cash is one balance, Cash in hand, shown at the top of Accounts and cards and as a row on Today's Spending card. It has no bank, nickname or last four digits.
+Cash is a payment method for recording what you spent. It has no bank, nickname or last four digits, and Loopd keeps no Cash in hand balance (owner, 23 November 2026).
 
 | Event | What happens |
 | --- | --- |
-| ATM withdrawal SMS | A card in the Review Inbox: "ATM withdrawal ₹2,000 · HDFC Savings · Moves to Cash in hand". Looks Good records a **transfer** from the bank account to Cash in hand. It is not spending |
-| Cash expense | Added by hand with Cash as the method, or from the capture line ("spent 40 on tea cash"). It counts as spending and lowers Cash in hand |
-| Cash from someone | A loan repayment or other cash you receive can be recorded into Cash in hand |
-| Update cash | You type what is really in your wallet (the button was named Update count until 18 Nov 2026), and that becomes Cash in hand. A new count replaces the last one. The difference is not spending, so the totals only hold what you entered |
+| Cash expense | Added by hand with Cash as the method, or from the capture line ("spent 40 on tea cash"). It counts as spending |
+| ATM withdrawal SMS | A card in the Review Inbox. It is not spending, so you dismiss it, or correct it into an expense if it was one |
 
-The app cannot detect cash spending, because no SMS is sent for it. Cash in hand is therefore only as accurate as what you enter, and Update cash is the correction.
-
-So the flow is: Cash in hand starts at ₹0. Update cash sets it. An ATM withdrawal moves money from the bank account to Cash in hand, and a cash expense lowers it. Anything dated before your latest count is already in that count, so an ATM SMS that Loopd reads after you counted does not add the money twice (your decision, 18 November 2026).
+The app cannot detect cash spending, because no SMS is sent for it, so cash totals hold only what you enter.
 
 ### Tracking and correction
 
@@ -206,15 +214,17 @@ So the flow is: Cash in hand starts at ₹0. Update cash sets it. An ATM withdra
 
 ### Rules that keep the totals right
 
-- Paying a credit card bill is not an expense. The purchases were counted when they were made, so the app records the payment as a settlement outside spending.
+- Paying a credit card bill is not an expense. The purchases were counted when they were made, so the payment is not recorded.
 - A refund reduces the original expense.
-- Money moved between your own bank accounts is not an expense. An ATM withdrawal is a transfer from a bank account to Cash in hand, and is not an expense either.
+- Money moved between your own accounts and ATM withdrawals are not expenses, and are not recorded.
 - Money lent and repaid follows the transfer rules in section 6.
-- Money received, such as salary, is recorded against the bank account as income and never mixed into spending.
+- Money received, such as salary, is not recorded. Loopd tracks spending, not income.
+- A refund is added from its expense. Deleting an expense that has refunds lists them and asks first (screens A9 to A12, owner, 23 November 2026).
+- Each credit card can have a bill due day, from 1 to 31; a shorter month uses its last day (owner, 23 November 2026).
 
 ### Other bank debits
 
-Debit-card swipes, net banking and auto-debits (such as your auto-pay account's) still arrive by SMS. They appear in the Review Inbox against the right bank account, where you either save them under that account or dismiss them. ATM withdrawals go to Cash in hand, as above.
+Debit-card swipes, net banking and auto-debits (such as your auto-pay account's) still arrive by SMS. They appear in the Review Inbox against the right bank account, where you either save them under that account or dismiss them. ATM withdrawals are covered above.
 
 ## 5. SMS detection and the transaction card
 
@@ -226,7 +236,7 @@ On Android, in a build you install yourself, the app can detect transaction SMS 
 2. **Check it is a transaction.** The message must come from a commercial sender header and contain a transaction verb and an amount. Indian headers have carried a suffix since 6 May 2025: -P promotional, -S service, -T transactional, -G government ([reference](https://kb.smsalert.co.in/?p=2270)). It is a signal, not a guarantee, so the wording is checked too. The same bank arrives under several two-letter prefixes (AX-, AD-, VM-YESBNK-S), which only name the telecom route, so the sender is matched on the six-letter bank code.
 3. **Ignore the rest.** OTPs, promotions, failed payments, balance alerts, KYC notices and dispute updates are dropped. OTP text is never stored.
 4. **Extract.** Amount, merchant or recipient, date and time, reference number and the last four digits. Banks write dates differently (13-11-2026, 05/11/26, 13Nov26, 03-Nov-26), so each template knows its own format.
-5. **Identify the method.** Credit Card when the message names a card, even if it also carries a UPI marker; a card paid by UPI QR ("spent on YES BANK Card X4417 @UPI_shop") is a Credit Card expense. UPI when the message carries UPI markers on a bank account. An ATM cash withdrawal is a transfer to Cash in hand. Otherwise unknown.
+5. **Identify the method.** Credit Card when the message names a card, even if it also carries a UPI marker; a card paid by UPI QR ("spent on YES BANK Card X4417 @UPI_shop") is a Credit Card expense. UPI when the message carries UPI markers on a bank account. An ATM cash withdrawal is marked as not spending. Otherwise unknown.
 6. **Identify the account or card.** The bank comes from the sender code and the last four digits are matched to your saved accounts and cards.
 7. **Match existing records.** By reference number first, then by account, amount and date. A message for an expense you already typed in attaches to it as evidence. A repeat of the same payment is dropped.
 8. **Show the card.**
@@ -257,12 +267,13 @@ The card appears in three places: on Today, in the Review Inbox, and as an Andro
 | SMS arrives hours or days late | The card is dated by the time written in the message, so it lands on the correct day and month |
 | Bank changes its wording | The bank template misses, a generic extractor tries, and whatever it could not read turns the card into an unclear item with a single Review button |
 | Unknown last four digits | The card offers to add the account or card |
-| Credit card bill payment | Usually two messages: a bank debit (for example "via UPI to Kiwi Credit") and a card's "payment received" for the same amount. They pair into one settlement, not an expense |
+| Credit card bill payment | Usually two messages: a bank debit (for example "via UPI to Kiwi Credit") and a card's "payment received" for the same amount. They show as one Review Inbox card. It is not spending, so you dismiss it |
 | Money sent to a person | The card asks whether it was money lent or an expense |
 | The same message sent twice | The identity hash drops the copy |
 | Refund or reversal | Linked to the original expense and shown as refunded |
-| Transfer between your own accounts | The debit and credit pair into one transfer |
-| ATM withdrawal | A card that moves the amount from the bank account to Cash in hand. Looks Good records a transfer, not spending |
+| Transfer between your own accounts | The debit and credit show as one Review Inbox card. It is not spending, so you dismiss it |
+| Salary or other money received | A Review Inbox card. It is not spending, so you dismiss it |
+| ATM withdrawal | A Review Inbox card. It is not spending, so you dismiss it, or correct it into an expense if it was one |
 | Money from someone who owes you | The card offers "Record as repayment" |
 | Reinstall or restore | Each message has an identity hash, so nothing is imported twice |
 | SMS deleted before the next scan | The receiver saves a copy on arrival, which reduces this risk but cannot remove it |
@@ -288,9 +299,9 @@ The Lending segment answers two questions at a glance: who owes you, and how muc
 | Feature | Detail |
 | --- | --- |
 | People list | Each person with the amount still out and a bar showing how much came back, largest balance first |
-| Recording a loan | Person, amount, date, purpose, notes, and the bank account or Cash in hand it was paid from. A UPI payment to a person can become a loan from its card in the Review Inbox |
+| Recording a loan | Person, amount, date, purpose, notes, and the bank account or Cash it was paid from. A UPI payment to a person can become a loan from its card in the Review Inbox |
 | Several loans per person | Each loan keeps its own balance; a repayment settles the oldest loan first unless you choose another |
-| Repayments | Any amount, any time, in full or in part, into a bank account or Cash in hand |
+| Repayments | Any amount, any time, in full or in part, into a bank account or Cash |
 | Person page | The amount owed, the last repayment, open loans with progress bars, and a history with a running balance |
 | Mark received | One tap from the list or the person page |
 | History | Every loan, repayment and note for a person, in date order. Corrections show as visible adjustments |
@@ -302,7 +313,7 @@ The accounting rules are fixed:
 
 - Money lent is a **transfer out**, not an expense.
 - A repayment is a **transfer in**, not income.
-- Both appear in the bank account's history and in neither spending nor income totals.
+- Neither counts as spending.
 
 People are chosen with the system contact picker, which needs no contacts permission, or typed by name. There are no interest calculations.
 
@@ -533,7 +544,7 @@ More opens with two colour tiles, Vault and Screen time, followed by settings in
 
 | Group | Rows |
 | --- | --- |
-| Money | Accounts and cards, including Cash in hand; Expense categories (opens the category sheet); SMS detection (switch) |
+| Money | Accounts and cards; Expense categories (opens the category sheet); SMS detection (switch) |
 | Reminders | Task reminders (switch; tapping the name opens its screen). Travel has no time setting, because its stages follow the departure time |
 | Privacy and backup | App lock; Backup & restore; Export logs |
 | Appearance | Dark theme (switch) |
@@ -553,7 +564,7 @@ When each permission is asked:
 
 ### Shared engines
 
-- **Ledger.** Every money movement goes through it: expense, income, transfer (including ATM withdrawals into Cash in hand), Update cash (setting Cash in hand), card settlement, loan and repayment. Modules never write money rows themselves, so the totals cannot disagree.
+- **Ledger.** Every money record goes through it: expense, refund, loan and repayment. Modules never write money rows themselves, so the totals cannot disagree.
 - **Capture inbox.** Drafts from SMS, sharing and commands use one confirm-or-review flow.
 - **Reminders.** Trips, tasks, the daily task summary, document expiry and backup nudges use one scheduler. Quiet hours apply to task reminders only. It rebuilds its schedule after a restart and whenever the app opens.
 - **Backup.** Takes the snapshot, writes and verifies the backup, keeps the retention, and runs the restore checks.
@@ -659,14 +670,14 @@ packages/ (pure Dart)  Kotlin in android/app (reached only through core/platform
 | Repository | Data access for one owner's tables, built on its DAO. A concrete class |
 | DAO | The Drift accessor for one owner's tables, used only inside that owner's folder |
 
-The ledger owns accounts, cards, Cash in hand and categories. Their screens live in the expenses feature. The capture inbox owns drafts, the identity hash and merchant memory. The full folder map, the import rules and the naming rules are in [docs/architecture.md](docs/architecture.md).
+The ledger owns accounts, cards, Cash and categories. Their screens live in the expenses feature. The capture inbox owns drafts, the identity hash and merchant memory. The full folder map, the import rules and the naming rules are in [docs/architecture.md](docs/architecture.md).
 
 ### The ledger: data model
 
 Every money event is one row in `ledger_transactions` with two or more rows in `postings`.
 
 ```text
-accounts               id, kind, name, bank_name, bank_code, last4, is_default, created_at, removed_at
+accounts               id, kind, name, bank_name, bank_code, last4, bill_due_day, is_default, created_at, removed_at
                        kind: bank | credit_card | cash | category | income | loan
                              | adjustment | write_off | opening
 categories             account_id → accounts, colour, icon, sort_order
@@ -683,7 +694,7 @@ transaction_revisions  id, transaction_id, revision, action, snapshot_json, reas
 loans                  account_id → accounts, person_id, purpose                    (lending)
 ```
 
-**The sign convention.** Every posting says how much moved into (+) or out of (−) one account, and the postings of a transaction always sum to zero. A bank account, Cash in hand or a loan has a positive balance when you have money or are owed money. A credit card has a negative balance for the amount you owe and a positive one for a credit on the card. A category's positive balance is spending, and an income account's negative balance is income.
+**The sign convention.** Every posting says how much moved into (+) or out of (−) one account, and the postings of a transaction always sum to zero. A bank account, Cash or a loan has a positive balance when you have money or are owed money. A credit card has a negative balance for the amount you owe and a positive one for a credit on the card. A category's positive balance is spending, and an income account's negative balance is income.
 
 Examples:
 
@@ -692,12 +703,9 @@ Examples:
 | ₹62 by UPI from Primary | Snacks +6200 · Primary −6200 |
 | ₹1,299 on the Kiwi card | Shopping +129900 · Kiwi −129900 |
 | ₹705 on Kiwi paid by UPI QR | Travel +70500 · Kiwi −70500 (method Credit Card, channel upi_qr) |
-| ₹705 card bill paid from Savings | Kiwi +70500 · Savings −70500 (not spending) |
 | ₹300 refund of the ₹1,299 order to the card | Kiwi +30000 · Shopping −30000 |
-| ₹2,000 at an ATM | Cash in hand +200000 · Savings −200000 (not spending) |
 | ₹5,000 lent to Arun | Loan (Arun) +500000 · Savings −500000 |
 | ₹1,500 of it repaid | Primary +150000 · Loan (Arun) −150000 |
-| ₹60,000 salary | Salary account +6000000 · Salary income −6000000 |
 
 Each loan is its own account, so "oldest loan first" is written directly into the postings. A write-off moves a loan balance to a written-off account, which is never spending.
 
@@ -727,48 +735,30 @@ CREATE TABLE transaction_sources (
   draft_id       TEXT PRIMARY KEY REFERENCES capture_drafts(id),
   transaction_id TEXT NOT NULL REFERENCES ledger_transactions(id),
   role           TEXT NOT NULL
-                 CHECK (role IN ('primary', 'pair_debit', 'pair_credit', 'evidence')),
+                 CHECK (role IN ('primary', 'evidence')),
   linked_at      INTEGER NOT NULL
 ) STRICT;
 
--- At most one primary, one pair_debit and one pair_credit per transaction;
--- any number of evidence links.
+-- At most one primary per transaction; any number of evidence links.
 CREATE UNIQUE INDEX transaction_sources_one_role
   ON transaction_sources (transaction_id, role)
-  WHERE role IN ('primary', 'pair_debit', 'pair_credit');
+  WHERE role = 'primary';
 ```
 
 - The primary key on `draft_id` means a draft belongs to at most one transaction.
-- A card bill uses `pair_debit` and `pair_credit` on one card payment. An SMS for an expense you already typed in is `evidence`, which changes no money.
-- The rule "a single primary, or a pair, but not both" spans several rows, so the ledger engine checks it, and the health check confirms it.
+- The two messages of a card bill or own transfer show as one Review Inbox card and save nothing unless you correct them into an expense. An SMS for an expense you already typed in is `evidence`, which changes no money.
+- A transaction has at most one primary SMS. The rule spans several rows, so the ledger engine checks it, and the health check confirms it.
 - A draft gets its future transaction id when it is created, so confirming it twice (from the app and from the notification) cannot create two transactions.
 
-**Opening and verified balances.**
+**Balances.** Loopd keeps no bank, card or cash balances (owner, 23 November 2026). The income, transfer and card payment kinds and the `balance_checkpoints` table stay in the schema, so data saved by earlier builds stays valid, but no screen writes them.
 
-- An optional opening balance is an `opening_balance` transaction against an opening account, dated "as of" a day you choose. The tracked balance is the opening balance plus the postings dated after it; older history does not count twice.
-- A verified balance is a figure you type in after checking your bank or card app. It is stored in `balance_checkpoints` with the **same sign as the ledger**:
-  - bank: positive is money in the account, negative an overdraft
-  - card: negative is the amount owed, positive a credit on the card
-  - The form asks for "Amount owed" or "Credit on the card" and never asks for a sign.
-- The difference shown is the actual balance minus the tracked balance.
-- Labels:
-  - "Movement since …" when there is no opening balance (never called a balance)
-  - "Tracked balance" with an opening balance
-  - "Verified … · date" when the latest check matches
-  - "Tracked … · Bank says … · ₹… unexplained" when it does not
-- Each Update cash sets Cash in hand's balance from that moment: the latest count plus what is dated after it. It is kept as a checkpoint, not a money row, so it is never spending and ₹0 is a valid count. Before the first count, Cash in hand starts at ₹0.
-
-**Edits, undo and reconciliation.**
+**Edits and undo.**
 
 - Every create, edit, delete and restore adds a row to `transaction_revisions` with a full snapshot. History is never rewritten.
 - An edit replaces the postings inside one database transaction and keeps the transaction's id, its SMS links and its refund links.
 - A delete is a soft delete.
 - Undo applies the previous snapshot as a new revision, and only while nothing has changed since; otherwise it says it cannot undo.
-- Reconciliation never creates anything by itself:
-  - Cash in hand has no bank to compare with, so Update cash simply sets it; nothing is recorded as an adjustment.
-  - A bank or card difference is shown. You add the missing transaction, record a labelled adjustment outside spending, or leave it.
-  - Editing anything dated before a checkpoint marks that checkpoint for a recheck.
-- Unmatched card-bill halves stay in the Review Inbox. They pair on the same amount when the two messages arrive within ±3 days of each other (owner, 21 November 2026).
+- The two messages of a card bill or own transfer become one Review Inbox card when they have the same amount and arrive within ±3 days of each other (owner, 21 November 2026).
 
 **Guards.**
 
@@ -1035,7 +1025,7 @@ docs/architecture.md, docs/adr/
 | Item | Detail |
 | --- | --- |
 | Objective | A manual expense tracker you can use every day, with data that is safe |
-| Features | Bank accounts and cards with nickname, last four digits and default, added from a sheet with a searchable bank list and live preview; the shared expense form with UPI, Credit Card and Cash; Cash in hand with Update cash; categories with the category sheet; totals by period, category, method, account and card, with refunds in the purchase month; editing with history and undo; refunds linked to originals; settlement, transfer and income rules; optional opening balances and verified balances; encrypted backup and restore with its screen, read-back verification and keeping the last three backups; app lock; app-switcher privacy |
+| Features | Bank accounts and cards with nickname, last four digits and default, added from a sheet with a searchable bank list and live preview; the shared expense form with UPI, Credit Card and Cash; categories with the category sheet; totals by period, category, method, account and card, with refunds in the purchase month; editing with history and undo; refunds linked to originals; the Accounts and cards wallet with a bill due date on each card; encrypted backup and restore with its screen, read-back verification and keeping the last three backups; app lock; app-switcher privacy |
 | Technical dependencies | Phase 1 components. The ledger engine (section 13) and the first version of the backup engine are built here; Bouncy Castle is added for Argon2id |
 | Risks and platform restrictions | The backup format must carry a version from its first release |
 | Tested on Android | Everything, including restore onto a clean install |
@@ -1046,7 +1036,7 @@ docs/architecture.md, docs/adr/
 | Item | Detail |
 | --- | --- |
 | Objective | Payments arrive as cards that you confirm |
-| Features | SMS setup with the restricted-settings guide; first-run import; receiver and inbox scan; templates for your banks; sender-code matching; method and account identification, card before UPI; ATM withdrawals as transfers to Cash in hand; duplicate matching; card bill payment pairing through the transaction sources; the transaction card on Today (stacked), in the Review Inbox (with its opening animation) and as a notification; the single Review button for unclear items; delete with Undo; "Not a payment"; paste or share a message as the alternative; merchant memory |
+| Features | SMS setup with the restricted-settings guide; first-run import; receiver and inbox scan; templates for your banks; sender-code matching; method and account identification, card before UPI; ATM, own-transfer, salary and card bill messages as Review Inbox cards that are not spending; duplicate matching; pairing the two messages of a card bill or own transfer into one card; the transaction card on Today (stacked), in the Review Inbox (with its opening animation) and as a notification; the single Review button for unclear items; delete with Undo; "Not a payment"; paste or share a message as the alternative; merchant memory |
 | Technical dependencies | The SMS spike; scrambled fixtures exported from your phone; your list of banks and cards. The capture inbox engine is built here |
 | Risks and platform restrictions | Formats from banks you do not use are untested. Templates break when a bank rewords. A message deleted before the scan is lost. This flavour is not for Google Play |
 | Tested on Android | A replay over your own inbox, measured against the 95% target |
@@ -1068,7 +1058,7 @@ docs/architecture.md, docs/adr/
 | Item | Detail |
 | --- | --- |
 | Objective | Tickets are stored, and the final ticket is on your lock screen 15 minutes before departure |
-| Features | The Travel list with All, Train and Bus tabs; manual tickets and planned trips; train and bus ticket details; ticket documents; ticket detection from IRCTC and TNSTC SMS, with the journey-day bus message updating the same ticket; call conductor; share to app; the four stages, counted from departure; the final notification with Show Ticket and Done; re-posting after a restart; the exact-alarm permission flow |
+| Features | The Travel list with All, Train and Bus tabs; manual tickets and planned trips; train and bus ticket details; ticket documents; ticket detection from IRCTC and TNSTC SMS, with the journey-day bus message updating the same ticket; call conductor; share to app; the four stages, counted from departure; the final notification with Show Ticket and Done; re-posting after a restart; the exact-alarm permission flow; the card bill reminder at 9:00 am on the due date, every month (owner, 23 November 2026) |
 | Technical dependencies | The notification spike; the SMS pipeline. The reminder engine and the encrypted file store are built here and reused by Planner and the Vault |
 | Risks and platform restrictions | Refusal of exact alarms. Manufacturer battery policies. Ticket SMS wording varies far more than bank SMS. What shows on the lock screen depends on your phone's settings |
 | Tested on Android | Stage timing with a fake clock in tests, then real trips on your phone and one other brand |
@@ -1211,7 +1201,7 @@ The largest risks are device behaviour on Android and the size of the scope for 
 | No iPhone | iOS problems go unnoticed | The build compiles on every change, and nothing on iOS is described as verified |
 | Lost phone or forgotten backup passphrase | Permanent loss of data | Backup nudges, optional weekly backup, and a clear warning when the passphrase is set |
 | Nine modules for one developer | Slipping dates | Fixed "not included" lists per module, one droppable optional phase, and approval after every phase |
-| Cash in hand drifts from your real wallet | Cash totals are off, because cash spending sends no SMS | Update cash sets Cash in hand to what you counted |
+| Cash spending is forgotten | Cash totals are low, because cash spending sends no SMS | Adding a cash expense takes one sheet or one capture line |
 | Usage figures vary between manufacturers | Wellbeing totals differ from the system's | Compared over a week in Phase 8 and stated in the screen |
 | The bubble's service is stopped by the system | The bubble disappears | Opt-in, restarted when the app opens, built last |
 
@@ -1265,7 +1255,7 @@ Your confirmed decisions are applied and are not reopened here. Each open point 
 - [x] **The capture sheet.** (a): it stays on every tab. You will confirm it once the sheet is designed and tested.
 - [x] **Your phone.** Tecno Pova Curve 5G.
 - [x] **Your phone's Android version.** Android 16 with HiOS 16.3 (17 November 2026). Phase 0B tests on Android 16. The minimum stays Android 15.
-- [x] **Cash and other bank debits.** Cash is tracked as a third method with one Cash in hand balance (section 4). ATM withdrawals move money to Cash in hand; debit-card, net-banking and auto-debit messages appear in the Review Inbox under their bank account.
+- [x] **Cash and other bank debits.** Cash is a third method for recording spending (section 4). ATM withdrawals come to the Review Inbox and are not spending; debit-card, net-banking and auto-debit messages appear in the Review Inbox under their bank account.
 - [x] **On-device language features.** Not built.
 - [x] **Reminder times.** Travel stages are counted from departure, with no clock times. Only task reminders use times you choose: the lead, the snooze, the daily summary and quiet hours. Payment cards, travel stages and other alerts follow their own rules.
 - [x] **Your time.** No limit. The effort table sizes the work and is not a schedule.
@@ -1277,14 +1267,20 @@ Your confirmed decisions are applied and are not reopened here. Each open point 
 - [x] **Restore without the passphrase.** No: every restore asks for the backup passphrase, on this phone too (17 November 2026).
 - [x] **Resetting a forgotten passphrase.** Yes, on this phone after a fingerprint, face or PIN check. Older backups keep the old passphrase; new backups use the new one (17 November 2026).
 - [x] **Minimum passphrase length.** 12 characters (17 November 2026).
-- [x] **Pairing window.** ±3 days between the two SMS of a card bill or own transfer (21 November 2026).
+- [x] **Pairing window.** ±3 days between the two SMS of a card bill or own transfer, which show as one Review Inbox card (21 November 2026).
 - [x] **The original SMS text.** Deleted once you confirm the transaction; only the details read from it are kept (21 November 2026).
-- [x] **The missing Phase 2 screens.** Today's Spending card, entering a transfer, income, card bill payment or refund by hand, and opening and verified balances are built now, as part 8 of Phase 2, before Phase 3 starts (21 November 2026).
+- [x] **The missing Phase 2 screens.** Today's Spending and Backup cards, the Accounts and cards wallet, bill due dates and refunds by hand are built as part 8 of Phase 2, before Phase 3 starts (21 and 23 November 2026).
+- [x] **Spend only.** Loopd records spending only. No bank balances, no Cash in hand, and no income, transfer or card bill entries. Other bank SMS come to the Review Inbox to dismiss or correct (23 November 2026).
+- [x] **Card bill due dates.** A due day on each card, saved in Phase 2, with one reminder at 9:00 am on the due date every month, built in Phase 5 (23 November 2026).
+- [x] **Card payments from email.** Not used: it needs the internet, and Loopd has no internet permission. Card payment SMS are handled in Phase 3 (23 November 2026).
 
 ### Still open
 
 - [ ] **Text tools** in section 10 (tidy spacing, sort lines, count words, pull out amounts) have no screen in the mockups. Should they be commands typed in the capture line, or be dropped?
   If you say nothing: commands in the capture line, built in Phase 9.
+
+- [ ] **Lending without balances.** A loan and a repayment still name a bank account or Cash, but Loopd no longer keeps balances. Decide in the Phase 4 design whether to keep that field.
+  If you say nothing: it stays as a label only.
 
 Architecture choices still pending. Nothing that depends on them is built until you decide:
 

@@ -2,29 +2,13 @@
   "v": 3,
   "attachments": {},
   "boards": {
-    "Accounts.dc.html": {
-      "h": 1460,
-      "radius": 28,
-      "title": "4 · Accounts and cards",
-      "w": 390,
-      "x": 2820,
-      "y": 0
-    },
-    "AccountsLight.dc.html": {
-      "h": 1460,
-      "radius": 28,
-      "title": "4 · Accounts and cards (light)",
-      "w": 390,
-      "x": 2820,
-      "y": 2560
-    },
     "AddAccount.dc.html": {
       "h": 980,
       "is_interactive": true,
       "radius": 28,
       "title": "4b · Add bank account, searching \"hd\"",
       "w": 390,
-      "x": 3290,
+      "x": 8460,
       "y": 0
     },
     "AddAccountCard.dc.html": {
@@ -33,7 +17,7 @@
       "radius": 28,
       "title": "4c · Add credit card, bank chosen",
       "w": 390,
-      "x": 3760,
+      "x": 8930,
       "y": 0
     },
     "AddAccountCardLight.dc.html": {
@@ -42,7 +26,7 @@
       "radius": 28,
       "title": "4c · Add credit card (light)",
       "w": 390,
-      "x": 3760,
+      "x": 8930,
       "y": 2560
     },
     "AddAccountLight.dc.html": {
@@ -51,7 +35,7 @@
       "radius": 28,
       "title": "4b · Add bank account (light)",
       "w": 390,
-      "x": 3290,
+      "x": 8460,
       "y": 2560
     },
     "AddExpense.dc.html": {
@@ -96,7 +80,7 @@
       "radius": 28,
       "title": "8b · Add note sheet",
       "w": 390,
-      "x": 7050,
+      "x": 12220,
       "y": 0
     },
     "AddNoteLight.dc.html": {
@@ -105,7 +89,7 @@
       "radius": 28,
       "title": "8b · Add note sheet (light)",
       "w": 390,
-      "x": 7050,
+      "x": 12220,
       "y": 2560
     },
     "AddTask.dc.html": {
@@ -114,7 +98,7 @@
       "radius": 28,
       "title": "9c · Add task sheet",
       "w": 390,
-      "x": 8460,
+      "x": 13630,
       "y": 0
     },
     "AddTaskLight.dc.html": {
@@ -123,7 +107,7 @@
       "radius": 28,
       "title": "9c · Add task sheet (light)",
       "w": 390,
-      "x": 8460,
+      "x": 13630,
       "y": 2560
     },
     "Capture.dc.html": {
@@ -131,7 +115,7 @@
       "radius": 28,
       "title": "12 · Capture sheet (+ button)",
       "w": 390,
-      "x": 13160,
+      "x": 18330,
       "y": 0,
       "is_interactive": true
     },
@@ -140,7 +124,7 @@
       "radius": 28,
       "title": "12 · Capture sheet (light)",
       "w": 390,
-      "x": 13160,
+      "x": 18330,
       "y": 2560,
       "is_interactive": true
     },
@@ -149,7 +133,7 @@
       "radius": 28,
       "title": "5 · Lending: person page",
       "w": 390,
-      "x": 4230,
+      "x": 9400,
       "y": 0
     },
     "LendingLight.dc.html": {
@@ -157,7 +141,7 @@
       "radius": 28,
       "title": "5 · Lending (light)",
       "w": 390,
-      "x": 4230,
+      "x": 9400,
       "y": 2560
     },
     "LockScreen.dc.html": {
@@ -165,7 +149,7 @@
       "radius": 28,
       "title": "7 · Lock screen, 15 min before",
       "w": 390,
-      "x": 6110,
+      "x": 11280,
       "y": 0
     },
     "LockScreenLight.dc.html": {
@@ -173,7 +157,7 @@
       "radius": 28,
       "title": "7 · Lock screen (light)",
       "w": 390,
-      "x": 6110,
+      "x": 11280,
       "y": 2560
     },
     "Main.dc.html": {
@@ -190,7 +174,7 @@
       "radius": 28,
       "title": "10 · More (last tab)",
       "w": 390,
-      "x": 8930,
+      "x": 14100,
       "y": 0
     },
     "MoreLight.dc.html": {
@@ -198,7 +182,7 @@
       "radius": 28,
       "title": "10 · More (light)",
       "w": 390,
-      "x": 8930,
+      "x": 14100,
       "y": 2560
     },
     "Notes.dc.html": {
@@ -207,7 +191,7 @@
       "radius": 28,
       "title": "8 · Planner: Notes (one note tapped)",
       "w": 390,
-      "x": 6580,
+      "x": 11750,
       "y": 0
     },
     "NotesLight.dc.html": {
@@ -216,7 +200,7 @@
       "radius": 28,
       "title": "8 · Planner: Notes (light)",
       "w": 390,
-      "x": 6580,
+      "x": 11750,
       "y": 2560
     },
     "Review.dc.html": {
@@ -261,7 +245,7 @@
       "radius": 28,
       "title": "9 · Planner: Tasks, Today",
       "w": 390,
-      "x": 7520,
+      "x": 12690,
       "y": 0
     },
     "TasksLight.dc.html": {
@@ -270,7 +254,7 @@
       "radius": 28,
       "title": "9 · Planner: Tasks, Today (light)",
       "w": 390,
-      "x": 7520,
+      "x": 12690,
       "y": 2560
     },
     "TasksUpcoming.dc.html": {
@@ -279,7 +263,7 @@
       "radius": 28,
       "title": "9b · Planner: Tasks, Upcoming",
       "w": 390,
-      "x": 7990,
+      "x": 13160,
       "y": 0
     },
     "TasksUpcomingLight.dc.html": {
@@ -288,7 +272,7 @@
       "radius": 28,
       "title": "9b · Planner: Tasks, Upcoming (light)",
       "w": 390,
-      "x": 7990,
+      "x": 13160,
       "y": 2560
     },
     "Ticket.dc.html": {
@@ -296,7 +280,7 @@
       "radius": 28,
       "title": "6b · Ticket details, train",
       "w": 390,
-      "x": 5170,
+      "x": 10340,
       "y": 0
     },
     "TicketBus.dc.html": {
@@ -304,7 +288,7 @@
       "radius": 28,
       "title": "6c · Ticket details, bus",
       "w": 390,
-      "x": 5640,
+      "x": 10810,
       "y": 0
     },
     "TicketBusLight.dc.html": {
@@ -312,7 +296,7 @@
       "radius": 28,
       "title": "6c · Ticket details, bus (light)",
       "w": 390,
-      "x": 5640,
+      "x": 10810,
       "y": 2560
     },
     "TicketLight.dc.html": {
@@ -320,7 +304,7 @@
       "radius": 28,
       "title": "6b · Ticket details, train (light)",
       "w": 390,
-      "x": 5170,
+      "x": 10340,
       "y": 2560
     },
     "TodayLight.dc.html": {
@@ -338,7 +322,7 @@
       "radius": 28,
       "title": "6 · Travel list",
       "w": 390,
-      "x": 4700,
+      "x": 9870,
       "y": 0
     },
     "TravelLight.dc.html": {
@@ -347,7 +331,7 @@
       "radius": 28,
       "title": "6 · Travel list (light)",
       "w": 390,
-      "x": 4700,
+      "x": 9870,
       "y": 2560
     },
     "Vault.dc.html": {
@@ -355,7 +339,7 @@
       "radius": 28,
       "title": "10b · Document Vault (inside More)",
       "w": 390,
-      "x": 11750,
+      "x": 16920,
       "y": 0
     },
     "VaultLight.dc.html": {
@@ -363,7 +347,7 @@
       "radius": 28,
       "title": "10b · Document Vault (light)",
       "w": 390,
-      "x": 11750,
+      "x": 16920,
       "y": 2560
     },
     "Wellbeing.dc.html": {
@@ -371,7 +355,7 @@
       "radius": 28,
       "title": "11 · Digital Wellbeing",
       "w": 390,
-      "x": 12690,
+      "x": 17860,
       "y": 0
     },
     "WellbeingLight.dc.html": {
@@ -379,7 +363,7 @@
       "radius": 28,
       "title": "11 · Digital Wellbeing (light)",
       "w": 390,
-      "x": 12690,
+      "x": 17860,
       "y": 2560
     },
     "CategorySheet.dc.html": {
@@ -387,7 +371,7 @@
       "radius": 28,
       "title": "10c · Expense categories sheet",
       "w": 390,
-      "x": 9400,
+      "x": 14570,
       "y": 0,
       "is_interactive": true
     },
@@ -396,7 +380,7 @@
       "radius": 28,
       "title": "10c · Expense categories sheet (light)",
       "w": 390,
-      "x": 9400,
+      "x": 14570,
       "y": 2560,
       "is_interactive": true
     },
@@ -405,7 +389,7 @@
       "radius": 28,
       "title": "10d · New expense category",
       "w": 390,
-      "x": 9870,
+      "x": 15040,
       "y": 0,
       "is_interactive": true
     },
@@ -414,7 +398,7 @@
       "radius": 28,
       "title": "10d · New expense category (light)",
       "w": 390,
-      "x": 9870,
+      "x": 15040,
       "y": 2560,
       "is_interactive": true
     },
@@ -423,7 +407,7 @@
       "radius": 28,
       "title": "10e · New Vault category",
       "w": 390,
-      "x": 12220,
+      "x": 17390,
       "y": 0,
       "is_interactive": true
     },
@@ -432,7 +416,7 @@
       "radius": 28,
       "title": "10e · New Vault category (light)",
       "w": 390,
-      "x": 12220,
+      "x": 17390,
       "y": 2560,
       "is_interactive": true
     },
@@ -441,7 +425,7 @@
       "radius": 28,
       "title": "10f · Backup & restore",
       "w": 390,
-      "x": 10340,
+      "x": 15510,
       "y": 0,
       "is_interactive": true
     },
@@ -450,7 +434,7 @@
       "radius": 28,
       "title": "10f · Backup & restore (light)",
       "w": 390,
-      "x": 10340,
+      "x": 15510,
       "y": 2560,
       "is_interactive": true
     },
@@ -459,7 +443,7 @@
       "radius": 28,
       "title": "10g · Task reminders",
       "w": 390,
-      "x": 10810,
+      "x": 15980,
       "y": 0,
       "is_interactive": true
     },
@@ -468,7 +452,7 @@
       "radius": 28,
       "title": "10g · Task reminders (light)",
       "w": 390,
-      "x": 10810,
+      "x": 15980,
       "y": 2560,
       "is_interactive": true
     },
@@ -477,7 +461,7 @@
       "radius": 28,
       "title": "10h · Export logs",
       "w": 390,
-      "x": 11280,
+      "x": 16450,
       "y": 0,
       "is_interactive": true
     },
@@ -486,7 +470,7 @@
       "radius": 28,
       "title": "10h · Export logs (light)",
       "w": 390,
-      "x": 11280,
+      "x": 16450,
       "y": 2560,
       "is_interactive": true
     },
@@ -514,7 +498,7 @@
       "radius": 28,
       "title": "5a · Money tab: Expenses",
       "w": 390,
-      "x": 13630,
+      "x": 18800,
       "y": 0
     },
     "MoneyLight.dc.html": {
@@ -523,7 +507,7 @@
       "radius": 28,
       "title": "5a · Money tab: Expenses (light)",
       "w": 390,
-      "x": 13630,
+      "x": 18800,
       "y": 2560
     },
     "MoneyAll.dc.html": {
@@ -532,7 +516,7 @@
       "radius": 28,
       "title": "5b · Show all categories (Kiwi chosen)",
       "w": 390,
-      "x": 14100,
+      "x": 19270,
       "y": 0
     },
     "MoneyAllExpenses.dc.html": {
@@ -541,7 +525,7 @@
       "radius": 28,
       "title": "5c · Show all expenses (Kiwi chosen)",
       "w": 390,
-      "x": 14570,
+      "x": 19740,
       "y": 0
     },
     "MoneyAllLight.dc.html": {
@@ -550,7 +534,7 @@
       "radius": 28,
       "title": "5b · Show all categories (light)",
       "w": 390,
-      "x": 14100,
+      "x": 19270,
       "y": 2560
     },
     "MoneyAllExpensesLight.dc.html": {
@@ -559,7 +543,7 @@
       "radius": 28,
       "title": "5c · Show all expenses (light)",
       "w": 390,
-      "x": 14570,
+      "x": 19740,
       "y": 2560
     },
     "BackupSheet.dc.html": {
@@ -568,7 +552,7 @@
       "radius": 28,
       "title": "10i · Set up backup",
       "w": 390,
-      "x": 15040,
+      "x": 20210,
       "y": 0
     },
     "BackupSheetLight.dc.html": {
@@ -577,7 +561,7 @@
       "radius": 28,
       "title": "10i · Set up backup (light)",
       "w": 390,
-      "x": 15040,
+      "x": 20210,
       "y": 2560
     },
     "BackupRestore.dc.html": {
@@ -586,7 +570,7 @@
       "radius": 28,
       "title": "10j · Restore from a backup",
       "w": 390,
-      "x": 15510,
+      "x": 20680,
       "y": 0
     },
     "BackupRestoreLight.dc.html": {
@@ -595,7 +579,7 @@
       "radius": 28,
       "title": "10j · Restore from a backup (light)",
       "w": 390,
-      "x": 15510,
+      "x": 20680,
       "y": 2560
     },
     "BackupChange.dc.html": {
@@ -604,7 +588,7 @@
       "radius": 28,
       "title": "10k · Change passphrase",
       "w": 390,
-      "x": 15980,
+      "x": 21150,
       "y": 0
     },
     "BackupChangeLight.dc.html": {
@@ -613,7 +597,7 @@
       "radius": 28,
       "title": "10k · Change passphrase (light)",
       "w": 390,
-      "x": 15980,
+      "x": 21150,
       "y": 2560
     },
     "BackupForgot.dc.html": {
@@ -622,7 +606,7 @@
       "radius": 28,
       "title": "10l · Forgot passphrase",
       "w": 390,
-      "x": 16450,
+      "x": 21620,
       "y": 0
     },
     "BackupForgotLight.dc.html": {
@@ -631,7 +615,7 @@
       "radius": 28,
       "title": "10l · Forgot passphrase (light)",
       "w": 390,
-      "x": 16450,
+      "x": 21620,
       "y": 2560
     },
     "AppLock.dc.html": {
@@ -640,7 +624,7 @@
       "radius": 28,
       "title": "10m · App lock",
       "w": 390,
-      "x": 16920,
+      "x": 22090,
       "y": 0
     },
     "AppLockLight.dc.html": {
@@ -649,7 +633,7 @@
       "radius": 28,
       "title": "10m · App lock (light)",
       "w": 390,
-      "x": 16920,
+      "x": 22090,
       "y": 2560
     },
     "AppLocked.dc.html": {
@@ -658,7 +642,7 @@
       "radius": 28,
       "title": "10n · Loopd is locked, glow (option)",
       "w": 390,
-      "x": 17390,
+      "x": 22560,
       "y": 0
     },
     "AppLockedLight.dc.html": {
@@ -667,7 +651,7 @@
       "radius": 28,
       "title": "10n · Loopd is locked (light)",
       "w": 390,
-      "x": 17390,
+      "x": 22560,
       "y": 2560
     },
     "AppLockedIcons.dc.html": {
@@ -676,7 +660,7 @@
       "radius": 28,
       "title": "10n-b · Loopd is locked, floating icons (option)",
       "w": 390,
-      "x": 17860,
+      "x": 23030,
       "y": 0
     },
     "AppLockedIconsLight.dc.html": {
@@ -685,7 +669,223 @@
       "radius": 28,
       "title": "10n-b · Floating icons (light)",
       "w": 390,
-      "x": 17860,
+      "x": 23030,
+      "y": 2560
+    },
+    "ExpenseEditRefund.dc.html": {
+      "h": 1480,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "A9 · Edit expense, with Add refund",
+      "w": 390,
+      "x": 6580,
+      "y": 0
+    },
+    "ExpenseEditRefundLight.dc.html": {
+      "h": 1480,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "A9 · Edit expense, with Add refund (light)",
+      "w": 390,
+      "x": 6580,
+      "y": 2560
+    },
+    "BillDueDay.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "A7 · Bill due date",
+      "w": 390,
+      "x": 5640,
+      "y": 0
+    },
+    "BillDueDayLight.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "A7 · Bill due date (light)",
+      "w": 390,
+      "x": 5640,
+      "y": 2560
+    },
+    "CardBillReminder.dc.html": {
+      "h": 420,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "A8 · Card bill reminder (Phase 5)",
+      "w": 390,
+      "x": 6110,
+      "y": 0
+    },
+    "CardBillReminderLight.dc.html": {
+      "h": 420,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "A8 · Card bill reminder (Phase 5) (light)",
+      "w": 390,
+      "x": 6110,
+      "y": 2560
+    },
+    "AccountDetails.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "A5 · Account details",
+      "w": 390,
+      "x": 4700,
+      "y": 0
+    },
+    "AccountDetailsLight.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "A5 · Account details (light)",
+      "w": 390,
+      "x": 4700,
+      "y": 2560
+    },
+    "AccountDetailsCard.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "A6 · Card details",
+      "w": 390,
+      "x": 5170,
+      "y": 0
+    },
+    "AccountDetailsCardLight.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "A6 · Card details (light)",
+      "w": 390,
+      "x": 5170,
+      "y": 2560
+    },
+    "EntryRefund.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "w": 390,
+      "title": "A10 · Add refund",
+      "x": 7050,
+      "y": 0
+    },
+    "EntryRefundLight.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "w": 390,
+      "title": "A10 · Add refund (light)",
+      "x": 7050,
+      "y": 2560
+    },
+    "Wallet.dc.html": {
+      "h": 880,
+      "is_interactive": true,
+      "radius": 28,
+      "w": 390,
+      "title": "A1 · Accounts and cards (wallet)",
+      "x": 2820,
+      "y": 0
+    },
+    "WalletLight.dc.html": {
+      "h": 880,
+      "is_interactive": true,
+      "radius": 28,
+      "w": 390,
+      "title": "A1 · Accounts and cards (wallet) (light)",
+      "x": 2820,
+      "y": 2560
+    },
+    "WalletCard.dc.html": {
+      "h": 880,
+      "is_interactive": true,
+      "radius": 28,
+      "w": 390,
+      "title": "A2 · A credit card opened",
+      "x": 3290,
+      "y": 0
+    },
+    "WalletCardLight.dc.html": {
+      "h": 880,
+      "is_interactive": true,
+      "radius": 28,
+      "w": 390,
+      "title": "A2 · A credit card opened (light)",
+      "x": 3290,
+      "y": 2560
+    },
+    "WalletBank.dc.html": {
+      "h": 880,
+      "is_interactive": true,
+      "radius": 28,
+      "w": 390,
+      "title": "A3 · A bank account opened",
+      "x": 3760,
+      "y": 0
+    },
+    "WalletBankLight.dc.html": {
+      "h": 880,
+      "is_interactive": true,
+      "radius": 28,
+      "w": 390,
+      "title": "A3 · A bank account opened (light)",
+      "x": 3760,
+      "y": 2560
+    },
+    "WalletCash.dc.html": {
+      "h": 880,
+      "is_interactive": true,
+      "radius": 28,
+      "w": 390,
+      "title": "A4 · Cash opened",
+      "x": 4230,
+      "y": 0
+    },
+    "WalletCashLight.dc.html": {
+      "h": 880,
+      "is_interactive": true,
+      "radius": 28,
+      "w": 390,
+      "title": "A4 · Cash opened (light)",
+      "x": 4230,
+      "y": 2560
+    },
+    "EntryRefundEdit.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "w": 390,
+      "title": "A11 · Edit refund",
+      "x": 7520,
+      "y": 0
+    },
+    "EntryRefundEditLight.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "w": 390,
+      "title": "A11 · Edit refund (light)",
+      "x": 7520,
+      "y": 2560
+    },
+    "DeleteRefunded.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "w": 390,
+      "title": "A12 · Delete an expense with refunds",
+      "x": 7990,
+      "y": 0
+    },
+    "DeleteRefundedLight.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 28,
+      "w": 390,
+      "title": "A12 · Delete an expense with refunds (light)",
+      "x": 7990,
       "y": 2560
     }
   },
@@ -722,7 +922,6 @@
     "AddExpense.dc.html",
     "AddExpenseCard.dc.html",
     "AddExpenseCash.dc.html",
-    "Accounts.dc.html",
     "AddAccount.dc.html",
     "AddAccountCard.dc.html",
     "Lending.dc.html",
@@ -755,13 +954,15 @@
     "AppLock.dc.html",
     "AppLocked.dc.html",
     "AppLockedIcons.dc.html",
+    "ExpenseEditRefund.dc.html",
+    "BillDueDay.dc.html",
+    "CardBillReminder.dc.html",
     "TodayLight.dc.html",
     "ReviewLight.dc.html",
     "ReviewDetailLight.dc.html",
     "AddExpenseLight.dc.html",
     "AddExpenseCardLight.dc.html",
     "AddExpenseCashLight.dc.html",
-    "AccountsLight.dc.html",
     "AddAccountLight.dc.html",
     "AddAccountCardLight.dc.html",
     "LendingLight.dc.html",
@@ -793,7 +994,28 @@
     "BackupForgotLight.dc.html",
     "AppLockLight.dc.html",
     "AppLockedLight.dc.html",
-    "AppLockedIconsLight.dc.html"
+    "AppLockedIconsLight.dc.html",
+    "ExpenseEditRefundLight.dc.html",
+    "BillDueDayLight.dc.html",
+    "CardBillReminderLight.dc.html",
+    "AccountDetails.dc.html",
+    "AccountDetailsLight.dc.html",
+    "AccountDetailsCard.dc.html",
+    "AccountDetailsCardLight.dc.html",
+    "EntryRefund.dc.html",
+    "EntryRefundLight.dc.html",
+    "Wallet.dc.html",
+    "WalletLight.dc.html",
+    "WalletCard.dc.html",
+    "WalletCardLight.dc.html",
+    "WalletBank.dc.html",
+    "WalletBankLight.dc.html",
+    "WalletCash.dc.html",
+    "WalletCashLight.dc.html",
+    "EntryRefundEdit.dc.html",
+    "EntryRefundEditLight.dc.html",
+    "DeleteRefunded.dc.html",
+    "DeleteRefundedLight.dc.html"
   ],
   "pages": [],
   "title": "Loopd Mockups"

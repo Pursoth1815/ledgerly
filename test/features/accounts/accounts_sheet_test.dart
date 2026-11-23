@@ -317,7 +317,7 @@ void main() {
     expect(viewed, [SystemAccounts.cash]);
   });
 
-  testWidgets('Details change the nickname, due date and default; the bank and digits stay', (tester) async {
+  testWidgets('Details change the nickname, due date and default', (tester) async {
     final ledger = await pumpAccounts(tester, seed: seedWallet);
     await openCard(tester, 'Kiwi');
     await tester.tap(find.text('Card details'));
@@ -342,6 +342,53 @@ void main() {
     final saved = (await tester.runAsync(() => ledger.watchAccounts(AccountKind.creditCard).first))!.single;
     expect((saved.nickname, saved.billDueDay, saved.isDefault, saved.last4), ('My Kiwi', 20, false, '4417'));
     expect(find.bySemanticsLabel('Bill due 20 Nov, 3 days left'), findsOneWidget, reason: 'the open card follows');
+  });
+
+  testWidgets('Details change the bank and digits; the same account keeps its expenses', (tester) async {
+    final ledger = await pumpAccounts(tester, seed: seedWallet);
+    await openCard(tester, 'Kiwi');
+    await tester.tap(find.text('Card details'));
+    await tester.pumpAndSettle();
+    expect(find.text('SMS from YESBNK ending 4417 are linked here.'), findsOneWidget);
+
+    await tester.tap(find.byKey(AccountDetailsSheet.bankRowKey));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(AccountDetailsSheet.bankSearchKey), 'feder');
+    await tester.pumpAndSettle();
+    await tester.tap(find.bySemanticsLabel('Federal Bank'));
+    await tester.pumpAndSettle();
+    expect(find.text('SMS from FEDBNK ending 4417 are linked here.'), findsOneWidget);
+
+    await tester.enterText(find.byKey(AccountDetailsSheet.last4Key), '77');
+    await tester.pumpAndSettle();
+    expect(find.text('Enter the last four digits to link SMS from FEDBNK.'), findsOneWidget);
+    expect(button(tester, 'Save changes').onTap, isNull, reason: 'the digits are not complete');
+    await tester.enterText(find.byKey(AccountDetailsSheet.last4Key), '7781');
+    await tester.pumpAndSettle();
+    expect(find.text('SMS from FEDBNK ending 7781 are linked here.'), findsOneWidget);
+    await tapText(tester, 'Save changes');
+    expect(find.text('Saved changes'), findsOneWidget);
+
+    final saved = (await tester.runAsync(() => ledger.watchAccounts(AccountKind.creditCard).first))!.single;
+    expect((saved.nickname, saved.bankName, saved.bankCode, saved.last4), ('Kiwi', 'Federal Bank', 'FEDBNK', '7781'));
+    expect(find.bySemanticsLabel('Spent in November, ₹8,000, 2 expenses, 80% of your spending'), findsOneWidget);
+  });
+
+  testWidgets('Details block digits another account of the same kind uses', (tester) async {
+    await pumpAccounts(
+      tester,
+      seed: (ledger) async {
+        await seedWallet(ledger);
+        await ledger.addAccount(kind: AccountKind.bank, name: 'Savings', bankName: 'Indian Bank', last4: '8124');
+      },
+    );
+    await openCard(tester, 'Primary');
+    await tester.tap(find.text('Account details'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(AccountDetailsSheet.last4Key), '8124');
+    await tester.pumpAndSettle();
+    expect(find.text('Savings already ends ••8124. Each bank account needs its own last four digits.'), findsOneWidget);
+    expect(button(tester, 'Save changes').onTap, isNull);
   });
 
   testWidgets('removing the open account asks once, then returns to the stack', (tester) async {

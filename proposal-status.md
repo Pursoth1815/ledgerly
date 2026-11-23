@@ -10,7 +10,7 @@ As of 2026-11-17. Stage reached: revision 3.2 of the proposal (architecture agre
 
 - Concept: capture, confirm, remember. Home screen is Today. Android-first, fully offline. Name: Loopd (chosen 16 Nov 2026).
 - Core modules: Today, Expenses, Lending, Travel tickets, Notes, Tasks, Document Vault, Digital Wellbeing, offline assistant. Notes, Tasks and Vault are core, not deferred.
-- Expenses: record only, never initiate payments. Three payment methods in the UI: UPI (then which bank account), Credit Card (then which bank's card) and Cash (from one Cash in hand balance). Cash was added on 16 Nov 2026; before that there were exactly two. Multiple accounts and cards, nicknames, last four digits, a default each, per-account and per-card tracking, manual correction.
+- Expenses: record only, never initiate payments. Three payment methods in the UI: UPI (then which bank account), Credit Card (then which bank's card) and Cash. Cash was added on 16 Nov 2026; before that there were exactly two. Multiple accounts and cards, nicknames, last four digits, a default each, per-account and per-card tracking, manual correction.
 - Lending: money lent is a transfer out, not an expense; a repayment is a transfer in, not income. No interest calculations.
 - SMS detection (Android): every detected transaction becomes a card to confirm. Nothing is saved without confirmation. Review Inbox holds unconfirmed items. Play approval is not assumed; personal/sideloaded build is primary; paste or share of message text is the alternative. No iOS SMS detection. No paid parsing services.
 - Travel: manual entry plus SMS detection; no paid booking APIs, no PNR scraping. Four reminder stages, all counted from departure (24 hours, 12 hours, 3 hours, 15 minutes); the final ticket notification shows on the lock screen 15 minutes before departure, stays until Done, and is never cleared by the clock.
@@ -36,7 +36,7 @@ As of 2026-11-17. Stage reached: revision 3.2 of the proposal (architecture agre
 
 - Capture sheet: stays on every tab (option a). Confirmed on 17 Nov 2026 after trying the Phase 1 sheet on the phone.
 - Phone: Tecno Pova Curve 5G on Android 16, HiOS 16.3 (confirmed 17 Nov 2026). The minimum stays Android 15.
-- Cash: tracked. A third method, Cash, spends from one Cash in hand balance. ATM withdrawal SMS become Review Inbox cards that move money from the bank account to Cash in hand (a transfer, not spending). "Update cash" sets Cash in hand to what you counted; a new count replaces the last one, and the difference is not spending or an adjustment (changed 18 Nov 2026). Debit-card, net-banking and auto-debit messages go to the Review Inbox under their bank account.
+- Spend only (owner, 23 Nov 2026): Loopd records spending only. It keeps no bank balances and no Cash in hand, and does not record income, own transfers, ATM withdrawals or card bill payments. Cash is a payment method for recording spends. Other bank SMS come to the Review Inbox, where you dismiss them or correct them into an expense. Debit-card, net-banking and auto-debit messages go to the Review Inbox under their bank account.
 - On-device AI text features (ML Kit GenAI): not built. Listed as removed.
 - Reminder times: travel stages follow the departure time, with no clock times and no travel setting. Only task reminders use times the owner picks: the lead, the snooze, the daily summary of overdue and today's tasks, and quiet hours. Payment cards, travel stages and other alerts follow their own rules; quiet hours apply to tasks only.
 - Time: no limit. The day estimates size the work and are not a schedule.
@@ -44,6 +44,8 @@ As of 2026-11-17. Stage reached: revision 3.2 of the proposal (architecture agre
 - SMS capture (17 Nov 2026): the SMS receiver is the fast path. Each time Loopd runs, it also reads the inbox for any messages it missed, because HiOS hides new-SMS signals from a frozen Loopd (ADR 0007).
 - Screen time (17 Nov 2026): counted from apps' foreground events, which matched Digital Wellbeing to within a few minutes for the top apps. Android's daily `totalTimeVisible` was off by up to 2.5 times, so it is not used. App names need a launcher `<queries>` entry in the manifest (Phase 8). The home screen is left out of the totals.
 - Phase 2 decisions (17 Nov 2026): debit-card, net-banking and auto-debit payments count as UPI (only UPI, Credit Card and Cash exist); refunds are reported in the purchase month, with no cash-flow switch (owner, 18 Nov 2026, replacing the switch chosen on 17 Nov); the last three backups are kept; every restore asks for the passphrase; a forgotten passphrase can be reset on this phone after a fingerprint, face or PIN check; the passphrase is at least 12 characters.
+- Phase 3 decisions (21 Nov 2026): a card bill or own transfer pairs its two SMS when they arrive within ±3 days of each other; the original SMS text is deleted once you confirm the transaction, and only the details read from it are kept.
+- Part 8 decisions (23 Nov 2026): Accounts and cards is an animated wallet (screens A1 to A12): a soft periwinkle banner, credit cards with soft circles, bank accounts with a dot grid. Each credit card has an optional bill due day, with one reminder at 9:00 am on the due date every month, built in Phase 5. Delete is a labelled red button at the end of an edit form. Email is not used, because Loopd has no internet permission.
 - Reminder alarms (17 Nov 2026): task reminders, travel stages and the final ticket use alarm-clock alarms (`setAlarmClock`). In Phase 0B they were the only kind that HiOS let through on time while Loopd was frozen; exact and normal alarms were held back until Loopd woke. Android shows the ⏰ icon and lists Loopd's next reminder as the next alarm.
 - Workflow: once coding starts, Claude does not commit, push or open a pull request until the owner has checked the changes and approved them (see CLAUDE.md).
 
@@ -54,7 +56,7 @@ Approved by the owner. Details in section 13 of the proposal, `docs/architecture
 - Feature-first folders with layers only where needed; one public file per feature; cross-module writes through core engines; imports checked in CI.
 - Riverpod 3 with code generation; go_router with a five-tab shell; no interface-plus-implementation pairs.
 - Drift on SQLCipher (the build bundled by the `sqlite3` package); one schema, a DAO per owner; one writer at a time.
-- Double-entry ledger: signed postings in paise, stored payment method, refunds linked to originals (both reporting modes), many-SMS-to-one-transaction sources, opening and verified balances, edit history and undo.
+- Double-entry ledger: signed postings in paise, stored payment method, refunds linked to originals (both reporting modes), many-SMS-to-one-transaction sources, edit history and undo.
 - Keys: Android Keystore through Tink's `AndroidKeystore` helper; `AndroidKeysetManager` is not used; Tink streaming encryption for files, with 256 KiB segments; Argon2id (Bouncy Castle) for the backup passphrase, at m = 128 MiB, t = 4, p = 1 (both chosen 17 Nov 2026 from the Phase 0B results). Pinned: tink-android 1.24.0, bcprov-jdk18on 1.86.
 - Kotlin in the app's own Android project, with one Pigeon interface; own Kotlin alarms and notifications; a headless background engine started by WorkManager.
 - Backup: an index file plus encrypted parts, resumable, read back before it counts, never overwriting the last good backup.
@@ -68,14 +70,17 @@ Approved by the owner. Details in section 13 of the proposal, `docs/architecture
 ## Open points awaiting the user
 
 1. Text tools in section 10 have no screen: commands in the capture line (default), or drop them.
-2. Architecture choices still pending (listed in section 19 of the proposal): the pairing window; weekly backup conditions; an in-app test restore (new scope); exact alarms in the personal build; keeping the original SMS text; iOS compile check frequency; a separate store application id; what to do if the Keystore proves unreliable.
-3. How the personal build is installed (found in Phase 0B, 17 Nov 2026): Google Play Protect blocks installing it from a file (Files app, browser, messaging app) because it asks for SMS permissions. In India this is Google's anti-fraud rule for sideloaded apps. Installing from the Mac over USB (`adb`) works. Options: install and update over USB, or turn Play Protect scanning off while installing.
+2. Lending without balances: a loan and a repayment still name an account or Cash. Decide in the Phase 4 design whether to keep that field.
+3. Architecture choices still pending (listed in section 19 of the proposal): weekly backup conditions; an in-app test restore (new scope); exact alarms in the personal build; iOS compile check frequency; a separate store application id; what to do if the Keystore proves unreliable.
+4. How the personal build is installed (found in Phase 0B, 17 Nov 2026): Google Play Protect blocks installing it from a file (Files app, browser, messaging app) because it asks for SMS permissions. In India this is Google's anti-fraud rule for sideloaded apps. Installing from the Mac over USB (`adb`) works. Options: install and update over USB, or turn Play Protect scanning off while installing.
 
 ## Next steps
 
-Phase 0B was tested on the owner's phone (Android 16, HiOS 16.3) on 17 Nov 2026. The results are in ADRs 0007, 0008, 0009, 0011 and 0013. It goes on one branch, `spike/phase0b`, and one pull request (owner's choice, 17 Nov 2026). Not working yet: the ticket coming back after a restart, which is revisited in Phase 5. Open point 3 (how the personal build is installed) waits on the owner. Phase 0B was approved and merged on 17 Nov 2026.
+Phase 0B was tested on the owner's phone (Android 16, HiOS 16.3) on 17 Nov 2026. The results are in ADRs 0007, 0008, 0009, 0011 and 0013. It goes on one branch, `spike/phase0b`, and one pull request (owner's choice, 17 Nov 2026). Not working yet: the ticket coming back after a restart, which is revisited in Phase 5. Open point 4 (how the personal build is installed) waits on the owner. Phase 0B was approved and merged on 17 Nov 2026.
 
 Phase 1 is built in three parts, each on its own branch and pull request, merged one at a time (owner's choice, 17 Nov 2026): design tokens and themes; shared components with a gallery; then the five-tab shell, Today, More and the capture sheet shell.
 
 Phase 1 was finished on 17 Nov 2026 (PRs #26, #27, #28). Phase 2 is built in seven parts, each on its own branch and pull request, merged one at a time: the ledger engine; accounts and cards with Cash in hand; the expense form with editing and undo; categories; the Money tab with totals and refunds (its screen is designed on the canvas first); encrypted backup and restore; app lock and app-switcher privacy.
+
+Parts 1 to 7 were merged by 21 Nov 2026 (PRs #29 to #38). Before Phase 2 closes, an eighth part builds what is left, to the approved mockups (owner, 23 Nov 2026): Today's Spending and Backup cards; the Accounts and cards wallet with bill due dates; adding and editing refunds; and removing Cash in hand and Update cash.
 

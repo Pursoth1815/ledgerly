@@ -16,9 +16,16 @@ The files in this folder are the source of that canvas, kept in git so every rev
 | 3 | Add expense, UPI | 4 | Switch method, account and category |
 | 3b | Add expense, Credit Card | 4 | Same form with Credit Card chosen |
 | 3c | Add expense, Cash | 4 | Same form with Cash chosen: Cash in hand and what is left after this expense |
-| 4 | Accounts and cards | 4 | Cash in hand at the top, with Update cash |
 | 4b | Add bank account (sheet, searching "hd") | 4 | Type to search banks, pick one, nickname, last four digits, default; live preview |
-| 4c | Add credit card (sheet, bank chosen) | 4 | Same sheet for a card |
+| 4c | Add credit card (sheet, bank chosen) | 4 | Same sheet for a card, with Bill due date |
+| A1 | Accounts and cards (wallet) | 4 | Tap a card; back returns it to the stack |
+| A2 to A4 | A credit card, bank account or Cash opened | 4 | Spending, bill due, View expenses, Details |
+| A5, A6 | Account and card details | 4 | Nickname, due date, default, Remove |
+| A7 | Bill due date (sheet) | 4 | Pick a day from 1 to 31 |
+| A8 | Card bill reminder (notification, Phase 5) | 4 | |
+| A9 | Edit expense | 4 | Add refund and Delete expense |
+| A10, A11 | Add and edit a refund | 4 | Warns above the amount left |
+| A12 | Delete an expense with refunds | 4 | Keep or Delete all |
 | 5 | Lending: person page | 6 | |
 | 5a | Money tab: Expenses | 3, 4 | Day / Week / Month, filter by account or card, show all |
 | 5b | Show all categories (sheet) | 4 | View and account or card set in Tweaks |
@@ -218,6 +225,23 @@ Built from the mockups, with these additions for a phase where no features exist
 - **Capture sheet:** the input, the five shortcuts and the three questions are in place. Shortcuts and questions say which phase builds them. Typed text is not understood until the offline assistant (Phase 9).
 - **Icons:** Material icons stand in for the mockups' line icons, except the tab bar, which is drawn from the mockup paths.
 
+
+## Review round 10: spend only and the Accounts wallet (23 Nov 2026)
+
+Designed for Phase 2, part 8 (screens A1 to A12). This replaces the Accounts and cards sheet (screen 4) and the balance, income, transfer and card bill screens tried during this review.
+
+- **Spend only** (owner): Loopd records spending. It keeps no bank balances and no Cash in hand, and has no income, transfer, card bill or Update cash screens, because a bank balance typed by hand would not stay in step with the real bank.
+- **Wallet (A1):** credit cards, bank accounts and Cash in one stack, each showing what it spent this month. The cards deal in one by one when the sheet opens.
+- **Banner:** the T1 design in soft periwinkle (`#E3E6FF`), with "Accounts & cards", the month's total and three pastel cards that fan open.
+- **Card looks:** a credit card has a gold chip, tap-to-pay waves and soft circles. A bank account has a bank icon and a fading dot grid. Cash is sky blue with a dashed border.
+- **Opening a card (A2 to A4):** the card moves to the top while the others slide down and fade away, leaving none below it. Then the spending tile with its ring, the bill due tile and the actions rise in. Back plays this in reverse: the content fades, the card comes down, and the others return to their places.
+- **Actions:** View expenses opens the Show all expenses sheet (5c) for that account. Details opens A5 or A6. Cash has no details.
+- **Details (A5, A6):** nickname, bank, last four digits, bill due date for a card, default and Remove. The Bank row opens the same searchable list as Add account. Digits already used by another account of the same kind are blocked. Past expenses stay on the account and show the new details (owner, 24 Nov 2026).
+- **Bill due date (A7, A8):** an optional day from 1 to 31 on each card; a shorter month uses its last day. The reminder comes at 9:00 am on the due date every month and is built in Phase 5.
+- **Refunds (A9 to A12):** added from Edit expense, or opened from a green refund in the Money list. A refund lowers the month of its purchase. Deleting an expense that has refunds lists them and asks Keep or Delete all, and Undo brings them all back.
+- **Delete** (owner): no icon in the header of an edit page. A red outlined button at the end of the form says what it deletes.
+- **Other bank SMS** (owner): ATM, transfer, salary and card bill messages come to the Review Inbox, to dismiss or correct. The Review mockup's ATM card still says "Moves to Cash in hand" and is redrawn with the Phase 3 design.
+- **Email is not used.** Reading mail needs the internet, and Loopd has no internet permission.
 
 ## Review round 9: app lock (21 Nov 2026)
 

@@ -73,6 +73,8 @@ These are out of scope and must not come back under another name:
 - "Choose" pickers and a disabled Looks Good on unclear review cards
 - On-device AI text features (ML Kit GenAI proofreading, rewriting, summarising), declined on 16 Nov 2026
 - Fixed clock times for travel reminders, and a travel reminder time setting (stages follow the departure time)
+- Bank and card balances, opening and verified balances, and Cash in hand with Update cash (spend only, 23 Nov 2026)
+- Income, own-transfer, ATM and card bill entries (spend only, 23 Nov 2026)
 
 ## Optional enhancements that are in the roadmap
 

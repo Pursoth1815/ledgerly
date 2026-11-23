@@ -235,6 +235,60 @@ void main() {
       expect(cardDue(5).nextBillDue(DateTime(2026, 12, 20)), DateTime(2027, 1, 5));
     });
 
+    test('Account details change the bank and digits; digits stay unique within a kind', () async {
+      final primary = await ledger.addAccount(
+        kind: AccountKind.bank,
+        name: 'Primary',
+        bankName: 'Federal Bank',
+        bankCode: 'FEDBNK',
+        last4: '2210',
+      );
+      await bank('Savings', '8124');
+      final card = await ledger.addAccount(kind: AccountKind.creditCard, name: 'Kiwi', last4: '4417');
+
+      await ledger.saveAccountDetails(
+        primary,
+        nickname: 'Primary',
+        isDefault: false,
+        bank: (name: ' Indian Bank ', code: 'INDBNK'),
+        last4: '3301',
+      );
+      var saved = (await ledger.getAccount(primary))!;
+      expect((saved.bankName, saved.bankCode, saved.last4), ('Indian Bank', 'INDBNK', '3301'));
+
+      await ledger.saveAccountDetails(primary, nickname: 'Main', isDefault: false);
+      saved = (await ledger.getAccount(primary))!;
+      expect((saved.nickname, saved.bankName, saved.bankCode, saved.last4), ('Main', 'Indian Bank', 'INDBNK', '3301'));
+
+      await ledger.saveAccountDetails(
+        primary,
+        nickname: 'Main',
+        isDefault: false,
+        bank: (name: 'My Local Bank', code: null),
+      );
+      saved = (await ledger.getAccount(primary))!;
+      expect((saved.bankName, saved.bankCode), ('My Local Bank', null), reason: 'a typed bank has no SMS code');
+
+      await ledger.saveAccountDetails(primary, nickname: 'Main', isDefault: false, last4: '3301');
+      await expectLater(
+        ledger.saveAccountDetails(primary, nickname: 'Main', isDefault: false, last4: '8124'),
+        fails(LedgerFailure.duplicateAccount),
+      );
+      await ledger.saveAccountDetails(card, nickname: 'Kiwi', isDefault: false, last4: '8124');
+      expect((await ledger.getAccount(card))!.last4, '8124', reason: 'a card and a bank account may share digits');
+      for (final wrong in ['12', '12a4', '12345']) {
+        await expectLater(
+          ledger.saveAccountDetails(primary, nickname: 'Main', isDefault: false, last4: wrong),
+          fails(LedgerFailure.invalidAccount),
+        );
+      }
+      await expectLater(
+        ledger.saveAccountDetails(primary, nickname: 'Main', isDefault: false, bank: (name: '  ', code: null)),
+        fails(LedgerFailure.invalidAccount),
+      );
+      expect((await ledger.getAccount(primary))!.last4, '3301');
+    });
+
     test('Account details save the nickname, default and due day; only a card has one, from 1 to 31', () async {
       final kiwi = await ledger.addAccount(kind: AccountKind.creditCard, name: 'Kiwi', last4: '4417', billDueDay: 5);
       final other = await ledger.addAccount(

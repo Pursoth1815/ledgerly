@@ -150,13 +150,17 @@ class LedgerEngine {
   }
 
   /// Saves what Account details can change: the nickname, whether it is the
-  /// default of its kind, and a credit card's bill due day. The bank and the
-  /// last four digits stay, because they link each SMS.
+  /// default of its kind, a credit card's bill due day, and, when given, the
+  /// bank and the last four digits. Past expenses stay on this account, so
+  /// they show the new name and digits. Two accounts of one kind cannot share
+  /// the same digits, because the digits link each SMS.
   Future<void> saveAccountDetails(
     String accountId, {
     required String nickname,
     required bool isDefault,
     int? billDueDay,
+    ({String name, String? code})? bank,
+    String? last4,
   }) => _db.transaction(() async {
     final account = await _dao.getAccount(accountId);
     if (account == null || account.removedAt != null) throw const LedgerException(LedgerFailure.notFound);
@@ -167,9 +171,25 @@ class LedgerEngine {
     final name = nickname.trim();
     if (name.isEmpty) throw const LedgerException(LedgerFailure.invalidAccount);
     _checkBillDueDay(kind, billDueDay);
+    final bankName = bank?.name.trim();
+    if (bankName != null && bankName.isEmpty) throw const LedgerException(LedgerFailure.invalidAccount);
+    if (last4 != null) {
+      if (!RegExp(r'^\d{4}$').hasMatch(last4)) throw const LedgerException(LedgerFailure.invalidAccount);
+      final others = await _dao.activeAccounts(kind);
+      if (others.any((a) => a.id != accountId && a.last4 == last4)) {
+        throw const LedgerException(LedgerFailure.duplicateAccount);
+      }
+    }
     if (isDefault) await _clearDefault(kind);
     await (_db.update(_db.accounts)..where((a) => a.id.equals(accountId))).write(
-      AccountsCompanion(name: Value(name), isDefault: Value(isDefault), billDueDay: Value(billDueDay)),
+      AccountsCompanion(
+        name: Value(name),
+        isDefault: Value(isDefault),
+        billDueDay: Value(billDueDay),
+        bankName: bank == null ? const Value.absent() : Value(bankName),
+        bankCode: bank == null ? const Value.absent() : Value(bank.code),
+        last4: last4 == null ? const Value.absent() : Value(last4),
+      ),
     );
   });
 

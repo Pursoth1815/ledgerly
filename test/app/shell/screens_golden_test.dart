@@ -43,7 +43,7 @@ void main() {
     final name = brightness.name;
 
     testWidgets('Today, empty, $name', (tester) async {
-      await pumpScreen(tester, TodayScreen(clock: () => DateTime(2026, 11, 15)), brightness);
+      await pumpScreen(tester, TodayScreen(onBackUp: (_) async {}, clock: () => DateTime(2026, 11, 15)), brightness);
       await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/today_$name.png'));
     });
 

@@ -8,7 +8,9 @@ import '../../../design_system/loopd_colors.dart';
 import '../../../design_system/loopd_spacing.dart';
 import '../../../design_system/loopd_typography.dart';
 import '../../accounts/accounts.dart';
+import 'expense_sheet.dart';
 import 'providers/expense_providers.dart';
+import 'refund_sheet.dart';
 import 'spending_parts.dart';
 import 'spending_period.dart';
 
@@ -31,6 +33,35 @@ Future<void> showSpendingSheet(
   tall: true,
   builder: (_) => SpendingSheet(view: view, period: period, sourceId: sourceId, onEdit: onEdit, clock: clock),
 );
+
+/// Opens one account's expenses for this month, from the wallet.
+Future<void> showAccountExpensesSheet(
+  BuildContext context, {
+  required String accountId,
+  AddAccountAction? onAddAccount,
+  DateTime Function() clock = DateTime.now,
+}) => showSpendingSheet(
+  context,
+  view: SpendingView.expenses,
+  period: SpendingPeriod.current(PeriodKind.month, clock()),
+  sourceId: accountId,
+  onEdit: (entry) => openSpendingEntry(context, entry, onAddAccount: onAddAccount, clock: clock),
+  clock: clock,
+);
+
+/// A purchase opens Edit expense; a refund opens its refund form.
+void openSpendingEntry(
+  BuildContext context,
+  SpendingEntry entry, {
+  AddAccountAction? onAddAccount,
+  DateTime Function() clock = DateTime.now,
+}) {
+  if (entry.isRefund) {
+    showRefundSheet(context, expenseId: entry.originalId!, refundId: entry.id, clock: clock);
+  } else {
+    showExpenseSheet(context, expenseId: entry.id, onAddAccount: onAddAccount, clock: clock);
+  }
+}
 
 class SpendingSheet extends ConsumerWidget {
   const SpendingSheet({

@@ -124,6 +124,78 @@ final class CategorySpendingFamily extends $Family with $FunctionalFamilyOverrid
   String toString() => r'categorySpendingProvider';
 }
 
+/// What has come back for one purchase, for Edit expense.
+
+@ProviderFor(expenseRefunded)
+final expenseRefundedProvider = ExpenseRefundedFamily._();
+
+/// What has come back for one purchase, for Edit expense.
+
+final class ExpenseRefundedProvider extends $FunctionalProvider<AsyncValue<int>, int, Stream<int>>
+    with $FutureModifier<int>, $StreamProvider<int> {
+  /// What has come back for one purchase, for Edit expense.
+  ExpenseRefundedProvider._({required ExpenseRefundedFamily super.from, required String super.argument})
+    : super(
+        retry: null,
+        name: r'expenseRefundedProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$expenseRefundedHash();
+
+  @override
+  String toString() {
+    return r'expenseRefundedProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<int> $createElement($ProviderPointer pointer) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<int> create(Ref ref) {
+    final argument = this.argument as String;
+    return expenseRefunded(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ExpenseRefundedProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$expenseRefundedHash() => r'7a9f4caaf50065074e1c985b1dfa2c856beff149';
+
+/// What has come back for one purchase, for Edit expense.
+
+final class ExpenseRefundedFamily extends $Family with $FunctionalFamilyOverride<Stream<int>, String> {
+  ExpenseRefundedFamily._()
+    : super(
+        retry: null,
+        name: r'expenseRefundedProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// What has come back for one purchase, for Edit expense.
+
+  ExpenseRefundedProvider call(String expenseId) => ExpenseRefundedProvider._(argument: expenseId, from: this);
+
+  @override
+  String toString() => r'expenseRefundedProvider';
+}
+
 /// Spending from the local day [from] up to [to] (end excluded), for the
 /// Money tab: purchases net of their refunds, and the refunds that came back.
 

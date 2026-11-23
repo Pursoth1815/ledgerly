@@ -17,6 +17,10 @@ Stream<List<LedgerCategory>> expenseCategories(Ref ref) => ref.watch(ledgerEngin
 Stream<Map<String, int>> categorySpending(Ref ref, DateTime month) =>
     ref.watch(ledgerEngineProvider).watchCategorySpending(month);
 
+/// What has come back for one purchase, for Edit expense.
+@riverpod
+Stream<int> expenseRefunded(Ref ref, String expenseId) => ref.watch(ledgerEngineProvider).watchRefundedPaise(expenseId);
+
 /// Spending from the local day [from] up to [to] (end excluded), for the
 /// Money tab: purchases net of their refunds, and the refunds that came back.
 @riverpod

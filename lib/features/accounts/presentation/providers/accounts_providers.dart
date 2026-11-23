@@ -15,12 +15,8 @@ part 'accounts_providers.g.dart';
 Stream<List<LedgerAccount>> accountsOfKind(Ref ref, AccountKind kind) =>
     ref.watch(ledgerEngineProvider).watchAccounts(kind);
 
-/// What each account, card and Cash in hand spent in [month]'s calendar
-/// month: account id → paise.
+/// This calendar month's spending, for the wallet's totals on each card.
 @riverpod
-Stream<Map<String, int>> monthSpending(Ref ref, DateTime month) =>
-    ref.watch(ledgerEngineProvider).watchMonthSpending(month);
-
-/// Cash in hand: the balance, the last count and the last money moved in.
-@riverpod
-Stream<CashInHand> cashInHand(Ref ref) => ref.watch(ledgerEngineProvider).watchCashInHand();
+Stream<SpendingReport> walletSpending(Ref ref, DateTime month) => ref
+    .watch(ledgerEngineProvider)
+    .watchSpending(DateTime(month.year, month.month), DateTime(month.year, month.month + 1));

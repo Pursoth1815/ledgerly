@@ -49,7 +49,7 @@ enum _Segment { expenses, lending }
 class _MoneyScreenState extends ConsumerState<MoneyScreen> {
   late SpendingPeriod _period = SpendingPeriod.current(PeriodKind.month, widget.clock());
 
-  /// The account, card or Cash in hand the tab is filtered to.
+  /// The account, card or Cash the tab is filtered to.
   String? _sourceId;
 
   /// The last report shown. Each period is its own query, so switching
@@ -57,8 +57,7 @@ class _MoneyScreenState extends ConsumerState<MoneyScreen> {
   /// keeps the screen from blanking (owner, 18 Nov 2026).
   SpendingReport? _shown;
 
-  void _edit(SpendingEntry e) =>
-      showExpenseSheet(context, expenseId: e.id, onAddAccount: widget.onAddAccount, clock: widget.clock);
+  void _edit(SpendingEntry e) => openSpendingEntry(context, e, onAddAccount: widget.onAddAccount, clock: widget.clock);
 
   void _showAll(SpendingView view) =>
       showSpendingSheet(context, view: view, period: _period, sourceId: _sourceId, onEdit: _edit, clock: widget.clock);

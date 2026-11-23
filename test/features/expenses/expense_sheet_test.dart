@@ -153,9 +153,9 @@ void main() {
     expect(find.text('Primary'), findsNothing);
 
     await tapText(tester, 'Cash');
-    expect(find.text('₹2,350 now · ₹2,230 after this'), findsOneWidget);
+    expect(find.text('Paid in cash'), findsOneWidget);
+    expect(find.textContaining('after this'), findsNothing, reason: 'Loopd keeps no cash balance');
     await typeAmount(tester, '3000');
-    expect(find.text('₹2,350 now · more than you have · update your cash'), findsOneWidget);
 
     await tapText(tester, 'Credit Card');
     await tapText(tester, 'Shopping');
@@ -234,6 +234,12 @@ void main() {
 
     testWidgets('Delete removes it, and Undo brings it back', (tester) async {
       final ledger = await pumpForm(tester, seed: seedOne, expenseId: () => id);
+      await tester.dragUntilVisible(
+        find.bySemanticsLabel('Delete expense'),
+        find.byKey(ExpenseSheet.formKey),
+        const Offset(0, -250),
+      );
+      await tester.pumpAndSettle();
       await tester.tap(find.bySemanticsLabel('Delete expense'));
       await tester.pumpAndSettle();
       expect(find.text('Deleted ₹250'), findsOneWidget);

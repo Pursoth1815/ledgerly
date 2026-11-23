@@ -14,6 +14,9 @@ enum LoopdButtonStyle {
 
   /// A hairline outline, such as Review.
   outlined,
+
+  /// A red outline, such as Delete at the end of an edit form.
+  danger,
 }
 
 /// A 48 px pill button (mockups: Review and Looks Good).
@@ -48,6 +51,7 @@ class LoopdButton extends StatelessWidget {
       LoopdButtonStyle.accent => (accent ?? colors.money, colors.onAccent, null as Color?),
       LoopdButtonStyle.solid => (colors.buttonFill, colors.onButton, null as Color?),
       LoopdButtonStyle.outlined => (null as Color?, colors.textPrimary, colors.line),
+      LoopdButtonStyle.danger => (null as Color?, colors.danger, colors.danger),
     };
     // A disabled button keeps its own colours, faded (owner's choice, 17 Nov 2026).
     final (fill, foreground, borderColor) = (ownFill, ownForeground, ownBorder);

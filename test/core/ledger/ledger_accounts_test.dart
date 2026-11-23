@@ -215,4 +215,66 @@ void main() {
       expect(summary.lastInAt, atm);
     });
   });
+
+  group('card bill due date (part 8b)', () {
+    LedgerAccount cardDue(int? day) =>
+        LedgerAccount(id: 'c', kind: AccountKind.creditCard, nickname: 'Kiwi', isDefault: false, billDueDay: day);
+
+    test('the next due date is this month, today included, or next month', () {
+      final mid = DateTime(2026, 11, 15, 10);
+      expect(cardDue(null).nextBillDue(mid), isNull);
+      expect(cardDue(20).nextBillDue(mid), DateTime(2026, 11, 20));
+      expect(cardDue(15).nextBillDue(mid), DateTime(2026, 11, 15), reason: 'due today is still due');
+      expect(cardDue(5).nextBillDue(mid), DateTime(2026, 12, 5));
+    });
+
+    test('a shorter month uses its last day, and December rolls into January', () {
+      expect(cardDue(31).nextBillDue(DateTime(2026, 11, 15)), DateTime(2026, 11, 30));
+      expect(cardDue(31).nextBillDue(DateTime(2027, 2, 10)), DateTime(2027, 2, 28));
+      expect(cardDue(30).nextBillDue(DateTime(2028, 2, 29)), DateTime(2028, 2, 29), reason: 'a leap year');
+      expect(cardDue(5).nextBillDue(DateTime(2026, 12, 20)), DateTime(2027, 1, 5));
+    });
+
+    test('Account details save the nickname, default and due day; only a card has one, from 1 to 31', () async {
+      final kiwi = await ledger.addAccount(kind: AccountKind.creditCard, name: 'Kiwi', last4: '4417', billDueDay: 5);
+      final other = await ledger.addAccount(
+        kind: AccountKind.creditCard,
+        name: 'Other',
+        last4: '7781',
+        makeDefault: true,
+      );
+      expect((await ledger.getAccount(kiwi))!.billDueDay, 5);
+
+      await ledger.saveAccountDetails(kiwi, nickname: '  My Kiwi ', isDefault: true, billDueDay: 31);
+      final saved = (await ledger.getAccount(kiwi))!;
+      expect((saved.nickname, saved.isDefault, saved.billDueDay, saved.last4), ('My Kiwi', true, 31, '4417'));
+      expect((await ledger.getAccount(other))!.isDefault, isFalse, reason: 'one default of each kind');
+
+      await ledger.saveAccountDetails(kiwi, nickname: 'My Kiwi', isDefault: false);
+      final cleared = (await ledger.getAccount(kiwi))!;
+      expect((cleared.isDefault, cleared.billDueDay), (false, null));
+
+      await expectLater(
+        ledger.saveAccountDetails(kiwi, nickname: 'Kiwi', isDefault: false, billDueDay: 0),
+        fails(LedgerFailure.invalidAccount),
+      );
+      await expectLater(
+        ledger.saveAccountDetails(kiwi, nickname: 'Kiwi', isDefault: false, billDueDay: 32),
+        fails(LedgerFailure.invalidAccount),
+      );
+      await expectLater(
+        ledger.saveAccountDetails(kiwi, nickname: '   ', isDefault: false),
+        fails(LedgerFailure.invalidAccount),
+      );
+      final primary = await bank('Primary', '2210');
+      await expectLater(
+        ledger.saveAccountDetails(primary, nickname: 'Primary', isDefault: false, billDueDay: 5),
+        fails(LedgerFailure.invalidAccount),
+      );
+      await expectLater(
+        ledger.addAccount(kind: AccountKind.bank, name: 'Savings', last4: '8124', billDueDay: 5),
+        fails(LedgerFailure.invalidAccount),
+      );
+    });
+  });
 }

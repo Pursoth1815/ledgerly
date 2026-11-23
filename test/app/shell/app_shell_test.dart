@@ -111,7 +111,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(tappableButton(), findsNothing, reason: 'Accounts and cards is a sheet');
 
-      for (final opener in ['+ Add bank account', 'Update cash']) {
+      for (final opener in ['+ Add account or card']) {
         await tester.ensureVisible(find.text(opener));
         await tester.pumpAndSettle();
         await tester.tap(find.text(opener));
@@ -121,7 +121,7 @@ void main() {
         await tester.pumpAndSettle();
         expect(tappableButton(), findsNothing, reason: '$opener closed, Accounts and cards still open');
       }
-      await tester.tap(find.bySemanticsLabel('Close').last);
+      await tester.state<NavigatorState>(find.byType(Navigator).first).maybePop();
       await tester.pumpAndSettle();
       expect(tappableButton(), findsOneWidget, reason: 'every sheet closed');
     });

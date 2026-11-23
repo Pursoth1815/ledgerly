@@ -561,6 +561,16 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _billDueDayMeta = const VerificationMeta('billDueDay');
+  @override
+  late final GeneratedColumn<int> billDueDay = GeneratedColumn<int>(
+    'bill_due_day',
+    aliasedName,
+    true,
+    check: () => ComparableExpr(billDueDay).isBetweenValues(1, 31),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _isDefaultMeta = const VerificationMeta('isDefault');
   @override
   late final GeneratedColumn<bool> isDefault = GeneratedColumn<bool>(
@@ -591,7 +601,18 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
     requiredDuringInsert: false,
   );
   @override
-  List<GeneratedColumn> get $columns => [id, kind, name, bankName, bankCode, last4, isDefault, createdAt, removedAt];
+  List<GeneratedColumn> get $columns => [
+    id,
+    kind,
+    name,
+    bankName,
+    bankCode,
+    last4,
+    billDueDay,
+    isDefault,
+    createdAt,
+    removedAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -625,6 +646,9 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
     if (data.containsKey('last4')) {
       context.handle(_last4Meta, last4.isAcceptableOrUnknown(data['last4']!, _last4Meta));
     }
+    if (data.containsKey('bill_due_day')) {
+      context.handle(_billDueDayMeta, billDueDay.isAcceptableOrUnknown(data['bill_due_day']!, _billDueDayMeta));
+    }
     if (data.containsKey('is_default')) {
       context.handle(_isDefaultMeta, isDefault.isAcceptableOrUnknown(data['is_default']!, _isDefaultMeta));
     }
@@ -651,6 +675,7 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
       bankName: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}bank_name']),
       bankCode: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}bank_code']),
       last4: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}last4']),
+      billDueDay: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}bill_due_day']),
       isDefault: attachedDatabase.typeMapping.read(DriftSqlType.bool, data['${effectivePrefix}is_default'])!,
       createdAt: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}created_at'])!,
       removedAt: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}removed_at']),
@@ -687,6 +712,10 @@ class Account extends DataClass implements Insertable<Account> {
 
   /// Last four digits of the account or card number.
   final String? last4;
+
+  /// The day of the month a credit card's bill is due, 1 to 31; a shorter
+  /// month uses its last day (owner, 23 Nov 2026). Null when not set.
+  final int? billDueDay;
   final bool isDefault;
   final int createdAt;
 
@@ -699,6 +728,7 @@ class Account extends DataClass implements Insertable<Account> {
     this.bankName,
     this.bankCode,
     this.last4,
+    this.billDueDay,
     required this.isDefault,
     required this.createdAt,
     this.removedAt,
@@ -718,6 +748,9 @@ class Account extends DataClass implements Insertable<Account> {
     if (!nullToAbsent || last4 != null) {
       map['last4'] = Variable<String>(last4);
     }
+    if (!nullToAbsent || billDueDay != null) {
+      map['bill_due_day'] = Variable<int>(billDueDay);
+    }
     map['is_default'] = Variable<bool>(isDefault);
     map['created_at'] = Variable<int>(createdAt);
     if (!nullToAbsent || removedAt != null) {
@@ -734,6 +767,7 @@ class Account extends DataClass implements Insertable<Account> {
       bankName: bankName == null && nullToAbsent ? const Value.absent() : Value(bankName),
       bankCode: bankCode == null && nullToAbsent ? const Value.absent() : Value(bankCode),
       last4: last4 == null && nullToAbsent ? const Value.absent() : Value(last4),
+      billDueDay: billDueDay == null && nullToAbsent ? const Value.absent() : Value(billDueDay),
       isDefault: Value(isDefault),
       createdAt: Value(createdAt),
       removedAt: removedAt == null && nullToAbsent ? const Value.absent() : Value(removedAt),
@@ -749,6 +783,7 @@ class Account extends DataClass implements Insertable<Account> {
       bankName: serializer.fromJson<String?>(json['bankName']),
       bankCode: serializer.fromJson<String?>(json['bankCode']),
       last4: serializer.fromJson<String?>(json['last4']),
+      billDueDay: serializer.fromJson<int?>(json['billDueDay']),
       isDefault: serializer.fromJson<bool>(json['isDefault']),
       createdAt: serializer.fromJson<int>(json['createdAt']),
       removedAt: serializer.fromJson<int?>(json['removedAt']),
@@ -764,6 +799,7 @@ class Account extends DataClass implements Insertable<Account> {
       'bankName': serializer.toJson<String?>(bankName),
       'bankCode': serializer.toJson<String?>(bankCode),
       'last4': serializer.toJson<String?>(last4),
+      'billDueDay': serializer.toJson<int?>(billDueDay),
       'isDefault': serializer.toJson<bool>(isDefault),
       'createdAt': serializer.toJson<int>(createdAt),
       'removedAt': serializer.toJson<int?>(removedAt),
@@ -777,6 +813,7 @@ class Account extends DataClass implements Insertable<Account> {
     Value<String?> bankName = const Value.absent(),
     Value<String?> bankCode = const Value.absent(),
     Value<String?> last4 = const Value.absent(),
+    Value<int?> billDueDay = const Value.absent(),
     bool? isDefault,
     int? createdAt,
     Value<int?> removedAt = const Value.absent(),
@@ -787,6 +824,7 @@ class Account extends DataClass implements Insertable<Account> {
     bankName: bankName.present ? bankName.value : this.bankName,
     bankCode: bankCode.present ? bankCode.value : this.bankCode,
     last4: last4.present ? last4.value : this.last4,
+    billDueDay: billDueDay.present ? billDueDay.value : this.billDueDay,
     isDefault: isDefault ?? this.isDefault,
     createdAt: createdAt ?? this.createdAt,
     removedAt: removedAt.present ? removedAt.value : this.removedAt,
@@ -799,6 +837,7 @@ class Account extends DataClass implements Insertable<Account> {
       bankName: data.bankName.present ? data.bankName.value : this.bankName,
       bankCode: data.bankCode.present ? data.bankCode.value : this.bankCode,
       last4: data.last4.present ? data.last4.value : this.last4,
+      billDueDay: data.billDueDay.present ? data.billDueDay.value : this.billDueDay,
       isDefault: data.isDefault.present ? data.isDefault.value : this.isDefault,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       removedAt: data.removedAt.present ? data.removedAt.value : this.removedAt,
@@ -814,6 +853,7 @@ class Account extends DataClass implements Insertable<Account> {
           ..write('bankName: $bankName, ')
           ..write('bankCode: $bankCode, ')
           ..write('last4: $last4, ')
+          ..write('billDueDay: $billDueDay, ')
           ..write('isDefault: $isDefault, ')
           ..write('createdAt: $createdAt, ')
           ..write('removedAt: $removedAt')
@@ -822,7 +862,8 @@ class Account extends DataClass implements Insertable<Account> {
   }
 
   @override
-  int get hashCode => Object.hash(id, kind, name, bankName, bankCode, last4, isDefault, createdAt, removedAt);
+  int get hashCode =>
+      Object.hash(id, kind, name, bankName, bankCode, last4, billDueDay, isDefault, createdAt, removedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -833,6 +874,7 @@ class Account extends DataClass implements Insertable<Account> {
           other.bankName == this.bankName &&
           other.bankCode == this.bankCode &&
           other.last4 == this.last4 &&
+          other.billDueDay == this.billDueDay &&
           other.isDefault == this.isDefault &&
           other.createdAt == this.createdAt &&
           other.removedAt == this.removedAt);
@@ -845,6 +887,7 @@ class AccountsCompanion extends UpdateCompanion<Account> {
   final Value<String?> bankName;
   final Value<String?> bankCode;
   final Value<String?> last4;
+  final Value<int?> billDueDay;
   final Value<bool> isDefault;
   final Value<int> createdAt;
   final Value<int?> removedAt;
@@ -856,6 +899,7 @@ class AccountsCompanion extends UpdateCompanion<Account> {
     this.bankName = const Value.absent(),
     this.bankCode = const Value.absent(),
     this.last4 = const Value.absent(),
+    this.billDueDay = const Value.absent(),
     this.isDefault = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.removedAt = const Value.absent(),
@@ -868,6 +912,7 @@ class AccountsCompanion extends UpdateCompanion<Account> {
     this.bankName = const Value.absent(),
     this.bankCode = const Value.absent(),
     this.last4 = const Value.absent(),
+    this.billDueDay = const Value.absent(),
     this.isDefault = const Value.absent(),
     required int createdAt,
     this.removedAt = const Value.absent(),
@@ -883,6 +928,7 @@ class AccountsCompanion extends UpdateCompanion<Account> {
     Expression<String>? bankName,
     Expression<String>? bankCode,
     Expression<String>? last4,
+    Expression<int>? billDueDay,
     Expression<bool>? isDefault,
     Expression<int>? createdAt,
     Expression<int>? removedAt,
@@ -895,6 +941,7 @@ class AccountsCompanion extends UpdateCompanion<Account> {
       if (bankName != null) 'bank_name': bankName,
       if (bankCode != null) 'bank_code': bankCode,
       if (last4 != null) 'last4': last4,
+      if (billDueDay != null) 'bill_due_day': billDueDay,
       if (isDefault != null) 'is_default': isDefault,
       if (createdAt != null) 'created_at': createdAt,
       if (removedAt != null) 'removed_at': removedAt,
@@ -909,6 +956,7 @@ class AccountsCompanion extends UpdateCompanion<Account> {
     Value<String?>? bankName,
     Value<String?>? bankCode,
     Value<String?>? last4,
+    Value<int?>? billDueDay,
     Value<bool>? isDefault,
     Value<int>? createdAt,
     Value<int?>? removedAt,
@@ -921,6 +969,7 @@ class AccountsCompanion extends UpdateCompanion<Account> {
       bankName: bankName ?? this.bankName,
       bankCode: bankCode ?? this.bankCode,
       last4: last4 ?? this.last4,
+      billDueDay: billDueDay ?? this.billDueDay,
       isDefault: isDefault ?? this.isDefault,
       createdAt: createdAt ?? this.createdAt,
       removedAt: removedAt ?? this.removedAt,
@@ -949,6 +998,9 @@ class AccountsCompanion extends UpdateCompanion<Account> {
     if (last4.present) {
       map['last4'] = Variable<String>(last4.value);
     }
+    if (billDueDay.present) {
+      map['bill_due_day'] = Variable<int>(billDueDay.value);
+    }
     if (isDefault.present) {
       map['is_default'] = Variable<bool>(isDefault.value);
     }
@@ -973,6 +1025,7 @@ class AccountsCompanion extends UpdateCompanion<Account> {
           ..write('bankName: $bankName, ')
           ..write('bankCode: $bankCode, ')
           ..write('last4: $last4, ')
+          ..write('billDueDay: $billDueDay, ')
           ..write('isDefault: $isDefault, ')
           ..write('createdAt: $createdAt, ')
           ..write('removedAt: $removedAt, ')
@@ -4084,6 +4137,7 @@ typedef $$AccountsTableCreateCompanionBuilder = AccountsCompanion Function({
   Value<String?> bankName,
   Value<String?> bankCode,
   Value<String?> last4,
+  Value<int?> billDueDay,
   Value<bool> isDefault,
   required int createdAt,
   Value<int?> removedAt,
@@ -4096,6 +4150,7 @@ typedef $$AccountsTableUpdateCompanionBuilder = AccountsCompanion Function({
   Value<String?> bankName,
   Value<String?> bankCode,
   Value<String?> last4,
+  Value<int?> billDueDay,
   Value<bool> isDefault,
   Value<int> createdAt,
   Value<int?> removedAt,
@@ -4168,6 +4223,9 @@ class $$AccountsTableFilterComposer extends Composer<_$AppDatabase, $AccountsTab
 
   ColumnFilters<String> get last4 =>
       $composableBuilder(column: $table.last4, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get billDueDay =>
+      $composableBuilder(column: $table.billDueDay, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<bool> get isDefault =>
       $composableBuilder(column: $table.isDefault, builder: (column) => ColumnFilters(column));
@@ -4258,6 +4316,9 @@ class $$AccountsTableOrderingComposer extends Composer<_$AppDatabase, $AccountsT
   ColumnOrderings<String> get last4 =>
       $composableBuilder(column: $table.last4, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<int> get billDueDay =>
+      $composableBuilder(column: $table.billDueDay, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<bool> get isDefault =>
       $composableBuilder(column: $table.isDefault, builder: (column) => ColumnOrderings(column));
 
@@ -4287,6 +4348,8 @@ class $$AccountsTableAnnotationComposer extends Composer<_$AppDatabase, $Account
   GeneratedColumn<String> get bankCode => $composableBuilder(column: $table.bankCode, builder: (column) => column);
 
   GeneratedColumn<String> get last4 => $composableBuilder(column: $table.last4, builder: (column) => column);
+
+  GeneratedColumn<int> get billDueDay => $composableBuilder(column: $table.billDueDay, builder: (column) => column);
 
   GeneratedColumn<bool> get isDefault => $composableBuilder(column: $table.isDefault, builder: (column) => column);
 
@@ -4382,6 +4445,7 @@ class $$AccountsTableTableManager
                 Value<String?> bankName = const Value.absent(),
                 Value<String?> bankCode = const Value.absent(),
                 Value<String?> last4 = const Value.absent(),
+                Value<int?> billDueDay = const Value.absent(),
                 Value<bool> isDefault = const Value.absent(),
                 Value<int> createdAt = const Value.absent(),
                 Value<int?> removedAt = const Value.absent(),
@@ -4393,6 +4457,7 @@ class $$AccountsTableTableManager
                 bankName: bankName,
                 bankCode: bankCode,
                 last4: last4,
+                billDueDay: billDueDay,
                 isDefault: isDefault,
                 createdAt: createdAt,
                 removedAt: removedAt,
@@ -4406,6 +4471,7 @@ class $$AccountsTableTableManager
                 Value<String?> bankName = const Value.absent(),
                 Value<String?> bankCode = const Value.absent(),
                 Value<String?> last4 = const Value.absent(),
+                Value<int?> billDueDay = const Value.absent(),
                 Value<bool> isDefault = const Value.absent(),
                 required int createdAt,
                 Value<int?> removedAt = const Value.absent(),
@@ -4417,6 +4483,7 @@ class $$AccountsTableTableManager
                 bankName: bankName,
                 bankCode: bankCode,
                 last4: last4,
+                billDueDay: billDueDay,
                 isDefault: isDefault,
                 createdAt: createdAt,
                 removedAt: removedAt,

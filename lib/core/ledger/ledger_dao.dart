@@ -253,6 +253,11 @@ class LedgerDao extends DatabaseAccessor<AppDatabase> with _$LedgerDaoMixin {
     ];
   }
 
+  /// The revisions written by one operation, such as a purchase deleted
+  /// together with its refunds.
+  Future<List<TransactionRevision>> revisionsOfOperation(String operationId) =>
+      (select(transactionRevisions)..where((r) => r.operationId.equals(operationId))).get();
+
   /// Live transactions (expenses and refunds) with a posting on any of
   /// [accountIds], oldest first.
   Future<List<LedgerTransaction>> liveTransactionsOn(Iterable<String> accountIds) {

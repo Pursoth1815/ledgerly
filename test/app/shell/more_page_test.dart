@@ -121,7 +121,7 @@ void main() {
       reason: 'the tab bar sits behind the sheet',
     );
 
-    await tester.tap(find.bySemanticsLabel('Close').last);
+    await tester.state<NavigatorState>(find.byType(Navigator).first).maybePop();
     await tester.pumpAndSettle();
     expect(find.byType(AccountsSheet), findsNothing);
     await tester.tap(find.descendant(of: find.byType(LoopdTabBar), matching: find.text('Money')));

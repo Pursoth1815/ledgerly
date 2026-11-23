@@ -106,6 +106,7 @@ class LedgerAccount {
     this.bankName,
     this.bankCode,
     this.last4,
+    this.billDueDay,
   });
 
   final String id;
@@ -117,6 +118,24 @@ class LedgerAccount {
   final String? bankCode;
   final String? last4;
   final bool isDefault;
+
+  /// A credit card's bill due day, 1 to 31; null when not set.
+  final int? billDueDay;
+
+  /// The next day this card's bill is due, today included; null when no due
+  /// day is set. A month too short for the day uses its last day.
+  DateTime? nextBillDue(DateTime now) {
+    final day = billDueDay;
+    if (day == null) return null;
+    DateTime inMonth(int month) {
+      final last = DateTime(now.year, month + 1, 0).day;
+      return DateTime(now.year, month, day > last ? last : day);
+    }
+
+    final today = DateTime(now.year, now.month, now.day);
+    final thisMonth = inMonth(now.month);
+    return thisMonth.isBefore(today) ? inMonth(now.month + 1) : thisMonth;
+  }
 }
 
 /// An expense category as screens show it: its name, a colour index into
@@ -138,6 +157,31 @@ class LedgerCategory {
   /// One of the default set, which cannot be deleted; only categories the
   /// owner added can.
   final bool builtIn;
+}
+
+/// A saved refund, as the refund form loads it for editing.
+class RefundRecord {
+  const RefundRecord({
+    required this.id,
+    required this.revision,
+    required this.originalId,
+    required this.amountPaise,
+    required this.method,
+    required this.destinationAccountId,
+    required this.occurredAt,
+    this.note,
+  });
+
+  final String id;
+  final int revision;
+
+  /// The purchase it belongs to.
+  final String originalId;
+  final int amountPaise;
+  final PaymentMethod method;
+  final String destinationAccountId;
+  final DateTime occurredAt;
+  final String? note;
 }
 
 /// A saved expense, as the expense form loads it for editing.

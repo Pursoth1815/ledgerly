@@ -110,11 +110,13 @@ class LedgerEngine {
     String? bankName,
     String? bankCode,
     String? last4,
+    int? billDueDay,
     bool makeDefault = false,
   }) async {
     if (kind != AccountKind.bank && kind != AccountKind.creditCard) {
       throw const LedgerException(LedgerFailure.invalidAccount);
     }
+    _checkBillDueDay(kind, billDueDay);
     final nickname = name.trim();
     final bank = bankName?.trim();
     if (nickname.isEmpty || (bank != null && bank.isEmpty)) throw const LedgerException(LedgerFailure.invalidAccount);
@@ -138,12 +140,44 @@ class LedgerEngine {
               bankName: Value(bank),
               bankCode: Value(bankCode),
               last4: Value(last4),
+              billDueDay: Value(billDueDay),
               isDefault: Value(makeDefault),
               createdAt: _now,
             ),
           );
       return id;
     });
+  }
+
+  /// Saves what Account details can change: the nickname, whether it is the
+  /// default of its kind, and a credit card's bill due day. The bank and the
+  /// last four digits stay, because they link each SMS.
+  Future<void> saveAccountDetails(
+    String accountId, {
+    required String nickname,
+    required bool isDefault,
+    int? billDueDay,
+  }) => _db.transaction(() async {
+    final account = await _dao.getAccount(accountId);
+    if (account == null || account.removedAt != null) throw const LedgerException(LedgerFailure.notFound);
+    final kind = AccountKind.fromDb(account.kind);
+    if (kind != AccountKind.bank && kind != AccountKind.creditCard) {
+      throw const LedgerException(LedgerFailure.invalidAccount);
+    }
+    final name = nickname.trim();
+    if (name.isEmpty) throw const LedgerException(LedgerFailure.invalidAccount);
+    _checkBillDueDay(kind, billDueDay);
+    if (isDefault) await _clearDefault(kind);
+    await (_db.update(_db.accounts)..where((a) => a.id.equals(accountId))).write(
+      AccountsCompanion(name: Value(name), isDefault: Value(isDefault), billDueDay: Value(billDueDay)),
+    );
+  });
+
+  /// Only a credit card has a due day, from 1 to 31.
+  static void _checkBillDueDay(AccountKind kind, int? day) {
+    if (day != null && (kind != AccountKind.creditCard || day < 1 || day > 31)) {
+      throw const LedgerException(LedgerFailure.invalidAccount);
+    }
   }
 
   /// Makes [accountId] the one default of its kind.
@@ -376,6 +410,50 @@ class LedgerEngine {
     required String destinationAccountId,
     required DateTime occurredAt,
     String? note,
+  }) async => _create(
+    await _refundEntry(
+      originalId: originalId,
+      amountPaise: amountPaise,
+      method: method,
+      destinationAccountId: destinationAccountId,
+      occurredAt: occurredAt,
+      note: note,
+    ),
+  );
+
+  /// Changes a refund: the amount, where the money came back to, the date or
+  /// the note. It stays linked to the same purchase.
+  Future<void> editRefund(
+    String id, {
+    required int amountPaise,
+    required PaymentMethod method,
+    required String destinationAccountId,
+    required DateTime occurredAt,
+    String? note,
+  }) async {
+    final row = await _dao.getTransaction(id);
+    if (row == null || row.kind != TransactionKind.refund.db) throw const LedgerException(LedgerFailure.notFound);
+    return _replace(
+      id,
+      await _refundEntry(
+        originalId: row.refundOf!,
+        amountPaise: amountPaise,
+        method: method,
+        destinationAccountId: destinationAccountId,
+        occurredAt: occurredAt,
+        note: note,
+      ),
+      action: 'edit',
+    );
+  }
+
+  Future<LedgerEntry> _refundEntry({
+    required String originalId,
+    required int amountPaise,
+    required PaymentMethod method,
+    required String destinationAccountId,
+    required DateTime occurredAt,
+    String? note,
   }) async {
     _positive(amountPaise);
     final original = await _dao.getTransaction(originalId);
@@ -384,16 +462,14 @@ class LedgerEngine {
     }
     final kinds = await _dao.accountKinds((await _dao.getPostings(originalId)).keys);
     final category = kinds.entries.firstWhere((entry) => entry.value == AccountKind.category).key;
-    return _create(
-      LedgerEntry(
-        kind: TransactionKind.refund,
-        method: method,
-        occurredAt: occurredAt,
-        note: note,
-        merchant: original.merchant,
-        refundOf: originalId,
-        postings: {destinationAccountId: amountPaise, category: -amountPaise},
-      ),
+    return LedgerEntry(
+      kind: TransactionKind.refund,
+      method: method,
+      occurredAt: occurredAt,
+      note: note,
+      merchant: original.merchant,
+      refundOf: originalId,
+      postings: {destinationAccountId: amountPaise, category: -amountPaise},
     );
   }
 
@@ -543,15 +619,32 @@ class LedgerEngine {
       await _setDeleted(row, deleted: true, action: 'undo');
       return;
     }
+    await _undoOne(row);
+    // A purchase deleted together with its refunds comes back with them. The
+    // purchase is first, because a refund needs a live original.
+    final operation = (await _dao.getRevision(id, expectedRevision))?.operationId;
+    if (operation == null) return;
+    for (final other in await _dao.revisionsOfOperation(operation)) {
+      if (other.transactionId == id) continue;
+      final refund = await _dao.getTransaction(other.transactionId);
+      if (refund == null || refund.revision != other.revision) {
+        throw const LedgerException(LedgerFailure.changedSince);
+      }
+      await _undoOne(refund);
+    }
+  });
+
+  /// Applies the snapshot before [row]'s latest revision, as a new revision.
+  Future<void> _undoOne(LedgerTransaction row) async {
     final previous =
-        await _dao.getRevision(id, expectedRevision - 1) ?? (throw const LedgerException(LedgerFailure.notFound));
+        await _dao.getRevision(row.id, row.revision - 1) ?? (throw const LedgerException(LedgerFailure.notFound));
     final snapshot = _Snapshot.fromJson(previous.snapshotJson);
     if (snapshot.deleted) {
       await _setDeleted(row, deleted: true, action: 'undo');
     } else {
-      await _write(id, snapshot.entry, action: 'undo', existing: row);
+      await _write(row.id, snapshot.entry, action: 'undo', existing: row);
     }
-  });
+  }
 
   // --- Reading ---------------------------------------------------------------
 
@@ -591,6 +684,7 @@ class LedgerEngine {
               bankName: row.bankName,
               bankCode: row.bankCode,
               last4: row.last4,
+              billDueDay: row.billDueDay,
               isDefault: row.isDefault,
             ),
         ],
@@ -637,6 +731,46 @@ class LedgerEngine {
     );
   }
 
+  /// A refund to edit, or null when it is missing, deleted or not a refund.
+  Future<RefundRecord?> getRefund(String id) async {
+    final row = await _dao.getTransaction(id);
+    if (row == null || row.deletedAt != null || row.kind != TransactionKind.refund.db) return null;
+    final postings = await _dao.getPostings(id);
+    final kinds = await _dao.accountKinds(postings.keys);
+    final destination = postings.keys.where((account) => kinds[account]!.holdsMoney).firstOrNull;
+    if (destination == null) return null;
+    return RefundRecord(
+      id: id,
+      revision: row.revision,
+      originalId: row.refundOf!,
+      amountPaise: postings[destination]!,
+      method: PaymentMethod.fromDb(row.paymentMethod!),
+      destinationAccountId: destination,
+      occurredAt: DateTime.fromMillisecondsSinceEpoch(row.occurredAt, isUtc: true).toLocal(),
+      note: row.note,
+    );
+  }
+
+  /// What has already come back for the purchase [originalId], leaving out
+  /// the refund [excluding] (the one being edited).
+  Future<int> refundedPaise(String originalId, {String? excluding}) async {
+    var total = 0;
+    for (final refund in await _dao.activeRefunds(originalId, excluding: excluding)) {
+      final postings = await _dao.getPostings(refund.id);
+      total += refundAmount(postings, await _dao.accountKinds(postings.keys));
+    }
+    return total;
+  }
+
+  /// The live refunds of the purchase [originalId].
+  Future<List<RefundRecord>> refundsOf(String originalId) async => [
+    for (final row in await _dao.activeRefunds(originalId)) ?await getRefund(row.id),
+  ];
+
+  /// What has come back for the purchase [originalId], as it changes.
+  Stream<int> watchRefundedPaise(String originalId) =>
+      _dao.watchLedgerChanges().asyncMap((_) => refundedPaise(originalId));
+
   /// One bank account or card, removed or not, as screens show it. An
   /// expense can still point at a removed one.
   Future<LedgerAccount?> getAccount(String id) async {
@@ -649,6 +783,7 @@ class LedgerEngine {
       bankName: row.bankName,
       bankCode: row.bankCode,
       last4: row.last4,
+      billDueDay: row.billDueDay,
       isDefault: row.isDefault,
     );
   }
@@ -754,7 +889,11 @@ class LedgerEngine {
     final kinds = await _dao.accountKinds(entry.postings.keys);
     checkEntry(entry, kinds);
     if (existing == null) {
+      // A refund may return to the account its purchase was paid from, even
+      // if that account has been removed since.
+      final own = entry.refundOf == null ? const <String>{} : (await _dao.getPostings(entry.refundOf!)).keys.toSet();
       for (final accountId in entry.postings.keys) {
+        if (own.contains(accountId)) continue;
         if ((await _dao.getAccount(accountId))?.removedAt != null) {
           throw const LedgerException(LedgerFailure.accountRemoved);
         }

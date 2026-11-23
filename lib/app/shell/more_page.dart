@@ -12,11 +12,11 @@ import '../../design_system/components/loopd_toast.dart';
 import '../../design_system/loopd_colors.dart';
 import '../../design_system/loopd_spacing.dart';
 import '../../design_system/loopd_typography.dart';
-import '../../features/accounts/accounts.dart';
 import '../../features/app_lock/app_lock.dart';
 import '../../features/backup/backup.dart';
 import '../../features/expenses/expenses.dart';
 import '../config/app_config.dart';
+import 'open_accounts.dart';
 
 /// The More tab (proposal section 3, mockup `More.dc.html`): the Vault and
 /// Screen time tiles, then settings in four groups. Rows show which phase
@@ -79,7 +79,7 @@ class MorePage extends ConsumerWidget {
                   label: 'Accounts and cards',
                   dot: c.money,
                   tint: c.moneyTint,
-                  onTap: () => showAccountsSheet(context),
+                  onTap: () => openAccountsSheet(context),
                 ),
                 _LinkRow(
                   label: 'Expense categories',

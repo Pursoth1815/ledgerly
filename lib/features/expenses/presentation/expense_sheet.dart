@@ -21,7 +21,11 @@ import '../../../design_system/loopd_typography.dart';
 import '../../accounts/accounts.dart';
 import 'amount_input.dart';
 import 'category_sheet.dart';
+import 'delete_refunded_sheet.dart';
+import 'form_parts.dart';
 import 'providers/expense_providers.dart';
+import 'refund_sheet.dart' show showRefundSheet;
+import 'spending_parts.dart' show categoryLook;
 import 'when_text.dart';
 
 /// Opens a form for a bank account or card from inside the expense form,
@@ -46,24 +50,27 @@ Future<void> showExpenseSheet(
     builder: (_) => ExpenseSheet(expenseId: expenseId, onAddAccount: onAddAccount, clock: clock),
   );
   if (done == null || !context.mounted) return;
-  showLoopdToast(
-    context,
-    done.message,
-    action: 'Undo',
-    onAction: () async {
-      String result;
-      try {
-        await ledger.undo(done.id, expectedRevision: done.revision);
-        result = done.undoneMessage;
-      } on LedgerException catch (error) {
-        result = error.failure == LedgerFailure.changedSince
-            ? 'It has changed since, so it cannot be undone'
-            : 'Could not undo that';
-      }
-      if (context.mounted) showLoopdToast(context, result);
-    },
-  );
+  showDoneToast(context, ledger, done);
 }
+
+/// Says what a money form did, with Undo.
+void showDoneToast(BuildContext context, LedgerEngine ledger, ExpenseDone done) => showLoopdToast(
+  context,
+  done.message,
+  action: 'Undo',
+  onAction: () async {
+    String result;
+    try {
+      await ledger.undo(done.id, expectedRevision: done.revision);
+      result = done.undoneMessage;
+    } on LedgerException catch (error) {
+      result = error.failure == LedgerFailure.changedSince
+          ? 'It has changed since, so it cannot be undone'
+          : 'Could not undo that';
+    }
+    if (context.mounted) showLoopdToast(context, result);
+  },
+);
 
 /// What the sheet did, for the toast and its Undo: the expense, the revision
 /// the change made, and what to say before and after an undo.
@@ -291,17 +298,49 @@ class _ExpenseSheetState extends ConsumerState<ExpenseSheet> {
 
   Future<void> _delete() async {
     final original = _original!;
+    final ledger = ref.read(ledgerEngineProvider);
+    FocusScope.of(context).unfocus();
+    // A purchase with refunds goes only together with them, once you have
+    // seen them and said so (proposal section 13).
+    final refunds = await ledger.refundsOf(original.id);
+    if (refunds.isNotEmpty) {
+      final lines = <RefundLine>[
+        for (final refund in refunds)
+          (
+            refund: refund,
+            accountName: refund.destinationAccountId == SystemAccounts.cash
+                ? 'Cash'
+                : (await ledger.getAccount(refund.destinationAccountId))?.nickname ?? 'Removed account',
+          ),
+      ];
+      if (!mounted) return;
+      final categories = ref.read(expenseCategoriesProvider).value ?? const <LedgerCategory>[];
+      final sure = await showDeleteRefundedSheet(
+        context,
+        name: original.merchant ?? categoryLook(original.categoryId, categories).name,
+        amountPaise: original.amountPaise,
+        refunds: lines,
+        now: widget.clock(),
+      );
+      if (!sure) return;
+    }
+    if (!mounted) return;
     setState(() => _saving = true);
     try {
-      await ref.read(ledgerEngineProvider).delete(original.id);
+      await ledger.delete(original.id, withRefunds: refunds.isNotEmpty);
       if (!mounted) return;
       final amount = formatRupees(original.amountPaise);
+      final extra = switch (refunds.length) {
+        0 => '',
+        1 => ' and its refund',
+        _ => ' and its ${refunds.length} refunds',
+      };
       Navigator.of(context).pop(
         ExpenseDone(
           id: original.id,
           revision: original.revision + 1,
-          message: 'Deleted $amount',
-          undoneMessage: 'Brought back $amount',
+          message: 'Deleted $amount$extra',
+          undoneMessage: 'Brought back $amount$extra',
         ),
       );
     } on LedgerException catch (error) {
@@ -326,9 +365,8 @@ class _ExpenseSheetState extends ConsumerState<ExpenseSheet> {
     final c = context.colors;
     final banksAsync = ref.watch(accountsOfKindProvider(AccountKind.bank));
     final cardsAsync = ref.watch(accountsOfKindProvider(AccountKind.creditCard));
-    final cashAsync = ref.watch(cashInHandProvider);
     final categoriesAsync = ref.watch(expenseCategoriesProvider);
-    final all = [banksAsync, cardsAsync, cashAsync, categoriesAsync];
+    final all = [banksAsync, cardsAsync, categoriesAsync];
     final failed = all.any((a) => a.hasError);
     final ready = all.every((a) => a.hasValue) && !_loading && (!_editing || _original != null);
 
@@ -340,6 +378,7 @@ class _ExpenseSheetState extends ConsumerState<ExpenseSheet> {
     final amountPaise = parseRupees(_amount.text);
     final validAmount = amountPaise != null && amountPaise > 0;
     final future = _when.isAfter(widget.clock());
+    final message = future ? 'That time is still to come. Pick a time that has passed.' : _error;
 
     Widget body;
     String? fundingId;
@@ -359,25 +398,25 @@ class _ExpenseSheetState extends ConsumerState<ExpenseSheet> {
       fundingId = _chosen(choices);
       final categories = categoriesAsync.requireValue;
       categoryName = categories.where((k) => k.id == _categoryId).firstOrNull?.name ?? '';
-      final cash = cashAsync.requireValue.balance.paise;
-      // When editing a cash expense, its own amount is already out of the
-      // balance; put it back to say what is left.
-      final cashBefore = cash + (_original?.method == PaymentMethod.cash ? _original!.amountPaise : 0);
-      final message = future ? 'That time is still to come. Pick a time that has passed.' : _error;
       body = ListView(
         key: ExpenseSheet.formKey,
         padding: const EdgeInsets.only(bottom: LoopdSpace.lg),
         children: [
-          _AmountField(controller: _amount, accent: accent, autofocus: !_editing),
+          AmountField(fieldKey: ExpenseSheet.amountFieldKey, controller: _amount, accent: accent, autofocus: !_editing),
           const SizedBox(height: 22),
-          _Details(
-            merchant: _merchant,
+          DetailsCard(
+            name: _merchant,
+            nameLabel: 'Paid to',
+            nameHint: 'Optional, e.g. Swiggy',
+            nameKey: ExpenseSheet.merchantFieldKey,
             note: _note,
+            noteKey: ExpenseSheet.noteFieldKey,
+            whenKey: ExpenseSheet.whenKey,
             whenLabel: whenText(_when, now: widget.clock()),
             onWhen: _pickWhen,
           ),
           const SizedBox(height: 22),
-          _SectionTitle('Paid with'),
+          FormSectionTitle('Paid with'),
           const SizedBox(height: 10),
           LoopdSegmented<PaymentMethod>(
             segments: [
@@ -395,7 +434,7 @@ class _ExpenseSheetState extends ConsumerState<ExpenseSheet> {
           ),
           const SizedBox(height: 10),
           if (_method == PaymentMethod.cash)
-            _CashChoice(beforePaise: cashBefore, spendPaise: validAmount ? amountPaise : 0)
+            const _CashChoice()
           else
             _AccountList(
               accounts: choices,
@@ -410,7 +449,7 @@ class _ExpenseSheetState extends ConsumerState<ExpenseSheet> {
               onAdd: widget.onAddAccount == null ? null : () => widget.onAddAccount!(context, _method.fundingKind),
             ),
           const SizedBox(height: 22),
-          _SectionTitle('Category'),
+          FormSectionTitle('Category'),
           const SizedBox(height: 10),
           _CategoryGrid(
             categories: categories,
@@ -423,7 +462,25 @@ class _ExpenseSheetState extends ConsumerState<ExpenseSheet> {
                 ? () => showLoopdToast(context, CategorySheet.fullMessage)
                 : _newCategory,
           ),
-          if (message != null) ...[const SizedBox(height: LoopdSpace.lg), LoopdErrorNote(message)],
+          if (_original != null) ...[
+            const SizedBox(height: 22),
+            const FormSectionTitle('Refunds'),
+            const SizedBox(height: 10),
+            _Refunds(
+              expense: _original!,
+              enabled: !_saving,
+              onAdd: () => showRefundSheet(context, expenseId: _original!.id, clock: widget.clock),
+            ),
+            const SizedBox(height: LoopdSpace.lg),
+            Semantics(
+              container: true,
+              child: LoopdButton(
+                label: 'Delete expense',
+                style: LoopdButtonStyle.danger,
+                onTap: _saving ? null : _delete,
+              ),
+            ),
+          ],
         ],
       );
     }
@@ -443,17 +500,6 @@ class _ExpenseSheetState extends ConsumerState<ExpenseSheet> {
                   child: Text(title, style: LoopdType.title.copyWith(color: c.textPrimary)),
                 ),
               ),
-              if (_editing && _original != null) ...[
-                LoopdRoundButton(
-                  icon: Icons.delete_outline_rounded,
-                  label: 'Delete expense',
-                  size: 40,
-                  background: c.dangerTint,
-                  foreground: c.danger,
-                  onTap: _saving ? null : _delete,
-                ),
-                const SizedBox(width: LoopdSpace.sm),
-              ],
               LoopdRoundButton(
                 icon: Icons.close_rounded,
                 label: 'Close',
@@ -468,6 +514,12 @@ class _ExpenseSheetState extends ConsumerState<ExpenseSheet> {
           Expanded(
             child: AnimatedSwitcher(duration: LoopdMotion.of(context).quick, child: body),
           ),
+          // Kept above the button, so a problem is never off screen.
+          if (ready && message != null) ...[
+            const SizedBox(height: LoopdSpace.sm),
+            LoopdErrorNote(message),
+            const SizedBox(height: LoopdSpace.sm),
+          ],
           Divider(height: 1, thickness: 1, color: c.line),
           const SizedBox(height: 14),
           LoopdButton(
@@ -482,175 +534,43 @@ class _ExpenseSheetState extends ConsumerState<ExpenseSheet> {
   }
 }
 
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle(this.text);
+/// Add refund and what has come back so far, kept live while refunds are
+/// added over this sheet. Faded once the whole amount has come back.
+class _Refunds extends ConsumerWidget {
+  const _Refunds({required this.expense, required this.enabled, required this.onAdd});
 
-  final String text;
-
-  @override
-  Widget build(BuildContext context) => Semantics(
-    header: true,
-    child: Text(text, style: LoopdType.small.copyWith(color: context.colors.textMuted)),
-  );
-}
-
-/// The big centred amount, with the ₹ in the method's colour.
-class _AmountField extends StatelessWidget {
-  const _AmountField({required this.controller, required this.accent, required this.autofocus});
-
-  final TextEditingController controller;
-  final Color accent;
-  final bool autofocus;
+  final ExpenseRecord expense;
+  final bool enabled;
+  final VoidCallback onAdd;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final c = context.colors;
-    const style = TextStyle(
-      fontFamily: LoopdType.sans,
-      fontSize: 48,
-      fontWeight: FontWeight.w800,
-      letterSpacing: -1,
-      height: 1.15,
-      fontFeatures: [FontFeature.tabularFigures()],
-    );
+    final refunded = ref.watch(expenseRefundedProvider(expense.id)).value ?? 0;
+    final full = refunded >= expense.amountPaise;
+    final status = refunded == 0
+        ? 'Nothing refunded yet. A refund comes off this purchase’s month.'
+        : full
+        ? 'Fully refunded.'
+        : '${formatRupees(refunded)} refunded. A refund comes off this purchase’s month.';
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          'Amount',
-          style: LoopdType.small.copyWith(color: c.textMuted, fontWeight: FontWeight.w600),
+        Semantics(
+          container: true,
+          child: LoopdButton(
+            label: 'Add refund',
+            icon: Icons.undo_rounded,
+            style: LoopdButtonStyle.outlined,
+            onTap: enabled && !full ? onAdd : null,
+          ),
         ),
-        const SizedBox(height: LoopdSpace.xs),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            AnimatedDefaultTextStyle(
-              duration: LoopdMotion.of(context).standard,
-              style: style.copyWith(fontSize: 32, fontWeight: FontWeight.w700, color: accent),
-              child: const Text('₹'),
-            ),
-            const SizedBox(width: LoopdSpace.xs),
-            ConstrainedBox(
-              constraints: const BoxConstraints(minWidth: 40, maxWidth: 280),
-              child: IntrinsicWidth(
-                child: TextField(
-                  key: ExpenseSheet.amountFieldKey,
-                  controller: controller,
-                  autofocus: autofocus,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: const [RupeeInputFormatter()],
-                  textAlign: TextAlign.center,
-                  cursorColor: accent,
-                  style: style.copyWith(color: c.textPrimary),
-                  decoration: InputDecoration.collapsed(
-                    hintText: '0',
-                    hintStyle: style.copyWith(color: c.textMuted),
-                  ),
-                ),
-              ),
-            ),
-          ],
+        const SizedBox(height: 10),
+        Text(
+          status,
+          style: LoopdType.caption.copyWith(color: c.textMuted, fontWeight: FontWeight.w500, height: 1.5),
         ),
       ],
-    );
-  }
-}
-
-/// Paid to, Date and time, and Note, in one outlined card.
-class _Details extends StatelessWidget {
-  const _Details({required this.merchant, required this.note, required this.whenLabel, required this.onWhen});
-
-  final TextEditingController merchant;
-  final TextEditingController note;
-  final String whenLabel;
-  final VoidCallback onWhen;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.colors;
-    final divider = Divider(height: 1, thickness: 1, color: c.line);
-    final rowLabel = LoopdType.label.copyWith(color: c.textSecondary, fontWeight: FontWeight.w500);
-    return Container(
-      decoration: BoxDecoration(
-        color: c.surface,
-        borderRadius: BorderRadius.circular(LoopdRadius.cardLarge),
-        border: Border.all(color: c.line),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(LoopdSpace.lg, 14, LoopdSpace.lg, 14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Paid to', style: LoopdType.caption.copyWith(color: c.textMuted)),
-                const SizedBox(height: LoopdSpace.xs),
-                TextField(
-                  key: ExpenseSheet.merchantFieldKey,
-                  controller: merchant,
-                  textCapitalization: TextCapitalization.words,
-                  textInputAction: TextInputAction.next,
-                  style: LoopdType.heading.copyWith(color: c.textPrimary, fontWeight: FontWeight.w700),
-                  decoration: InputDecoration.collapsed(
-                    hintText: 'Optional, e.g. Swiggy',
-                    hintStyle: LoopdType.heading.copyWith(color: c.textMuted, fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          divider,
-          LoopdPressable(
-            key: ExpenseSheet.whenKey,
-            onTap: onWhen,
-            label: 'Date and time, $whenLabel',
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 54),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: LoopdSpace.lg),
-                child: Row(
-                  children: [
-                    Expanded(child: Text('Date and time', style: rowLabel)),
-                    Text(
-                      '$whenLabel ›',
-                      style: LoopdType.body.copyWith(color: c.textPrimary, fontWeight: FontWeight.w700),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          divider,
-          ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 54),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: LoopdSpace.lg),
-              child: Row(
-                children: [
-                  Text('Note', style: rowLabel),
-                  const SizedBox(width: LoopdSpace.md),
-                  Expanded(
-                    child: TextField(
-                      key: ExpenseSheet.noteFieldKey,
-                      controller: note,
-                      textAlign: TextAlign.right,
-                      textCapitalization: TextCapitalization.sentences,
-                      style: LoopdType.body.copyWith(color: c.textPrimary),
-                      decoration: InputDecoration.collapsed(
-                        hintText: 'Add a note',
-                        hintStyle: LoopdType.body.copyWith(color: c.textMuted),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -807,63 +727,35 @@ class _AccountRow extends StatelessWidget {
   }
 }
 
-/// Cash in hand as the source, with what is left after this expense.
+/// Cash as the source. Loopd records the spend and keeps no cash balance.
 class _CashChoice extends StatelessWidget {
-  const _CashChoice({required this.beforePaise, required this.spendPaise});
-
-  final int beforePaise;
-  final int spendPaise;
+  const _CashChoice();
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final left = beforePaise - spendPaise;
-    final after = left >= 0 ? '${formatRupees(left)} after this' : 'more than you have · update your cash';
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Container(
-          constraints: const BoxConstraints(minHeight: 62),
-          padding: const EdgeInsets.symmetric(horizontal: LoopdSpace.lg, vertical: 10),
-          decoration: BoxDecoration(
-            color: c.cashTint,
-            borderRadius: BorderRadius.circular(LoopdRadius.cardLarge),
-            border: Border.all(color: c.cash, width: 1.5),
+    return Container(
+      constraints: const BoxConstraints(minHeight: 62),
+      padding: const EdgeInsets.symmetric(horizontal: LoopdSpace.lg, vertical: 10),
+      decoration: BoxDecoration(
+        color: c.cashTint,
+        borderRadius: BorderRadius.circular(LoopdRadius.cardLarge),
+        border: Border.all(color: c.cash, width: 1.5),
+      ),
+      child: Row(
+        children: [
+          ExcludeSemantics(
+            child: Container(
+              width: 46,
+              height: 30,
+              decoration: BoxDecoration(color: c.cash, borderRadius: BorderRadius.circular(6)),
+              child: Icon(Icons.payments_outlined, size: 20, color: c.onAccent),
+            ),
           ),
-          child: Row(
-            children: [
-              ExcludeSemantics(
-                child: Container(
-                  width: 46,
-                  height: 30,
-                  decoration: BoxDecoration(color: c.cash, borderRadius: BorderRadius.circular(6)),
-                  child: Icon(Icons.payments_outlined, size: 20, color: c.onAccent),
-                ),
-              ),
-              const SizedBox(width: LoopdSpace.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Cash in hand', style: LoopdType.bodyStrong.copyWith(color: c.textPrimary)),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${formatRupees(beforePaise)} now · $after',
-                      style: LoopdType.caption.copyWith(color: c.textSecondary, fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 10),
-        Text(
-          'Cash comes in from ATM withdrawals you confirm in the Review Inbox, '
-          'or when you update your cash in Accounts and cards.',
-          style: LoopdType.caption.copyWith(color: c.textMuted, fontWeight: FontWeight.w500, height: 1.5),
-        ),
-      ],
+          const SizedBox(width: LoopdSpace.md),
+          Text('Paid in cash', style: LoopdType.bodyStrong.copyWith(color: c.textPrimary)),
+        ],
+      ),
     );
   }
 }

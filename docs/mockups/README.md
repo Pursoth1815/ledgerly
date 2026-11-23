@@ -236,7 +236,7 @@ Designed for Phase 2, part 8 (screens A1 to A12). This replaces the Accounts and
 - **Card looks:** a credit card has a gold chip, tap-to-pay waves and soft circles. A bank account has a bank icon and a fading dot grid. Cash is sky blue with a dashed border.
 - **Opening a card (A2 to A4):** the card moves to the top while the others slide down and fade away, leaving none below it. Then the spending tile with its ring, the bill due tile and the actions rise in. Back plays this in reverse: the content fades, the card comes down, and the others return to their places.
 - **Actions:** View expenses opens the Show all expenses sheet (5c) for that account. Details opens A5 or A6. Cash has no details.
-- **Details (A5, A6):** nickname, bill due date for a card, default and Remove. Bank and last four digits are read-only, because they link each SMS.
+- **Details (A5, A6):** nickname, bank, last four digits, bill due date for a card, default and Remove. The Bank row opens the same searchable list as Add account. Digits already used by another account of the same kind are blocked. Past expenses stay on the account and show the new details (owner, 24 Nov 2026).
 - **Bill due date (A7, A8):** an optional day from 1 to 31 on each card; a shorter month uses its last day. The reminder comes at 9:00 am on the due date every month and is built in Phase 5.
 - **Refunds (A9 to A12):** added from Edit expense, or opened from a green refund in the Money list. A refund lowers the month of its purchase. Deleting an expense that has refunds lists them and asks Keep or Delete all, and Undo brings them all back.
 - **Delete** (owner): no icon in the header of an edit page. A red outlined button at the end of the form says what it deletes.

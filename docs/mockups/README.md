@@ -234,7 +234,7 @@ Drawings brought in line with what was built and with spend only:
 
 - **A5, A6:** the Bank row has its small arrow and opens the searchable bank list; the last four digits are a field; the SMS line updates as you type; digits used by another account of the same kind show the red error note.
 - **Review Inbox (2):** the ATM card no longer moves money to Cash in hand (see round 10).
-- **Money tab (5a, 5c):** the Cash mini card reads "Paid in cash", as in the app.
+- **Money tab (5a, 5c):** the Cash mini card reads "Paid in cash", as in the app, and its corner label is **CASH**, not "IN HAND" (owner, 28 Nov 2026; app changed too).
 - The **Cash in hand** and **Update cash** notes in "Update after the owner's answers" and "Phase 2, part 2" are history: round 10 replaced them.
 
 ## Review round 10: spend only and the Accounts wallet (23 Nov 2026)

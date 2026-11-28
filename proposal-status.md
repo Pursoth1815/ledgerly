@@ -1,8 +1,8 @@
 # Personal App: proposal status
 
-As of 2026-11-17. Stage reached: revision 3.2 of the proposal (architecture agreed). **Phase 0A, the project foundations, is done** (approved and tested on the owner's phone on 17 Nov 2026). **Phase 0B, the native spikes, is done** (tested on the owner's phone and merged on 17 Nov 2026). **Phase 1, the design system and Today shell, is done** (three parts, merged 17 Nov 2026). **Phase 2, expenses with UPI, Credit Card and Cash, is in progress.**
+As of 2026-11-28. Stage reached: revision 3.3 of the proposal (spend only, 23 Nov 2026). **Phase 0A, the project foundations, is done** (approved and tested on the owner's phone on 17 Nov 2026). **Phase 0B, the native spikes, is done** (tested on the owner's phone and merged on 17 Nov 2026). **Phase 1, the design system and Today shell, is done** (three parts, merged 17 Nov 2026). **Phase 2, expenses with UPI, Credit Card and Cash, is built and merged** (parts 1 to 8, PRs #29 to #41, docs #39) and waits for the owner's approval. **Phase 3, SMS capture and Review Inbox, starts after that approval.**
 
-- Full proposal: `Personal App — Product Proposal & Phased Roadmap.md` in this repository, mirrored in the Claude Doc at https://claude.ai/artifact/5E9r7cyk2nPgheaf7iyGmj (the repository file is at revision 3.2; the Claude Doc is still at revision 3.1 and is updated after the owner approves 3.2).
+- Full proposal: `Personal App — Product Proposal & Phased Roadmap.md` in this repository, mirrored in the Claude Doc at https://claude.ai/artifact/5E9r7cyk2nPgheaf7iyGmj (the repository file is at revision 3.3; the Claude Doc is still at revision 3.1 and is synced only if the owner asks).
 - Mockups and the review record: `docs/mockups/README.md`; canvas at https://claude.ai/artifact/LGbLMacN52Aq8mq8pi7bNa
 - Postponed features: `TO-DO.md`.
 
@@ -82,5 +82,5 @@ Phase 1 is built in three parts, each on its own branch and pull request, merged
 
 Phase 1 was finished on 17 Nov 2026 (PRs #26, #27, #28). Phase 2 is built in seven parts, each on its own branch and pull request, merged one at a time: the ledger engine; accounts and cards with Cash in hand; the expense form with editing and undo; categories; the Money tab with totals and refunds (its screen is designed on the canvas first); encrypted backup and restore; app lock and app-switcher privacy.
 
-Parts 1 to 7 were merged by 21 Nov 2026 (PRs #29 to #38). Before Phase 2 closes, an eighth part builds what is left, to the approved mockups (owner, 23 Nov 2026): Today's Spending and Backup cards; the Accounts and cards wallet with bill due dates; adding and editing refunds; and removing Cash in hand and Update cash.
+Parts 1 to 7 were merged by 21 Nov 2026 (PRs #29 to #38). Before Phase 2 closes, an eighth part builds what is left, to the approved mockups (owner, 23 Nov 2026): Today's Spending and Backup cards; the Accounts and cards wallet with bill due dates; adding and editing refunds; and removing Cash in hand and Update cash. Part 8 was merged on 24 Nov 2026 (PRs #40 and #41), with the closing docs in #39.
 

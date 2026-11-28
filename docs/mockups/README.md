@@ -11,16 +11,16 @@ The files in this folder are the source of that canvas, kept in git so every rev
 | # | Screen | Plan section | Interactive |
 | --- | --- | --- | --- |
 | 1 | Today | 3 | Tick tasks; the review stack opens the Review Inbox |
-| 2 | Review Inbox | 5 | Opening animation, Looks Good, delete with Undo, category for a new shop |
+| 2 | Review Inbox | 5 | Opening animation, Looks Good, delete with Undo, category for a new shop; the ATM card is not spending (Dismiss or Correct) |
 | 2b | Transaction details (what Review opens) | 5 | Edit name, method, account and category |
 | 3 | Add expense, UPI | 4 | Switch method, account and category |
 | 3b | Add expense, Credit Card | 4 | Same form with Credit Card chosen |
-| 3c | Add expense, Cash | 4 | Same form with Cash chosen: Cash in hand and what is left after this expense |
+| 3c | Add expense, Cash | 4 | Same form with Cash chosen (no Cash in hand since round 10) |
 | 4b | Add bank account (sheet, searching "hd") | 4 | Type to search banks, pick one, nickname, last four digits, default; live preview |
 | 4c | Add credit card (sheet, bank chosen) | 4 | Same sheet for a card, with Bill due date |
 | A1 | Accounts and cards (wallet) | 4 | Tap a card; back returns it to the stack |
 | A2 to A4 | A credit card, bank account or Cash opened | 4 | Spending, bill due, View expenses, Details |
-| A5, A6 | Account and card details | 4 | Nickname, due date, default, Remove |
+| A5, A6 | Account and card details | 4 | Nickname, bank, last four digits, due date, default, Remove; type taken digits (8124 for an account, 7781 for a card) to see the error |
 | A7 | Bill due date (sheet) | 4 | Pick a day from 1 to 31 |
 | A8 | Card bill reminder (notification, Phase 5) | 4 | |
 | A9 | Edit expense | 4 | Add refund and Delete expense |
@@ -182,6 +182,8 @@ Decisions that change the plan, to be folded into the proposal:
 
 ## Update after the owner's answers (16 Nov 2026)
 
+> **Replaced in part:** the Cash in hand, Update cash and ATM rows below are history. Since round 10 (spend only, 23 Nov 2026) Loopd keeps no Cash in hand.
+
 Not a review round: these changes come from the owner's answers to the open points in the plan. Only small parts of existing screens changed.
 
 | Answer | Change |
@@ -226,6 +228,15 @@ Built from the mockups, with these additions for a phase where no features exist
 - **Icons:** Material icons stand in for the mockups' line icons, except the tab bar, which is drawn from the mockup paths.
 
 
+## Phase 2 close-out fixes (28 Nov 2026)
+
+Drawings brought in line with what was built and with spend only:
+
+- **A5, A6:** the Bank row has its small arrow and opens the searchable bank list; the last four digits are a field; the SMS line updates as you type; digits used by another account of the same kind show the red error note.
+- **Review Inbox (2):** the ATM card no longer moves money to Cash in hand (see round 10).
+- **Money tab (5a, 5c):** the Cash mini card reads "Paid in cash", as in the app.
+- The **Cash in hand** and **Update cash** notes in "Update after the owner's answers" and "Phase 2, part 2" are history: round 10 replaced them.
+
 ## Review round 10: spend only and the Accounts wallet (23 Nov 2026)
 
 Designed for Phase 2, part 8 (screens A1 to A12). This replaces the Accounts and cards sheet (screen 4) and the balance, income, transfer and card bill screens tried during this review.
@@ -240,7 +251,7 @@ Designed for Phase 2, part 8 (screens A1 to A12). This replaces the Accounts and
 - **Bill due date (A7, A8):** an optional day from 1 to 31 on each card; a shorter month uses its last day. The reminder comes at 9:00 am on the due date every month and is built in Phase 5.
 - **Refunds (A9 to A12):** added from Edit expense, or opened from a green refund in the Money list. A refund lowers the month of its purchase. Deleting an expense that has refunds lists them and asks Keep or Delete all, and Undo brings them all back.
 - **Delete** (owner): no icon in the header of an edit page. A red outlined button at the end of the form says what it deletes.
-- **Other bank SMS** (owner): ATM, transfer, salary and card bill messages come to the Review Inbox, to dismiss or correct. The Review mockup's ATM card still says "Moves to Cash in hand" and is redrawn with the Phase 3 design.
+- **Other bank SMS** (owner): ATM, transfer, salary and card bill messages come to the Review Inbox, to dismiss or correct. The Review mockup's ATM card was redrawn on 28 Nov 2026: an ATM chip, "Not spending. Dismiss it, or Correct it if it was a payment.", and Correct and Dismiss buttons. The full Phase 3 design may refine it.
 - **Email is not used.** Reading mail needs the internet, and Loopd has no internet permission.
 
 ## Review round 9: app lock (21 Nov 2026)
@@ -278,6 +289,8 @@ Designed for Phase 2, part 5 (screens 5a, 5b and 5c) and reviewed in two rounds.
 - No hint texts ("tap one to filter", "tap one to edit") on the screen.
 
 ## Phase 2, part 2: Accounts and cards (18 Nov 2026)
+
+> **Replaced in part:** the Cash in hand, Update cash and ATM rows below are history. Since round 10 (spend only, 23 Nov 2026) Loopd keeps no Cash in hand.
 
 Built from screens 4, 4b and 4c, with these additions the mockups do not show:
 

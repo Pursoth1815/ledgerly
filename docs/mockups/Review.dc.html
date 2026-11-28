@@ -101,6 +101,13 @@
 <button onClick="{{k.confirm}}" style="height: 50px; border-radius: 25px; border: 0; background: {{c.money}}; color: {{c.onAccent}}; font-family: inherit; font-weight: 700; font-size: 15px">Looks Good ✓</button>
 </div>
 </sc-if>
+<sc-if value="{{k.notSpending}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; font-size: 13px; line-height: 1.45; color: {{c.t2}}">{{k.note}}</p>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<a href="ReviewDetail.dc.html" style="height: 50px; border-radius: 25px; border: 1.5px solid {{c.line}}; box-sizing: border-box; display: flex; align-items: center; justify-content: center; color: {{c.t1}}; font-weight: 700; font-size: 15px; text-decoration: none">Correct</a>
+<button onClick="{{k.confirm}}" style="height: 50px; border-radius: 25px; border: 0; background: {{c.btn}}; color: {{c.btnT}}; font-family: inherit; font-weight: 700; font-size: 15px">Dismiss</button>
+</div>
+</sc-if>
 <sc-if value="{{k.needsAction}}" hint-placeholder-val="{{ false }}">
 <a href="ReviewDetail.dc.html" style="height: 50px; border-radius: 25px; background: {{c.review}}; color: {{c.onAccent}}; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; font-size: 15px; text-decoration: none">Review<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
 </sc-if>
@@ -152,9 +159,9 @@ class Component extends DCLogic {
       { id: 'k4', initial: 'A', title: 'Sent to Arun', sub: 'From HDFC Bank SMS · 14 Nov, 10:48 am', amount: '₹2,000.00', person: true,
         source: { color: '#1E3A8A', last4: '8124', name: 'HDFC Bank', detail: 'Sent to a person · loan or expense?', method: 'UPI' },
         needsAction: true },
-      { id: 'k5', initial: '₹', title: 'ATM withdrawal', sub: 'From HDFC Bank SMS · 12 Nov, 6:05 pm', amount: '₹2,000.00', cash: true,
-        source: { color: '#1E3A8A', last4: '8124', name: 'HDFC Bank', detail: 'Savings ••8124 · not spending', method: 'Cash' },
-        cat: { name: 'Cash in hand', color: c.cash }, catLabel: 'Moves to', toast: 'Moved to Cash in hand · ₹2,000' }
+      { id: 'k5', initial: '₹', title: 'ATM withdrawal', sub: 'From HDFC Bank SMS · 12 Nov, 6:05 pm', amount: '₹2,000.00', notSpending: true,
+        source: { color: '#1E3A8A', last4: '8124', name: 'HDFC Bank', detail: 'Savings ••8124 · cash taken out', method: 'ATM' },
+        note: 'Not spending. Dismiss it, or Correct it if it was a payment.', toast: 'Dismissed · not spending' }
     ];
     const cats = [['Food', '#FF8A4C'], ['Snacks', '#F472B6'], ['Groceries', '#EAB308'], ['More', c.t3]];
     let visibleIndex = 0;
@@ -182,8 +189,8 @@ class Component extends DCLogic {
         op: isGone ? '0' : (closed && i > 2 ? '0' : '1'),
         delay: s.open && !isGone ? (i * 140) + 'ms' : '0ms',
         border: d.needsAction ? '1.5px solid ' + c.review : '1px solid ' + c.line,
-        avatarBg: d.person ? c.lend : (d.cash ? c.cash : (catColor || d.avatarColor || c.s2)),
-        avatarFg: (d.person || d.cash) ? c.onAccent : ((catColor || d.avatarColor) ? '#0D0F14' : c.t2),
+        avatarBg: d.person ? c.lend : (catColor || d.avatarColor || c.s2),
+        avatarFg: d.person ? c.onAccent : ((catColor || d.avatarColor) ? '#0D0F14' : c.t2),
         showSource: !!d.source,
         unknownSource: !!d.unknown,
         bankColor: d.source ? d.source.color : 'transparent',
@@ -191,8 +198,8 @@ class Component extends DCLogic {
         srcName: src.name || '',
         srcDetail: src.detail || '',
         method: d.source ? d.source.method : '',
-        methodBg: d.source && d.source.method === 'CC' ? c.cardT : (d.source && d.source.method === 'Cash' ? c.cashT : c.moneyT),
-        methodFg: d.source && d.source.method === 'CC' ? c.card : (d.source && d.source.method === 'Cash' ? c.cash : c.money),
+        methodBg: d.source && d.source.method === 'CC' ? c.cardT : (d.source && d.source.method === 'ATM' ? c.s1 : c.moneyT),
+        methodFg: d.source && d.source.method === 'CC' ? c.card : (d.source && d.source.method === 'ATM' ? c.t2 : c.money),
         showCat: !!d.cat,
         catLabel: d.catLabel || 'Category',
         catName: d.cat ? d.cat.name : '',
@@ -200,7 +207,9 @@ class Component extends DCLogic {
         showChips: chips.length > 0,
         chipsLabel: catPick ? 'Saved for this shop from now on' : 'New shop · pick a category (optional)',
         chips,
-        ready: !d.needsAction,
+        ready: !d.needsAction && !d.notSpending,
+        notSpending: !!d.notSpending,
+        note: d.note || '',
         needsAction: !!d.needsAction,
         confirm: () => finish(d.id, d.toast || ('Saved · ' + d.amount)),
         remove: () => finish(d.id, 'Deleted from inbox')

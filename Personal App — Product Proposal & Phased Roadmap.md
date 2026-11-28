@@ -192,6 +192,8 @@ An account or card is added from a sheet with a live card preview. The sheet sho
 
 The last four digits are how an SMS is tied to the right account or card. There is no archived state: removing an account or card keeps its past transactions under the name they were saved with.
 
+The nickname, bank and last four digits can all be changed later in Details (screens A5 and A6, owner, 24 November 2026). The Bank row opens the same searchable list as the Add sheet. Digits already used by another account of the same kind are blocked, though a bank account and a card may share digits. Past expenses stay on the account and show the new details.
+
 A card used by family members still counts fully in your spending. There is no shared-card state.
 
 ### Cash

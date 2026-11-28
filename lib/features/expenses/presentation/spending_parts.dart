@@ -27,10 +27,10 @@ class SpendSource {
   final String tail;
   final String? bankName;
 
-  /// "UPI", "CARD" or "IN HAND", in the card's corner.
+  /// "UPI", "CARD" or "CASH", in the card's corner.
   String get kindLabel => switch (kind) {
     AccountKind.creditCard => 'CARD',
-    AccountKind.cash => 'IN HAND',
+    AccountKind.cash => 'CASH',
     _ => 'UPI',
   };
 
